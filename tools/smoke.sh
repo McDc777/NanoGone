@@ -16,32 +16,45 @@ for m in re.finditer(r'<node [^>]*>', xml):
         print((b[0] + b[2]) // 2, (b[1] + b[3]) // 2, b[1], b[3]); break
 PY
 }
+wait_gone() { # wait until text $1 is no longer on screen (max $2 seconds)
+  for i in $(seq 1 $2); do
+    adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1
+    adb shell cat /sdcard/ui.xml | grep -q "text=\"$1\"" || { echo "gone after ${i}s: $1"; return 0; }
+    sleep 1
+  done; echo "still there: $1"; }
+wait_for() { # wait until text $1 appears (max $2 seconds)
+  for i in $(seq 1 $2); do
+    adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1
+    adb shell cat /sdcard/ui.xml | grep -q "text=\"$1\"" && { echo "found after ${i}s: $1"; return 0; }
+    sleep 1
+  done; echo "never found: $1"; }
 adb install -r out/NanoGone-debug.apk
 python3 tools/make_test_photo.py /tmp/test_beach.jpg
 adb push /tmp/test_beach.jpg /sdcard/Pictures/test_beach.jpg
 adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/test_beach.jpg
 sleep 4
 adb logcat -c
-adb shell am start -n app.nanogone/.MainActivity; sleep 6; shot 01-home
+adb shell am start -n app.nanogone/.MainActivity; wait_for "Choose a photo" 60; sleep 2; shot 01-home
 ID=$(adb shell content query --uri content://media/external/images/media --projection _id:_display_name | grep test_beach | sed -E 's/.*_id=([0-9]+).*/\1/' | head -1)
 echo "media id $ID"
 adb shell am start -a android.intent.action.EDIT -d content://media/external/images/media/$ID -t image/jpeg --grant-read-uri-permission -n app.nanogone/.MainActivity
-sleep 8; shot 02-editor
+wait_for "Remove" 60; sleep 3; shot 02-editor
 read TX TY TT TB <<< "$(find_bounds NanoGone)"
 read RX RY RT RB <<< "$(find_bounds Remove)"
 # The photo sits between the top pane and the bottom pane; the bin is in its middle.
 TOPP=$((TB + 40)); BOTP=$((RT - 330))
 MIDY=$(((TOPP + BOTP) / 2)); MIDX=540
-adb shell input swipe $MIDX $((MIDY - 40)) $MIDX $((MIDY + 40)) 700
+adb shell input swipe $MIDX $((MIDY - 60)) $MIDX $((MIDY + 120)) 900
 sleep 2; shot 03-selected
 read RX RY RT RB <<< "$(find_bounds Remove)"
 adb shell input tap $RX $RY
 sleep 1; shot 04-lifting
-sleep 25; shot 05-removed
+START=$(date +%s); wait_gone "Lifting the mist" 180; echo "removal took $(( $(date +%s) - START ))s" > $OUT/timing.txt
+sleep 2; shot 05-removed
 read SX SY ST SB <<< "$(find_bounds Save)"
 adb shell input tap $SX $SY; sleep 3; shot 06-save-sheet
 read JX JY JT JB <<< "$(find_bounds 'Top-quality JPEG')"
-adb shell input tap $JX $JY; sleep 25; shot 07-saved
+START=$(date +%s); adb shell input tap $JX $JY; wait_for "Saved" 180; echo "save took $(( $(date +%s) - START ))s" >> $OUT/timing.txt; sleep 1; shot 07-saved
 adb shell ls -la /sdcard/Pictures/NanoGone/ > $OUT/saved-files.txt 2>&1
 adb pull /sdcard/Pictures/NanoGone/test_beach_NanoGone.jpg $OUT/saved.jpg
 if [ -f $OUT/saved.jpg ]; then python3 tools/check_saved.py /tmp/test_beach.jpg $OUT/saved.jpg > $OUT/check.txt 2>&1; fi

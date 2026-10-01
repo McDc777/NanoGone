@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +55,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
@@ -66,6 +68,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.magnifier
 import app.nanogone.save.SaveFormat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import app.nanogone.ui.FrostedPane
 import app.nanogone.ui.LocalDawn
 import app.nanogone.ui.PhotoShape
@@ -82,19 +86,23 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
     val beforeSource = remember { MutableInteractionSource() }
     val showBefore by beforeSource.collectIsPressedAsState()
 
-    // The mist that lifts after a removal keeps the shapes it was covering.
-    var lifting by remember { mutableStateOf<List<Shape>>(emptyList()) }
+    // The mist is painted once per selection change, off the main thread.
+    val mist by produceState<ImageBitmap?>(null, ui.selection, photo) {
+        value = withContext(Dispatchers.Default) { renderMist(ui.selection, photo.width, photo.height, p.mist, p.gold) }
+    }
+    // The mist that lifts after a removal keeps the picture it was showing.
+    var lifting by remember { mutableStateOf<ImageBitmap?>(null) }
     val lift = remember { Animatable(0f) }
     LaunchedEffect(ui.removals) {
-        if (lifting.isNotEmpty()) {
+        if (lifting != null) {
             lift.snapTo(0f)
             lift.animateTo(1f, tween(1200, easing = FastOutSlowInEasing))
-            lifting = emptyList()
+            lifting = null
             lift.snapTo(0f)
         }
     }
 
-    LaunchedEffect(ui.message) { if (ui.message != null) lifting = emptyList() }
+    LaunchedEffect(ui.message) { if (ui.message != null) lifting = null }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
         // Top pane: back, wordmark, undo, redo, before, save.
@@ -124,6 +132,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
         PhotoCanvas(
             ui = ui,
             showBefore = showBefore,
+            mist = mist,
             lifting = lifting,
             lift = lift.value,
             onShape = vm::addShape,
@@ -158,7 +167,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
                             else Brush.horizontalGradient(listOf(p.textSoft.copy(alpha = 0.18f), p.textSoft.copy(alpha = 0.12f))),
                         )
                         .clickable(enabled = canRemove) {
-                            lifting = ui.selection
+                            lifting = mist
                             vm.remove()
                         },
                     contentAlignment = Alignment.Center,
@@ -212,7 +221,8 @@ private fun ToolButton(glyph: Glyph, label: String, selected: Boolean, modifier:
 private fun PhotoCanvas(
     ui: EditorUi,
     showBefore: Boolean,
-    lifting: List<Shape>,
+    mist: ImageBitmap?,
+    lifting: ImageBitmap?,
     lift: Float,
     onShape: (Shape) -> Unit,
     modifier: Modifier,
@@ -327,16 +337,15 @@ private fun PhotoCanvas(
                 )
                 if (!showBefore) {
                     val pxPerScreen = 1f / sc
-                    if (lifting.isEmpty()) drawMist(ui.selection, p.mist, p.gold, pxPerScreen, breath, 0f)
-                    if (lifting.isNotEmpty()) drawMist(lifting, p.mist, p.gold, pxPerScreen, breath, lift)
+                    if (lifting == null && mist != null) drawMistImage(mist, photo.width, photo.height, breath, 0f)
+                    if (lifting != null) drawMistImage(lifting, photo.width, photo.height, breath, lift)
                     if (live.size > 0) {
-                        val preview: Shape = when (ui.tool) {
-                            Tool.Loop -> if (live.size >= 3) Loop(FloatArray(live.size) { live[it].x }, FloatArray(live.size) { live[it].y })
-                            else BrushStroke(floatArrayOf(live[0].x), floatArrayOf(live[0].y), 2f * pxPerScreen, false)
-                            Tool.Spot -> Spot(live.last().x, live.last().y, spotScreenPx * pxPerScreen)
-                            else -> BrushStroke(FloatArray(live.size) { live[it].x }, FloatArray(live.size) { live[it].y }, brushScreenPx * pxPerScreen, ui.tool == Tool.Eraser)
+                        when (ui.tool) {
+                            Tool.Loop -> drawLiveTrail(live, 4f * pxPerScreen, p.mist, loop = true)
+                            Tool.Spot -> drawLiveTrail(listOf(live.last()), spotScreenPx * pxPerScreen, p.mist, loop = false)
+                            Tool.Eraser -> drawLiveTrail(live, brushScreenPx * pxPerScreen, p.textSoft, loop = false)
+                            Tool.Brush -> drawLiveTrail(live, brushScreenPx * pxPerScreen, p.mist, loop = false)
                         }
-                        drawMist(ui.selection + preview, p.mist, p.gold, pxPerScreen, breath, 0f)
                     }
                 }
             }
