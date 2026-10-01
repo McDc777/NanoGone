@@ -206,9 +206,9 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
 }
 
 private fun hintFor(ui: EditorUi): String = when {
+    ui.enhanced -> "Enhanced to ${ui.enhancedSize}. Hold the eye to compare, or Save."
     ui.removals > 0 && ui.selection.isEmpty() && ui.lastShadowCaught -> "Gone, and its shadow too. Hold the eye to compare."
     ui.removals > 0 && ui.selection.isEmpty() -> "Gone. Hold the eye to compare, or pick the next thing."
-    ui.enhanced -> "Enhanced to ${ui.enhancedSize}. Hold the eye to compare, or Save."
     ui.selection.any { !(it is BrushStroke && it.erase) } -> "Wrapped in morning mist. Tap Remove, or keep adding."
     ui.tool == Tool.Tap -> "Tap what should go. Zoom in first for tiny things."
     ui.tool == Tool.Brush -> "Paint over what should go. Pinch to zoom in for tiny things."
