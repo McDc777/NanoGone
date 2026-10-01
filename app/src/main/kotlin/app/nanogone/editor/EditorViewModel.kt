@@ -6,7 +6,11 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.nanogone.ai.LamaEngine
+import app.nanogone.ai.MagicTap
+import app.nanogone.ai.TfliteModel
 import app.nanogone.imaging.geom.CropPlanner
+import app.nanogone.imaging.image.Argb
 import app.nanogone.imaging.geom.IntRect
 import app.nanogone.imaging.image.Paste
 import app.nanogone.imaging.mask.MaskOps
@@ -59,7 +63,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences("nanogone", Context.MODE_PRIVATE)
     private val fallback: RepairEngine = SmoothFillEngine()
     @Volatile private var lama: RepairEngine? = null
-    @Volatile private var tapper: app.nanogone.ai.MagicTap? = null
+    @Volatile private var tapper: MagicTap? = null
     private val engine: RepairEngine get() = lama ?: fallback
 
     private fun describeBrains(): String = buildString {
@@ -86,7 +90,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                         val bmp = _ui.value.display ?: error("no screen copy")
                         val px = IntArray(bmp.width * bmp.height)
                         bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
-                        val whole = app.nanogone.imaging.image.Argb(bmp.width, bmp.height, px)
+                        val whole = Argb(bmp.width, bmp.height, px)
                         val sx = bmp.width.toFloat() / photo.width
                         val r = IntRect((view.left * sx).toInt(), (view.top * sx).toInt(), minOf(bmp.width, (view.right * sx).toInt()), minOf(bmp.height, (view.bottom * sx).toInt()))
                         whole.crop(r)
@@ -124,10 +128,10 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.Default) {
             val c = getApplication<Application>()
             runCatching {
-                if (app.nanogone.ai.TfliteModel.exists(c, app.nanogone.ai.LamaEngine.ASSET)) lama = app.nanogone.ai.LamaEngine(c)
+                if (TfliteModel.exists(c, LamaEngine.ASSET)) lama = LamaEngine(c)
             }.onFailure { android.util.Log.w("NanoGone", "fast brain failed to load", it) }
             runCatching {
-                if (app.nanogone.ai.TfliteModel.exists(c, app.nanogone.ai.MagicTap.ENCODER)) tapper = app.nanogone.ai.MagicTap(c)
+                if (TfliteModel.exists(c, MagicTap.ENCODER)) tapper = MagicTap(c)
             }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
             _ui.update { it.copy(brains = describeBrains()) }
         }
