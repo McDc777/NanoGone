@@ -61,3 +61,13 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - STILL BLOCKED: `dl.google.com` (Android SDK and Google's Maven, so no APK yet) and `huggingface.co` (AI model files).
 - Next: Plan 2 (Android app shell, Dawn Mist theme, open and save a copy using :core:imaging) as soon as `dl.google.com` is allowed; Plan 3 (AI brains) needs `huggingface.co`.
 - Also written: `ART_DIRECTION.md` (Dawn Mist, gate answers A1 to A9 with the owner override) and Plan 2 `docs/superpowers/plans/2026-10-01-plan-2-app-shell.md` (first installable APK). Plan 2 starts with the SDK install once `dl.google.com` is allowed.
+
+## 2026-10-01, building on GitHub instead (Plan B)
+
+- This cloud box still cannot reach `dl.google.com` or `huggingface.co`, so builds run on **GitHub Actions** (`.github/workflows/build.yml`), which has the Android SDK and open internet.
+- Each push to `main` (outside docs) builds, runs all tests, starts an Android emulator, and drives the app (`tools/smoke.sh`): open a 12 MP test photo, brush the bin, Remove, Save as JPEG, then byte-check the saved copy (`tools/check_saved.py`).
+- Results come back on the branch `ci-results` (status, errors, tests, screenshots in `smoke/`, timings). Read them with `git fetch origin ci-results && git show FETCH_HEAD:status.txt`.
+- The APK is attached to the GitHub release **debug-latest** (download on the phone from the repo's Releases page).
+- AI brains (Qualcomm builds, public download, shipped inside the APK, fetched at build time, not committed): LaMa-Dilated (fast brain, 512x512), MobileSAM (magic tap), Real-ESRGAN x4 (for Enhance). Run with LiteRT 2.2 CompiledModel: graphics chip first, main chip fallback.
+- First emulator run (smooth fill, before the AI brains): same size kept, EXIF kept, bin gone, 2.8% of pixels changed (all around the bin). Removal took 32 s on the emulator; step timing logs added to find out why.
+- Known limits right now: Find distractions, Shadow catcher, Text eraser, deep brain, Enhance not built yet. Huge photos (200 MP) can run out of memory when saving as PNG.
