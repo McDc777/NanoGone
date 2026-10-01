@@ -17,6 +17,8 @@ jobs:
           for a in litert litert-gpu litert-gpu-api litert-support litert-api; do echo "$a: $(curl -s $g/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | tail -6 | tr '\n' ' ')"; done > versions.txt
           curl -sfo l.aar $g/litert/2.2.0/litert-2.2.0.aar && unzip -qo l.aar -d l && unzip -qo l/classes.jar -d lc && find lc -path "*gpu*" -name "*.class" | head -30 > gpu-classes.txt; ls l/jni/arm64-v8a > jni.txt 2>&1
           curl -s $g/litert/2.2.0/litert-2.2.0.pom > litert.pom
+          find lc -name "*.class" | sed 's#lc/##; s#\.class$##; s#/#.#g' | grep "com.google.ai.edge.litert" | grep -v '\$[0-9]' > litert-classes.txt
+          for c in $(grep -E "litert\.(CompiledModel|CompiledModel\$Options|Accelerator|TensorBuffer|Environment|Model|TensorBufferRequirements|LiteRtException)$" litert-classes.txt); do echo "== $c"; javap -cp lc "$c"; done > compiled-api.txt 2>&1
           rm -rf l lc l.aar
       - name: Publish
         run: |
