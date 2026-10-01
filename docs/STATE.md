@@ -21,3 +21,10 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Phones: Galaxy S23, S24, S25, S26 Ultra and Galaxy Tab A11+ 5G. Admin wants the app to use all the phone's power.
 - Sites `dl.google.com` and `huggingface.co` still blocked at this time.
 - Next: Question 3 (save as a copy or replace the original).
+
+## 2026-10-01, brainstorm Question 3 answered, engine research saved
+
+- Save a copy. The original stays untouched. The copy goes into a "NanoGone" folder.
+- Engine research saved in `docs/research/2026-10-01-engine-research.md` (LiteRT runs the AI chip on all five devices; LaMa repair in about 40 ms on new Galaxy chips; new one-step removers also wipe shadows).
+- Sites still blocked: `dl.google.com`, `huggingface.co`.
+- Next: Question 4 (extra features for version 1), then propose engine approaches A, B, C.
