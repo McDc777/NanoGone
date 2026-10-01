@@ -37,6 +37,7 @@ jobs:
           cp "$(find /tmp/m/x -name encoder.tflite)" app/src/main/assets/models/sam_encoder.tflite
           cp "$(find /tmp/m/x -name decoder.tflite)" app/src/main/assets/models/sam_decoder.tflite
           cp "$(find /tmp/m/x -name real_esrgan_x4plus.tflite)" app/src/main/assets/models/esrgan_x4.tflite
+          curl -sfL https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/latest/efficientdet_lite2.tflite -o app/src/main/assets/models/objects.tflite
           ls -la app/src/main/assets/models
       - name: Build and test
         run: |

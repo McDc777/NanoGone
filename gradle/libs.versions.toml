@@ -10,6 +10,8 @@ coreKtx = "1.19.1"
 exifinterface = "1.4.2"
 coroutines = "1.11.0"
 litert = "2.2.0"
+mlkitText = "16.0.1"
+mediapipe = "0.10.35"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
@@ -29,6 +31,8 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
+mlkit-text = { module = "com.google.mlkit:text-recognition", version.ref = "mlkitText" }
+mediapipe-vision = { module = "com.google.mediapipe:tasks-vision", version.ref = "mediapipe" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
 [plugins]

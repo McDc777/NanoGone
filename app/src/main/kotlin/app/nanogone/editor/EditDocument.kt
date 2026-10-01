@@ -10,10 +10,26 @@ import kotlin.math.floor
 sealed interface Shape {
     /** Bounding box in image pixels (may reach outside the image). */
     fun bounds(): IntRect
+
+    /** Does this shape cover image point (x, y)? Used to unpick a piece with one tap. */
+    fun covers(x: Float, y: Float): Boolean
 }
 
 /** A round-tipped brush stroke. [erase] strokes remove from the selection. */
 class BrushStroke(val xs: FloatArray, val ys: FloatArray, val radius: Float, val erase: Boolean) : Shape {
+    override fun covers(x: Float, y: Float): Boolean {
+        if (erase) return false
+        for (i in xs.indices) {
+            val j = minOf(i + 1, xs.size - 1)
+            val dx = xs[j] - xs[i]; val dy = ys[j] - ys[i]
+            val len2 = dx * dx + dy * dy
+            val t = if (len2 == 0f) 0f else (((x - xs[i]) * dx + (y - ys[i]) * dy) / len2).coerceIn(0f, 1f)
+            val qx = xs[i] + t * dx - x; val qy = ys[i] + t * dy - y
+            if (qx * qx + qy * qy <= radius * radius) return true
+        }
+        return false
+    }
+
     override fun bounds(): IntRect = IntRect(
         floor(xs.min() - radius).toInt(), floor(ys.min() - radius).toInt(),
         ceil(xs.max() + radius).toInt() + 1, ceil(ys.max() + radius).toInt() + 1,
@@ -22,6 +38,16 @@ class BrushStroke(val xs: FloatArray, val ys: FloatArray, val radius: Float, val
 
 /** A loop drawn around something: everything inside is selected. */
 class Loop(val xs: FloatArray, val ys: FloatArray) : Shape {
+    override fun covers(x: Float, y: Float): Boolean {
+        var inside = false
+        var j = xs.size - 1
+        for (i in xs.indices) {
+            if ((ys[i] > y) != (ys[j] > y) && x < (xs[j] - xs[i]) * (y - ys[i]) / (ys[j] - ys[i]) + xs[i]) inside = !inside
+            j = i
+        }
+        return inside
+    }
+
     override fun bounds(): IntRect = IntRect(
         floor(xs.min()).toInt(), floor(ys.min()).toInt(), ceil(xs.max()).toInt() + 1, ceil(ys.max()).toInt() + 1,
     )
@@ -29,6 +55,8 @@ class Loop(val xs: FloatArray, val ys: FloatArray) : Shape {
 
 /** A one-tap spot (dust, speck). */
 class Spot(val cx: Float, val cy: Float, val radius: Float) : Shape {
+    override fun covers(x: Float, y: Float): Boolean = (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius
+
     override fun bounds(): IntRect = IntRect(
         floor(cx - radius).toInt(), floor(cy - radius).toInt(), ceil(cx + radius).toInt() + 1, ceil(cy + radius).toInt() + 1,
     )
@@ -40,6 +68,9 @@ class Spot(val cx: Float, val cy: Float, val radius: Float) : Shape {
  */
 class MaskShape(val rect: IntRect, val mask: Mask, val erase: Boolean = false) : Shape {
     override fun bounds(): IntRect = rect
+
+    override fun covers(x: Float, y: Float): Boolean =
+        !erase && rect.contains(x.toInt(), y.toInt()) && at(x.toInt(), y.toInt())
 
     fun at(x: Int, y: Int): Boolean {
         val mx = ((x - rect.left + 0.5f) * mask.width / rect.width).toInt().coerceIn(0, mask.width - 1)
@@ -70,6 +101,17 @@ class EditDocument(val width: Int, val height: Int) {
     }
 
     fun addShape(shape: Shape) = push(state.copy(selection = state.selection + shape))
+
+    fun addShapes(shapes: List<Shape>) {
+        if (shapes.isNotEmpty()) push(state.copy(selection = state.selection + shapes))
+    }
+
+    /** Unpick: the last-added piece that covers (x, y) is taken out. Returns false if none does. */
+    fun unpickAt(x: Float, y: Float): Boolean {
+        val hit = state.selection.lastOrNull { it.covers(x, y) } ?: return false
+        push(state.copy(selection = state.selection - hit))
+        return true
+    }
 
     fun clearSelection() {
         if (state.selection.isNotEmpty()) push(state.copy(selection = emptyList()))

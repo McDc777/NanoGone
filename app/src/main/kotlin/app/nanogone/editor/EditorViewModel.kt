@@ -6,10 +6,12 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.nanogone.ai.DistractionFinder
 import app.nanogone.ai.EnhanceOptions
 import app.nanogone.ai.Enhancer
 import app.nanogone.ai.LamaEngine
 import app.nanogone.ai.MagicTap
+import app.nanogone.ai.TextFinder
 import app.nanogone.ai.TfliteModel
 import app.nanogone.imaging.geom.CropPlanner
 import app.nanogone.imaging.image.Argb
@@ -29,6 +31,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 enum class Tool { Tap, Brush, Loop, Spot, Eraser }
+
+enum class FindWhat { Distractions, Text }
 
 /** Logs how long each step takes (tag NanoGone), so speed can be checked on real phones. */
 class StageClock(private val job: String) {
@@ -67,6 +71,8 @@ data class EditorUi(
     val lastShadowCaught: Boolean = false,
     /** True right after a removal, until the next action. */
     val justRemoved: Boolean = false,
+    /** How many things the last Find added (0 hides the hint). */
+    val foundCount: Int = 0,
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -144,11 +150,90 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         refresh()
     }
 
+    @Volatile private var distractions: DistractionFinder? = null
+    @Volatile private var texts: TextFinder? = null
+
+    /** Find distractions (people in the background, clutter) or text, and add them to the selection. */
+    fun find(what: FindWhat) {
+        val photo = _ui.value.photo ?: return
+        val d = doc ?: return
+        val screen = _ui.value.display ?: return
+        _ui.update { it.copy(busy = if (what == FindWhat.Distractions) "Looking for distractions" else "Looking for text", justRemoved = false) }
+        viewModelScope.launch {
+            try {
+                val shapes = withContext(Dispatchers.Default) {
+                    val clock = StageClock("find $what")
+                    val c = getApplication<Application>()
+                    val upright = rotate(screen, photo.rotation)
+                    val found = when (what) {
+                        FindWhat.Distractions -> (distractions ?: DistractionFinder(c).also { distractions = it }).find(upright)
+                        FindWhat.Text -> (texts ?: TextFinder().also { texts = it }).find(upright)
+                    }
+                    clock.lap("found ${found.size}")
+                    val sx = photo.width.toFloat() / screen.width
+                    val px = IntArray(screen.width * screen.height)
+                    screen.getPixels(px, 0, screen.width, 0, 0, screen.width, screen.height)
+                    val whole = Argb(screen.width, screen.height, px)
+                    found.map { f ->
+                        // Box corners back to stored screen-copy pixels, then to photo pixels.
+                        val pts = listOf(f.box.left to f.box.top, f.box.right to f.box.top, f.box.right to f.box.bottom, f.box.left to f.box.bottom)
+                            .map { (u, v) -> unrotate(u, v, photo.rotation, screen.width.toFloat(), screen.height.toFloat()) }
+                        val xs = pts.map { it.first * sx }
+                        val ys = pts.map { it.second * sx }
+                        val box = IntRect(xs.min().toInt(), ys.min().toInt(), xs.max().toInt() + 1, ys.max().toInt() + 1)
+                        val pad = if (what == FindWhat.Text) maxOf(4, (minOf(box.width, box.height) * 0.25f).toInt()) else 0
+                        val padded = IntRect(box.left - pad, box.top - pad, box.right + pad, box.bottom + pad).intersect(d.image)
+                        val outline = if (what == FindWhat.Distractions) {
+                            tapper?.select(d.image, whole, _ui.value.version, (box.left + box.right) / 2f, (box.top + box.bottom) / 2f)
+                        } else null
+                        // Trust the outline only if it stays near the box the finder saw.
+                        val near = outline != null && outline.rect.width <= box.width * 1.6f && outline.rect.height <= box.height * 1.6f
+                        if (near) outline!! else Loop(
+                            floatArrayOf(padded.left.toFloat(), padded.right.toFloat(), padded.right.toFloat(), padded.left.toFloat()),
+                            floatArrayOf(padded.top.toFloat(), padded.top.toFloat(), padded.bottom.toFloat(), padded.bottom.toFloat()),
+                        )
+                    }.also { clock.lap("outlines") }
+                }
+                d.addShapes(shapes)
+                val msg = when {
+                    shapes.isEmpty() && what == FindWhat.Distractions -> "No distractions found. Tap or brush anything you want gone."
+                    shapes.isEmpty() -> "No text found."
+                    else -> null
+                }
+                _ui.update { it.copy(busy = null, message = msg, foundCount = shapes.size) }
+                publishSelection()
+            } catch (e: Exception) {
+                _ui.update { it.copy(busy = null, message = e.message ?: "Finding did not work. Try again.") }
+            }
+        }
+    }
+
+    private fun rotate(b: Bitmap, deg: Int): Bitmap {
+        if (deg % 360 == 0) return b
+        val m = android.graphics.Matrix().apply { postRotate(deg.toFloat()) }
+        return Bitmap.createBitmap(b, 0, 0, b.width, b.height, m, true)
+    }
+
+    /** Point in the upright picture back to the stored (unrotated) picture of size [w] x [h]. */
+    private fun unrotate(u: Float, v: Float, rot: Int, w: Float, h: Float): Pair<Float, Float> = when (rot) {
+        90 -> v to (h - u)
+        180 -> (w - u) to (h - v)
+        270 -> (w - v) to u
+        else -> u to v
+    }
+
     /** Magic tap at image point ([x], [y]) while the person views [view] (image pixels). */
     fun magicTap(view: IntRect, x: Float, y: Float) {
         val t = tapper
         val photo = _ui.value.photo ?: return
         val d = doc ?: return
+        // Tapping a piece that is already picked unpicks it (untick a found thing).
+        if (d.unpickAt(x, y)) {
+            clearEnhance()
+            _ui.update { it.copy(justRemoved = false, foundCount = 0) }
+            publishSelection()
+            return
+        }
         if (t == null) {
             _ui.update { it.copy(message = "Magic tap is still waking up. Try again in a moment, or use the brush.") }
             return
@@ -323,7 +408,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     display.copy(Bitmap.Config.ARGB_8888, true).also { drawPatch(it, patch, photo) }.also { clock.lap("screen copy") }
                 }
                 _ui.update {
-                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1, lastShadowCaught = shadowCaught, justRemoved = true)
+                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1, lastShadowCaught = shadowCaught, justRemoved = true, foundCount = 0)
                 }
                 publishSelection()
             } catch (e: OutOfMemoryError) {

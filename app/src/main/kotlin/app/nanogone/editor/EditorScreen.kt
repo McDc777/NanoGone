@@ -90,6 +90,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
     val photo = ui.photo ?: return
     var showSave by remember { mutableStateOf(false) }
     var showEnhance by remember { mutableStateOf(false) }
+    var showFind by remember { mutableStateOf(false) }
     val beforeSource = remember { MutableInteractionSource() }
     val showBefore by beforeSource.collectIsPressedAsState()
 
@@ -166,12 +167,13 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
                         )
                     }
                 }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     ToolButton(Glyph.Find, "Tap", ui.tool == Tool.Tap, Modifier.weight(1f)) { vm.setTool(Tool.Tap) }
                     ToolButton(Glyph.Brush, "Brush", ui.tool == Tool.Brush, Modifier.weight(1f)) { vm.setTool(Tool.Brush) }
                     ToolButton(Glyph.Loop, "Loop", ui.tool == Tool.Loop, Modifier.weight(1f)) { vm.setTool(Tool.Loop) }
                     ToolButton(Glyph.Spot, "Spot", ui.tool == Tool.Spot, Modifier.weight(1f)) { vm.setTool(Tool.Spot) }
                     ToolButton(Glyph.Eraser, "Unpick", ui.tool == Tool.Eraser, Modifier.weight(1f)) { vm.setTool(Tool.Eraser) }
+                    ToolButton(Glyph.Eye, "Find", false, Modifier.weight(1f), enabled = ui.busy == null) { showFind = true }
                     ToolButton(Glyph.Enhance, "Enhance", ui.enhanced, Modifier.weight(1f), enabled = ui.busy == null) { showEnhance = true }
                 }
                 val canRemove = ui.selection.any { !(it is BrushStroke && it.erase) } && ui.busy == null
@@ -196,6 +198,10 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
         }
     }
 
+    if (showFind) {
+        FindSheet(onFind = { w -> showFind = false; vm.setTool(Tool.Tap); vm.find(w) }, onDismiss = { showFind = false })
+    }
+
     if (showEnhance) {
         EnhanceSheet(ui, onApply = { o -> showEnhance = false; vm.enhance(o) }, onUndo = { showEnhance = false; vm.clearEnhance() }, onDismiss = { showEnhance = false })
     }
@@ -207,6 +213,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
 
 private fun hintFor(ui: EditorUi): String = when {
     ui.enhanced -> "Enhanced to ${ui.enhancedSize}. Hold the eye to compare, or Save."
+    ui.foundCount > 0 -> "Found ${ui.foundCount}. Tap any mist to keep that one, then Remove."
     ui.justRemoved && ui.lastShadowCaught -> "Gone, and its shadow too. Hold the eye to compare."
     ui.justRemoved -> "Gone. Hold the eye to compare, or pick the next thing."
     ui.selection.any { !(it is BrushStroke && it.erase) } -> "Wrapped in morning mist. Tap Remove, or keep adding."
@@ -533,5 +540,28 @@ private fun EnhanceSwitch(title: String, detail: String, checked: Boolean, onCha
             checked = checked, onCheckedChange = onChange,
             colors = SwitchDefaults.colors(checkedTrackColor = p.accent, checkedThumbColor = p.surface, uncheckedTrackColor = p.textSoft.copy(alpha = 0.2f)),
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FindSheet(onFind: (FindWhat) -> Unit, onDismiss: () -> Unit) {
+    val p = LocalDawn.current
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = state, containerColor = p.surface) {
+        Column(Modifier.padding(horizontal = 20.dp).padding(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text("Find for me", style = MaterialTheme.typography.headlineMedium, color = p.text)
+            FormatChoice(
+                title = "Find distractions",
+                detail = "People in the background, bins, poles, cars, bottles and other clutter.",
+                selected = false, enabled = true,
+            ) { onFind(FindWhat.Distractions) }
+            FormatChoice(
+                title = "Find text",
+                detail = "Writing, date stamps and watermarks.",
+                selected = false, enabled = true,
+            ) { onFind(FindWhat.Text) }
+            Text("Everything found gets the mist. Tap any piece to keep it in the photo.", style = MaterialTheme.typography.bodyMedium, color = p.textSoft)
+        }
     }
 }

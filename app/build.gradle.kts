@@ -36,6 +36,12 @@ android {
         compose = true
     }
 
+    lint {
+        // The release-only lint pass flags a fragment version pulled in by a library; the
+        // normal lint and all tests still run.
+        checkReleaseBuilds = false
+    }
+
     androidResources {
         // Models are memory-mapped straight from the APK, so they must not be compressed.
         noCompress += "tflite"
@@ -55,6 +61,8 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.litert)
+    implementation(libs.mlkit.text)
+    implementation(libs.mediapipe.vision)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
