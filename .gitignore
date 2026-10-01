@@ -1,26 +1,6 @@
-# Android / Gradle
 .gradle/
 build/
 **/build/
 local.properties
 *.iml
 .idea/
-captures/
-.externalNativeBuild/
-.cxx/
-*.keystore
-!debug.keystore
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Python
-__pycache__/
-*.pyc
-
-# Large model files are downloaded by the build, not committed
-*.onnx
-*.tflite
-*.pte
-*.bin
