@@ -46,3 +46,17 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Approved: Part 1 journey, Part 2 picking (plus Enhance added), Part 3 filling the hole, Part 4 Enhance (all four tools), Part 5 saving (Save offers JPEG and PNG).
 - Part 6 (look): three art directions built as a try-it page: `docs/design/nanogone-looks.html`, published at https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB . A: The Invisible Mender (weave). B: The Conservator's Lamp (UV torch compare). C: Fresh Powder (snowfall). Recommending B.
 - Next: Admin picks a look, then Part 7 (safety nets and testing), then write the spec.
+
+## 2026-10-01, Admin said "stop asking, pick the best, get it done"; spec and Plan 1 done
+
+- Look locked: Admin's own "Dawn Mist" (frosted glass, pastel dawn, warm mist that lifts away on Remove).
+- Spec written: `docs/superpowers/specs/2026-10-01-nanogone-design.md`.
+- Plan 1 written and DONE: `docs/superpowers/plans/2026-10-01-plan-1-imaging-core.md`. Module `:core:imaging` (pure Kotlin, 27 tests passing, run `./gradlew :core:imaging:test`):
+  - masks with no-drift tap rules, loop clipping, grow, distance transform
+  - crop planning, feathered paste (never touches pixels outside the mask)
+  - baseline JPEG coefficient decoder and writer (rewrite = identical pixels in Pillow)
+  - block patcher: only edited 8x8/16x16 squares re-encoded; full quality-100 encoder fallback
+  - copy cleaner (drops MPF, Ultra HDR and motion-photo XMP, Samsung trailer) and EXIF preview swap
+- Note: Maven Central sometimes answers 429 (too many requests). Just rerun; a second mirror (repo1) is set.
+- STILL BLOCKED: `dl.google.com` (Android SDK and Google's Maven, so no APK yet) and `huggingface.co` (AI model files).
+- Next: Plan 2 (Android app shell, Dawn Mist theme, open and save a copy using :core:imaging) as soon as `dl.google.com` is allowed; Plan 3 (AI brains) needs `huggingface.co`.

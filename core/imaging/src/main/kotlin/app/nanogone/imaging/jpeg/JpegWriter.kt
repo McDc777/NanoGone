@@ -2,17 +2,21 @@ package app.nanogone.imaging.jpeg
 
 import java.io.ByteArrayOutputStream
 
-/** Writes a JPEG from a parsed file and (possibly changed) coefficients. Trailing bytes are never written. */
+/**
+ * Writes a JPEG from a parsed file and (possibly changed) coefficients. Trailing bytes are never written.
+ * [rewrite] can change or drop (null) each metadata segment; see [CopyCleaner.forCopy].
+ */
 object JpegWriter {
 
-    fun write(p: ParsedJpeg, coeffs: Coefficients, keep: (Segment) -> Boolean = { true }): ByteArray {
+    fun write(p: ParsedJpeg, coeffs: Coefficients, rewrite: (Segment) -> Segment? = { it }): ByteArray {
         val enc = CoefficientEncoder.encode(p, coeffs)
         val out = ByteArrayOutputStream(p.entropy.size + 4096)
         out.write(0xFF); out.write(0xD8)
         val sof = p.segments.last { it.marker == 0xC0 || it.marker == 0xC1 }
         for (s in p.segments) {
             if (s.marker == 0xC0 || s.marker == 0xC1 || s.marker == 0xC4 || s.marker == 0xDD) continue
-            if (keep(s)) segment(out, s.marker, s.data)
+            val r = rewrite(s) ?: continue
+            segment(out, r.marker, r.data)
         }
         segment(out, sof.marker, sof.data)
         segment(out, 0xC4, dht(enc))

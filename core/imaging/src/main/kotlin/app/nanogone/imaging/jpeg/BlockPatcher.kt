@@ -45,14 +45,14 @@ object BlockPatcher {
      * @param region image area covered by [pixels]; must contain every touched MCU (clipped to the image).
      * @param pixels ARGB of [region]: the edited result (original pixels where nothing changed).
      * @param changed which pixels of [region] were edited.
-     * @param keep which pre-frame segments to keep (see CopyCleaner).
+     * @param rewrite what to do with each metadata segment (see CopyCleaner.forCopy).
      */
     fun patch(
         original: ByteArray,
         region: IntRect,
         pixels: IntArray,
         changed: Mask,
-        keep: (Segment) -> Boolean = { true },
+        rewrite: (Segment) -> Segment? = { it },
     ): ByteArray {
         require(pixels.size == region.width * region.height) { "pixels do not match region" }
         require(changed.width == region.width && changed.height == region.height) { "mask does not match region" }
@@ -79,6 +79,6 @@ object BlockPatcher {
             require(region.contains(mcuRect)) { "region $region does not cover touched MCU $mcuRect" }
             ForwardDct.encodeMcu(p, coeffs, mx, my, pixel)
         }
-        return JpegWriter.write(p, coeffs, keep)
+        return JpegWriter.write(p, coeffs, rewrite)
     }
 }
