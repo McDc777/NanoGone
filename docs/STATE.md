@@ -71,3 +71,15 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - AI brains (Qualcomm builds, public download, shipped inside the APK, fetched at build time, not committed): LaMa-Dilated (fast brain, 512x512), MobileSAM (magic tap), Real-ESRGAN x4 (for Enhance). Run with LiteRT 2.2 CompiledModel: graphics chip first, main chip fallback.
 - First emulator run (smooth fill, before the AI brains): same size kept, EXIF kept, bin gone, 2.8% of pixels changed (all around the bin). Removal took 32 s on the emulator; step timing logs added to find out why.
 - Known limits right now: Find distractions, Shadow catcher, Text eraser, deep brain, Enhance not built yet. Huge photos (200 MP) can run out of memory when saving as PNG.
+
+## 2026-10-01, version 1 features built (most of the spec)
+
+Built and pushed (each push builds on GitHub, runs tests, drives the app in an emulator):
+- Editor in the Dawn Mist look: Tap (magic tap, MobileSAM), Brush, Loop, Spot, Unpick, Find, Enhance; zoom and pan; magnifier bubble; hold the eye to see the original; undo and redo.
+- Remove: fast brain LaMa (512, letterboxed, small crops scaled up for tiny things), grain match, shadow catcher (on by default, chip in the tray), feathered paste. Smooth fill as safety net.
+- Find distractions (EfficientDet-Lite2 + magic tap outlines, rule: everyone but the main people, plus small clutter) and Find text (ML Kit offline). Tap any mist piece to unpick it.
+- Enhance: Light and colour (AutoTone), Sharper and cleaner, Bigger 2x or 4x (Real-ESRGAN x4 on tiles), strength slider. Results up to 64 MP for now.
+- Save: Top-quality JPEG (only changed squares rewritten; instant exact copy when nothing changed; full quality-100 encode for enhanced or unusual files) or Lossless PNG. EXIF kept and preview rebuilt; Samsung trailers, MPF and Ultra HDR/motion XMP dropped from the copy.
+- The APK is now a full-speed build (release, signed with the debug key), because debuggable builds ran 50 to 100 times slower.
+
+Not built yet: deep brain (SDXL-class one-step remover), Face fix, Ultra HDR gain-map repair (gain map is dropped for now), streaming save for 200 MP PNG, NPU (AI chip) path (GPU then CPU for now), zoom-aware magic tap is partial (whole-photo view when not zoomed).
