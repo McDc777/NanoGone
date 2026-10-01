@@ -74,4 +74,6 @@
 ## Design approval log
 
 - Part 1 (how it works): approved.
-- Part 2 (picking what to remove): Admin added **image enhancement** to version 1. Asking what Enhance should do.
+- Part 2 (picking what to remove): no changes to the tools; Admin added **image enhancement** to version 1.
+- Enhance question: Admin picked ALL four: **Sharper and cleaner** (blur and grain, same size), **Bigger photo** (2x or 4x), **Light and colour fix**, **Face fix**. Enhance is a separate button and changes the whole photo on purpose.
+- Design now has 7 parts: 1 journey, 2 picking, 3 filling the hole, 4 Enhance, 5 saving, 6 look, 7 safety nets and testing.

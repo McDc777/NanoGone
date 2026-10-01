@@ -86,6 +86,14 @@ Helpers for the version 1 extras:
 - **Shadow catcher:** instance shadow detection pairs each object with its shadow. FastInstShadow (2025, light FIS-D1 variant, fastest and most accurate on SOAP) or SSISv2 (TPAMI 2023). The deep brain also removes shadows by itself.
 - **Text and logo eraser:** an offline text finder (PaddleOCR detection, Apache 2.0, or Google ML Kit bundled text recognition, works offline). Logos: tap with the magnet.
 
+## 8. Enhance models (Admin added Enhance in design Part 2)
+
+- **Bigger (fast):** Real-ESRGAN-x4plus (BSD-3). Qualcomm build: 54 ms per tile on Galaxy S24 NPU (TFLite, FP16), 49 ms with QNN. Works in tiles for any photo size.
+- **Bigger and Sharper (deep, Ultras):** one-step diffusion super-resolution (OSEDiff, NeurIPS 2024, SD 2.1 base plus 8.5M LoRA). It was the official baseline of the NTIRE 2026 Mobile Real-World Super-Resolution challenge on a MediaTek Dimensity 8400. Newer: FiDeSR (CVPR 2026).
+- **Sharper and cleaner (fast):** a real-world restoration network at the same size (candidates: Real-ESRGAN x1 style, SCUNet, NAFNet); bake-off picks.
+- **Light and colour:** image-adaptive 3D LUT (under 600K params, about 2 ms for 4K on a desktop GPU), trained on MIT-Adobe FiveK expert retouches. Newer: SepLUT (ECCV 2022), SVDLUT (ICCV 2025).
+- **Face fix:** GFPGAN v1.4 (Apache 2.0), with a strength slider so faces stay true to life. Not CodeFormer (non-commercial licence). Faces found first by a small face finder.
+
 ## Sources (web search, 2026-10-01)
 
 - LiteRT Qualcomm NPU: https://developers.google.com/edge/litert/next/qualcomm
@@ -109,4 +117,9 @@ Helpers for the version 1 extras:
 - RF-DETR: https://github.com/roboflow/rf-detr , https://blog.roboflow.com/rf-detr-segmentation/
 - Wire removal: https://arxiv.org/abs/2304.00221
 - FastInstShadow: https://www.researchgate.net/publication/389748319_FastInstShadow_A_Simple_Query-Based_Model_for_Instance_Shadow_Detection
+- Real-ESRGAN Qualcomm: https://huggingface.co/qualcomm/Real-ESRGAN-x4plus
+- NTIRE 2026 mobile SR: https://arxiv.org/abs/2604.17306
+- OSEDiff: https://arxiv.org/abs/2406.08177
+- GFPGAN: https://github.com/TencentARC/GFPGAN
+- 3D LUT: https://arxiv.org/pdf/2508.16121 , https://huggingface.co/WeiChen80percent/image-adaptive-3dlut
 - Magic Eraser small-object complaints: https://www.androidpolice.com/users-claim-magic-eraser-has-gotten-worse/
