@@ -9,32 +9,15 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Download models and print their inputs and outputs
+      - name: LiteRT artifacts
         run: |
-          mkdir -p out m && cd m
-          B=https://qaihub-public-assets.s3.us-west-2.amazonaws.com/qai-hub-models/models
-          for z in lama_dilated/releases/v0.63.0/lama_dilated-tflite-float.zip mobilesam/releases/v0.63.0/mobilesam-tflite-float.zip real_esrgan_x4plus/releases/v0.63.0/real_esrgan_x4plus-tflite-float.zip aotgan/releases/v0.63.0/aotgan-tflite-float.zip; do
-            curl -sfLO "$B/$z" && unzip -qo "$(basename $z)" -d "$(basename $z .zip)"
-          done
-          find . -type f -not -name "*.zip" -exec ls -la {} \; > ../out/files.txt
-          find . -name "*.json" -o -name "*.md" -o -name "*.txt" | head -20 | while read f; do echo "== $f"; head -c 3000 "$f"; echo; done > ../out/meta.txt
-          pip install -q ai-edge-litert numpy > /dev/null 2>&1
-          python3 - > ../out/tensors.txt 2>&1 <<'PY'
-          import glob, time, numpy as np
-          from ai_edge_litert.interpreter import Interpreter
-          for f in sorted(glob.glob("**/*.tflite", recursive=True)):
-              print("==", f)
-              it = Interpreter(model_path=f, num_threads=2)
-              it.allocate_tensors()
-              for d in it.get_input_details(): print(" in ", d["name"], d["shape"], d["dtype"].__name__, d["quantization"])
-              for d in it.get_output_details(): print(" out", d["name"], d["shape"], d["dtype"].__name__, d["quantization"])
-              try:
-                  for d in it.get_input_details(): it.set_tensor(d["index"], np.random.rand(*d["shape"]).astype(d["dtype"]))
-                  t = time.time(); it.invoke(); print(" cpu invoke %.2fs" % (time.time() - t))
-                  for d in it.get_output_details():
-                      o = it.get_tensor(d["index"]); print(" out range", float(o.min()), float(o.max()))
-              except Exception as e: print(" invoke failed", e)
-          PY
+          mkdir -p out && cd out
+          g=https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert
+          curl -s $g/group-index.xml > group-index.xml
+          for a in litert litert-gpu litert-gpu-api litert-support litert-api; do echo "$a: $(curl -s $g/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | tail -6 | tr '\n' ' ')"; done > versions.txt
+          curl -sfo l.aar $g/litert/2.2.0/litert-2.2.0.aar && unzip -qo l.aar -d l && unzip -qo l/classes.jar -d lc && find lc -path "*gpu*" -name "*.class" | head -30 > gpu-classes.txt; ls l/jni/arm64-v8a > jni.txt 2>&1
+          curl -s $g/litert/2.2.0/litert-2.2.0.pom > litert.pom
+          rm -rf l lc l.aar
       - name: Publish
         run: |
           cd out
