@@ -75,6 +75,17 @@ adb shell input tap $SX $SY; sleep 3; shot 06-save-sheet
 read JX JY JT JB <<< "$(find_bounds 'Top-quality JPEG')"
 START=$(date +%s); adb shell input tap $JX $JY; wait_for "Saved" 180; echo "save took $(( $(date +%s) - START ))s" >> $OUT/timing.txt; sleep 1; shot 07-saved
 adb shell ls -la /sdcard/Pictures/NanoGone/ > $OUT/saved-files.txt 2>&1
+# Close the save sheet, then try Find distractions and open Enhance (screenshots only).
+adb shell input keyevent 4; sleep 2
+read FX FY FT FB <<< "$(find_bounds Find)"
+adb shell input tap $FX $FY; sleep 2; shot 08-find-sheet
+read DX DY DT DB <<< "$(find_bounds 'Find distractions')"
+START=$(date +%s); adb shell input tap $DX $DY; sleep 1
+wait_gone "Looking for distractions" 240; echo "find distractions took $(( $(date +%s) - START ))s" >> $OUT/timing.txt
+sleep 2; shot 09-found
+read EX EY ET EB <<< "$(find_bounds Enhance)"
+adb shell input tap $EX $EY; sleep 2; shot 10-enhance-sheet
+adb shell input keyevent 4; sleep 1
 adb pull /sdcard/Pictures/NanoGone/test_beach_NanoGone.jpg $OUT/saved.jpg
 if [ -f $OUT/saved.jpg ]; then python3 tools/check_saved.py /tmp/test_beach.jpg $OUT/saved.jpg > $OUT/check.txt 2>&1; fi
 adb logcat -d -s AndroidRuntime:E app.nanogone:* > $OUT/crash.log
