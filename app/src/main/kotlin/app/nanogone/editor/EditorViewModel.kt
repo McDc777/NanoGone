@@ -22,6 +22,16 @@ import kotlinx.coroutines.withContext
 
 enum class Tool { Brush, Loop, Spot, Eraser }
 
+/** Logs how long each step takes (tag NanoGone), so speed can be checked on real phones. */
+class StageClock(private val job: String) {
+    private var t = android.os.SystemClock.elapsedRealtime()
+    fun lap(stage: String) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        android.util.Log.i("NanoGone", "$job: $stage took ${now - t} ms")
+        t = now
+    }
+}
+
 data class EditorUi(
     val photo: Photo? = null,
     /** Screen copy in stored orientation, with removals applied. Bumped [version] on every change. */
@@ -128,21 +138,28 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             try {
                 val patch = withContext(Dispatchers.Default) {
+                    val clock = StageClock("remove")
                     val pre = d.selectionMask(sel)
+                    clock.lap("selection mask ${sel.width}x${sel.height}")
                     val r = MaskOps.growRadiusFor(pre)
                     val grown = IntRect(sel.left - r, sel.top - r, sel.right + r, sel.bottom + r).intersect(d.image)
                     val ctx = CropPlanner.contextBox(grown, photo.width, photo.height)
                     val crop = saver.composite(photo, ctx, d.state.patches)
+                    clock.lap("decode crop ${ctx.width}x${ctx.height}")
                     val mask = MaskOps.grow(d.selectionMask(ctx), r)
+                    clock.lap("mask and grow r=$r")
                     val filled = engine.repair(crop, mask)
+                    clock.lap("repair (${engine.name})")
                     val result = crop.copy()
                     Paste.feathered(result, filled, 0, 0, mask, feather = maxOf(1.5f, r / 2f))
+                    clock.lap("paste")
                     Patch(ctx, result.px, mask)
                 }
                 d.addPatch(patch)
                 val display = _ui.value.display ?: return@launch
                 val shown = withContext(Dispatchers.Default) {
-                    display.copy(Bitmap.Config.ARGB_8888, true).also { drawPatch(it, patch, photo) }
+                    val clock = StageClock("remove")
+                    display.copy(Bitmap.Config.ARGB_8888, true).also { drawPatch(it, patch, photo) }.also { clock.lap("screen copy") }
                 }
                 _ui.update {
                     it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1)
@@ -189,7 +206,10 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         _ui.update { it.copy(busy = "Saving a perfect copy", lastFormat = format) }
         viewModelScope.launch {
             try {
-                val result = withContext(Dispatchers.IO) { saver.save(photo, d.state.patches, format, shown) }
+                val result = withContext(Dispatchers.IO) {
+                    val clock = StageClock("save")
+                    saver.save(photo, d.state.patches, format, shown).also { clock.lap("${format.name} ${it.method}") }
+                }
                 _ui.update { it.copy(busy = null, saved = result) }
             } catch (e: OutOfMemoryError) {
                 _ui.update { it.copy(busy = null, message = "This photo is too big for that format on this phone. Try Top-quality JPEG.") }

@@ -1,0 +1,33 @@
+name: probe
+on:
+  push:
+    paths: [".github/workflows/probe.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Look up model files and the LiteRT API
+        run: |
+          mkdir -p out && cd out
+          for r in qualcomm/LaMa-Dilated qualcomm/Segment-Anything-Model-2 qualcomm/Real-ESRGAN-x4plus qualcomm/AOT-GAN; do
+            echo "== $r" >> models.txt
+            curl -s "https://huggingface.co/api/models/$r/tree/main?recursive=true" | python3 -c "import json,sys; [print(f.get('path'), f.get('size'), (f.get('lfs') or {}).get('size')) for f in json.load(sys.stdin)]" >> models.txt 2>&1
+            curl -sL "https://huggingface.co/$r/raw/main/README.md" | head -c 12000 > "$(echo $r | tr / _).README.md"
+          done
+          g=https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert
+          curl -s $g/group-index.xml > litert-group.xml
+          curl -sfo litert.aar $g/litert/2.2.0/litert-2.2.0.aar && mkdir aar && cd aar && unzip -q ../litert.aar && ls -R > ../aar-files.txt && (unzip -q classes.jar -d classes || true) && cd ..
+          find aar/classes -name "*.class" | sed 's#aar/classes/##; s#\.class$##; s#/#.#g' | grep -v '\$' > classes.txt
+          for c in $(grep -E "CompiledModel$|Accelerator$|TensorBuffer$|Environment$|Model$|Options$|Interpreter$|InterpreterApi$" classes.txt | head -20); do
+            echo "== $c" >> api.txt; javap -cp aar/classes "$c" >> api.txt 2>&1
+          done
+          rm -rf aar litert.aar
+      - name: Publish
+        run: |
+          cd out
+          git init -q -b p && git config user.email ci@nanogone && git config user.name nanogone-ci
+          git add -A && git commit -qm probe
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" p:ci-results-probe

@@ -60,4 +60,5 @@ adb pull /sdcard/Pictures/NanoGone/test_beach_NanoGone.jpg $OUT/saved.jpg
 if [ -f $OUT/saved.jpg ]; then python3 tools/check_saved.py /tmp/test_beach.jpg $OUT/saved.jpg > $OUT/check.txt 2>&1; fi
 adb logcat -d -s AndroidRuntime:E app.nanogone:* > $OUT/crash.log
 adb logcat -d | grep -iE "nanogone|FATAL" | tail -200 > $OUT/logcat.txt
+adb logcat -d -s NanoGone:I > $OUT/timing-steps.txt
 true

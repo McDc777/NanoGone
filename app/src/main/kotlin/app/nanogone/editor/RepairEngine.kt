@@ -55,17 +55,17 @@ abstract class ScaledRepairEngine(private val workSide: Int) : RepairEngine {
         val y1 = (y0 + 1).coerceAtMost(img.height - 1)
         val ax = (fx - x0).coerceIn(0f, 1f)
         val ay = (fy - y0).coerceIn(0f, 1f)
-        var out = 0xFF shl 24
-        for (shift in intArrayOf(16, 8, 0)) {
-            val a = (img[x0, y0] shr shift) and 0xFF
-            val b = (img[x1, y0] shr shift) and 0xFF
-            val c = (img[x0, y1] shr shift) and 0xFF
-            val d = (img[x1, y1] shr shift) and 0xFF
+        val p00 = img[x0, y0]; val p10 = img[x1, y0]; val p01 = img[x0, y1]; val p11 = img[x1, y1]
+        fun ch(shift: Int): Int {
+            val a = (p00 shr shift) and 0xFF
+            val b = (p10 shr shift) and 0xFF
+            val c = (p01 shr shift) and 0xFF
+            val d = (p11 shr shift) and 0xFF
             val top = a + (b - a) * ax
             val bottom = c + (d - c) * ax
-            out = out or (((top + (bottom - top) * ay) + 0.5f).toInt().coerceIn(0, 255) shl shift)
+            return ((top + (bottom - top) * ay) + 0.5f).toInt().coerceIn(0, 255)
         }
-        return out
+        return (0xFF shl 24) or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
     }
 }
 
