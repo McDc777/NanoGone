@@ -9,18 +9,25 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: LiteRT artifacts
+      - name: LiteRT CompiledModel API
+        continue-on-error: true
         run: |
+          set +e
           mkdir -p out && cd out
           g=https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert
-          curl -s $g/group-index.xml > group-index.xml
-          for a in litert litert-gpu litert-gpu-api litert-support litert-api; do echo "$a: $(curl -s $g/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | tail -6 | tr '\n' ' ')"; done > versions.txt
-          curl -sfo l.aar $g/litert/2.2.0/litert-2.2.0.aar && unzip -qo l.aar -d l && unzip -qo l/classes.jar -d lc && find lc -path "*gpu*" -name "*.class" | head -30 > gpu-classes.txt; ls l/jni/arm64-v8a > jni.txt 2>&1
-          curl -s $g/litert/2.2.0/litert-2.2.0.pom > litert.pom
-          find lc -name "*.class" | sed 's#lc/##; s#\.class$##; s#/#.#g' | grep "com.google.ai.edge.litert" | grep -v '\$[0-9]' > litert-classes.txt
-          for c in $(grep -E "litert\.(CompiledModel|CompiledModel\$Options|Accelerator|TensorBuffer|Environment|Model|TensorBufferRequirements|LiteRtException)$" litert-classes.txt); do echo "== $c"; javap -cp lc "$c"; done > compiled-api.txt 2>&1
-          rm -rf l lc l.aar
+          for a in litert litert-api; do
+            curl -sfo $a.aar $g/$a/2.2.0/$a-2.2.0.aar; mkdir -p x-$a; unzip -qo $a.aar -d x-$a; unzip -qo x-$a/classes.jar -d c-$a
+          done
+          find c-litert c-litert-api -name "*.class" > all-classes.txt
+          for d in c-litert c-litert-api; do
+            for f in $(find $d -name "*.class" | grep -E "/(CompiledModel|Accelerator|TensorBuffer|Environment|Model|LiteRtException|Options)(\.class|\\\$Options\.class)$"); do
+              c=$(echo ${f#$d/} | sed 's/\.class$//; s#/#.#g')
+              echo "== $c"; javap -cp $d "$c"
+            done
+          done > compiled-api.txt 2>&1
+          rm -rf x-* c-* *.aar
       - name: Publish
+        if: always()
         run: |
           cd out
           git init -q -b p && git config user.email ci@nanogone && git config user.name nanogone-ci
