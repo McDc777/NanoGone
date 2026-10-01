@@ -1,0 +1,202 @@
+== CompiledModel$CpuOptions
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$CpuOptions {
+  public com.google.ai.edge.litert.CompiledModel$CpuOptions(java.lang.Integer, java.lang.Integer, java.lang.String);
+  public com.google.ai.edge.litert.CompiledModel$CpuOptions(java.lang.Integer, java.lang.Integer, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public final java.lang.Integer getNumThreads();
+  public final java.lang.Integer getXnnPackFlags();
+  public final java.lang.String getXnnPackWeightCachePath();
+  public final java.util.Map<com.google.ai.edge.litert.CompiledModel$CpuOptions$Key, java.lang.String> toMap$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final java.lang.Integer component1();
+  public final java.lang.Integer component2();
+  public final java.lang.String component3();
+  public final com.google.ai.edge.litert.CompiledModel$CpuOptions copy(java.lang.Integer, java.lang.Integer, java.lang.String);
+  public static com.google.ai.edge.litert.CompiledModel$CpuOptions copy$default(com.google.ai.edge.litert.CompiledModel$CpuOptions, java.lang.Integer, java.lang.Integer, java.lang.String, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+  public com.google.ai.edge.litert.CompiledModel$CpuOptions();
+}
+== CompiledModel$CpuOptions$Key
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$CpuOptions$Key extends java.lang.Enum<com.google.ai.edge.litert.CompiledModel$CpuOptions$Key> {
+  public static final com.google.ai.edge.litert.CompiledModel$CpuOptions$Key NUM_THREADS;
+  public static final com.google.ai.edge.litert.CompiledModel$CpuOptions$Key XNNPACK_FLAGS;
+  public static final com.google.ai.edge.litert.CompiledModel$CpuOptions$Key XNNPACK_WEIGHT_CACHE_PATH;
+  public final int getValue();
+  public static com.google.ai.edge.litert.CompiledModel$CpuOptions$Key[] values();
+  public static com.google.ai.edge.litert.CompiledModel$CpuOptions$Key valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<com.google.ai.edge.litert.CompiledModel$CpuOptions$Key> getEntries();
+  static {};
+}
+== CompiledModel$GpuOptions
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$GpuOptions {
+  public com.google.ai.edge.litert.CompiledModel$GpuOptions(java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision, com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType, java.lang.Boolean, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.String, com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend, com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority, java.lang.Integer);
+  public com.google.ai.edge.litert.CompiledModel$GpuOptions(java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision, com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType, java.lang.Boolean, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.String, com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend, com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority, java.lang.Integer, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public final java.lang.Boolean getConstantTensorSharing();
+  public final java.lang.Boolean getInfiniteFloatCapping();
+  public final java.lang.Boolean getAllowSrcQuantizedFcConvOps();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision getPrecision();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType getBufferStorageType();
+  public final java.lang.Boolean getPreferTextureWeights();
+  public final java.lang.String getSerializationDir();
+  public final java.lang.String getModelCacheKey();
+  public final java.lang.Boolean getSerializeProgramCache();
+  public final java.lang.Boolean getSerializeExternalTensors();
+  public final java.lang.Boolean getExternalTensorsMode();
+  public final java.lang.String getExternalTensorPattern();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend getBackend();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority getPriority();
+  public final java.lang.Integer getNumStepsOfCommandBufferPreparations();
+  public final java.util.Map<com.google.ai.edge.litert.CompiledModel$GpuOptions$Key, java.lang.String> toMap$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final java.lang.Boolean component1();
+  public final java.lang.Boolean component2();
+  public final java.lang.Boolean component3();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision component4();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType component5();
+  public final java.lang.Boolean component6();
+  public final java.lang.String component7();
+  public final java.lang.String component8();
+  public final java.lang.Boolean component9();
+  public final java.lang.Boolean component10();
+  public final java.lang.Boolean component11();
+  public final java.lang.String component12();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend component13();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority component14();
+  public final java.lang.Integer component15();
+  public final com.google.ai.edge.litert.CompiledModel$GpuOptions copy(java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision, com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType, java.lang.Boolean, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.String, com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend, com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority, java.lang.Integer);
+  public static com.google.ai.edge.litert.CompiledModel$GpuOptions copy$default(com.google.ai.edge.litert.CompiledModel$GpuOptions, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision, com.google.ai.edge.litert.CompiledModel$GpuOptions$BufferStorageType, java.lang.Boolean, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.String, com.google.ai.edge.litert.CompiledModel$GpuOptions$Backend, com.google.ai.edge.litert.CompiledModel$GpuOptions$Priority, java.lang.Integer, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+  public com.google.ai.edge.litert.CompiledModel$GpuOptions();
+}
+== CompiledModel$GpuOptions$Precision
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision extends java.lang.Enum<com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision> {
+  public static final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision DEFAULT;
+  public static final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision FP16;
+  public static final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision FP32;
+  public static final com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision FP16_WITH_FP32_ACCUM;
+  public final int getValue();
+  public static com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision[] values();
+  public static com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<com.google.ai.edge.litert.CompiledModel$GpuOptions$Precision> getEntries();
+  static {};
+}
+== CompiledModel$QualcommOptions
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$QualcommOptions {
+  public com.google.ai.edge.litert.CompiledModel$QualcommOptions(com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.util.List<java.lang.Integer>, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode, com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer, com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel);
+  public com.google.ai.edge.litert.CompiledModel$QualcommOptions(com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.util.List, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode, com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer, com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel getLogLevel();
+  public final java.lang.Boolean getUseHtpPreference();
+  public static void getUseHtpPreference$annotations();
+  public final java.lang.Boolean getUseQint16AsQuint16();
+  public static void getUseQint16AsQuint16$annotations();
+  public final java.lang.Boolean getEnableWeightSharing();
+  public final java.util.List<java.lang.Integer> getDumpTensorIds();
+  public final java.lang.Boolean getUseConvHmx();
+  public final java.lang.Boolean getUseFoldRelu();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode getHtpPerformanceMode();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling getProfiling();
+  public final java.lang.String getIrJsonDir();
+  public final java.lang.String getDlcDir();
+  public final java.lang.Integer getVtcmSize();
+  public final java.lang.Integer getNumHvxThreads();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel getOptimizationLevel();
+  public final java.util.Map<com.google.ai.edge.litert.CompiledModel$QualcommOptions$Key, java.lang.String> toMap$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel component1();
+  public final java.lang.Boolean component2();
+  public final java.lang.Boolean component3();
+  public final java.lang.Boolean component4();
+  public final java.util.List<java.lang.Integer> component5();
+  public final java.lang.Boolean component6();
+  public final java.lang.Boolean component7();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode component8();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling component9();
+  public final java.lang.String component10();
+  public final java.lang.String component11();
+  public final java.lang.Integer component12();
+  public final java.lang.Integer component13();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel component14();
+  public final com.google.ai.edge.litert.CompiledModel$QualcommOptions copy(com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.util.List<java.lang.Integer>, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode, com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer, com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel);
+  public static com.google.ai.edge.litert.CompiledModel$QualcommOptions copy$default(com.google.ai.edge.litert.CompiledModel$QualcommOptions, com.google.ai.edge.litert.CompiledModel$QualcommOptions$LogLevel, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.util.List, java.lang.Boolean, java.lang.Boolean, com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode, com.google.ai.edge.litert.CompiledModel$QualcommOptions$Profiling, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer, com.google.ai.edge.litert.CompiledModel$QualcommOptions$OptimizationLevel, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+  public com.google.ai.edge.litert.CompiledModel$QualcommOptions();
+}
+== CompiledModel$QualcommOptions$HtpPerformanceMode
+Compiled from "Model.kt"
+public final class com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode extends java.lang.Enum<com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode> {
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode DEFAULT;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode SUSTAINED_HIGH_PERFORMANCE;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode BURST;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode HIGH_PERFORMANCE;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode POWER_SAVER;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode LOW_POWER_SAVER;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode HIGH_POWER_SAVER;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode LOW_BALANCED;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode BALANCED;
+  public static final com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode EXTREME_POWER_SAVER;
+  public final int getValue();
+  public static com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode[] values();
+  public static com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<com.google.ai.edge.litert.CompiledModel$QualcommOptions$HtpPerformanceMode> getEntries();
+  static {};
+}
+== Environment$Option
+Compiled from "Environment.kt"
+public final class com.google.ai.edge.litert.Environment$Option extends java.lang.Enum<com.google.ai.edge.litert.Environment$Option> {
+  public static final com.google.ai.edge.litert.Environment$Option CompilerPluginLibraryDir;
+  public static final com.google.ai.edge.litert.Environment$Option DispatchLibraryDir;
+  public static final com.google.ai.edge.litert.Environment$Option SystemRuntimeHandle;
+  public final int getValue();
+  public static com.google.ai.edge.litert.Environment$Option[] values();
+  public static com.google.ai.edge.litert.Environment$Option valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<com.google.ai.edge.litert.Environment$Option> getEntries();
+  static {};
+}
+== BuiltinNpuAcceleratorProvider
+Compiled from "AcceleratorProvider.kt"
+public final class com.google.ai.edge.litert.BuiltinNpuAcceleratorProvider implements com.google.ai.edge.litert.NpuAcceleratorProvider {
+  public com.google.ai.edge.litert.BuiltinNpuAcceleratorProvider(android.content.Context, com.google.ai.edge.litert.NpuCompatibilityChecker);
+  public com.google.ai.edge.litert.BuiltinNpuAcceleratorProvider(android.content.Context, com.google.ai.edge.litert.NpuCompatibilityChecker, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public boolean isDeviceSupported();
+  public boolean isLibraryReady();
+  public java.lang.Object downloadLibrary(kotlin.coroutines.Continuation<? super kotlin.Unit>);
+  public java.lang.String getLibraryDir();
+  public com.google.ai.edge.litert.BuiltinNpuAcceleratorProvider(android.content.Context);
+}
+== NpuAcceleratorProvider
+Compiled from "AcceleratorProvider.kt"
+public interface com.google.ai.edge.litert.NpuAcceleratorProvider {
+  public abstract boolean isDeviceSupported();
+  public abstract boolean isLibraryReady();
+  public abstract java.lang.Object downloadLibrary(kotlin.coroutines.Continuation<? super kotlin.Unit>);
+  public abstract java.lang.String getLibraryDir();
+}
+== NpuCompatibilityChecker
+Compiled from "AcceleratorProvider.kt"
+public interface com.google.ai.edge.litert.NpuCompatibilityChecker {
+  public static final com.google.ai.edge.litert.NpuCompatibilityChecker$Companion Companion;
+  public abstract boolean isDeviceSupported();
+  static {};
+}
+== NpuCompatibilityChecker$Companion
+Compiled from "AcceleratorProvider.kt"
+public final class com.google.ai.edge.litert.NpuCompatibilityChecker$Companion {
+  static final com.google.ai.edge.litert.NpuCompatibilityChecker$Companion $$INSTANCE;
+  public final java.util.Set<kotlin.Pair<java.lang.String, java.lang.String>> getSUPPORTED_QUALCOMM_SOCS$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final com.google.ai.edge.litert.NpuCompatibilityChecker getQualcomm();
+  public final java.util.Set<kotlin.Pair<java.lang.String, java.lang.String>> getSUPPORTED_MEDIATEK_SOCS$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final com.google.ai.edge.litert.NpuCompatibilityChecker getMediatek();
+  public final java.util.Set<kotlin.Pair<java.lang.String, java.lang.String>> getSUPPORTED_GOOGLE_SOCS$third_party_odml_litert_litert_kotlin_litert_api_for_maven();
+  public final com.google.ai.edge.litert.NpuCompatibilityChecker getGoogleTensor();
+  public final com.google.ai.edge.litert.NpuCompatibilityChecker getDefault();
+  static {};
+}
+libLiteRt.so
+libLiteRtClGlAccelerator.so
