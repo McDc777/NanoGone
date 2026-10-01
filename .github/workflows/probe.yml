@@ -9,23 +9,17 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: LiteRT CompiledModel API
+      - name: Qualcomm model catalogue
         continue-on-error: true
         run: |
           set +e
           mkdir -p out && cd out
-          g=https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert
-          for a in litert litert-api; do
-            curl -sfo $a.aar $g/$a/2.2.0/$a-2.2.0.aar; mkdir -p x-$a; unzip -qo $a.aar -d x-$a; unzip -qo x-$a/classes.jar -d c-$a
+          curl -s "https://huggingface.co/api/models?author=qualcomm&limit=500" | python3 -c "import json,sys; [print(m['id']) for m in json.load(sys.stdin)]" | sort > qualcomm-models.txt
+          for r in EasyOCR DeepLabV3-Plus-MobileNet Mask2Former DETR-ResNet50 RTMDet Yolo-NAS FastSam-S PaddleOCR Face-Det-Lite MediaPipe-Face-Detection GFPGAN; do
+            echo "== $r" >> picks.txt
+            curl -sL "https://huggingface.co/qualcomm/$r/raw/main/release_assets.json" | grep -E '"download_url"|tflite' | head -6 >> picks.txt
+            curl -sL "https://huggingface.co/qualcomm/$r/raw/main/LICENSE" | head -3 >> picks.txt
           done
-          find c-litert c-litert-api -name "*.class" > all-classes.txt
-          for d in c-litert c-litert-api; do
-            for f in $(find $d -name "*.class" | grep -E "/(CompiledModel|Accelerator|TensorBuffer|Environment|Model|LiteRtException|Options)(\.class|\\\$Options\.class)$"); do
-              c=$(echo ${f#$d/} | sed 's/\.class$//; s#/#.#g')
-              echo "== $c"; javap -cp $d "$c"
-            done
-          done > compiled-api.txt 2>&1
-          rm -rf x-* c-* *.aar
       - name: Publish
         if: always()
         run: |

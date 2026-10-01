@@ -14,6 +14,7 @@ import app.nanogone.ai.TfliteModel
 import app.nanogone.imaging.geom.CropPlanner
 import app.nanogone.imaging.image.Argb
 import app.nanogone.imaging.image.Grain
+import app.nanogone.imaging.image.ShadowFinder
 import app.nanogone.imaging.geom.IntRect
 import app.nanogone.imaging.image.Paste
 import app.nanogone.imaging.mask.MaskOps
@@ -61,6 +62,9 @@ data class EditorUi(
     val enhanced: Boolean = false,
     val enhancedSize: String? = null,
     val canUpscale: Boolean = false,
+    /** Shadow catcher: also remove the shadow attached to what you picked. */
+    val shadowCatcher: Boolean = true,
+    val lastShadowCaught: Boolean = false,
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -73,6 +77,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     @Volatile private var tapper: MagicTap? = null
     @Volatile private var enhancer: Enhancer? = null
     private var enhanced: Argb? = null
+    @Volatile private var shadowCaught = false
     private val engine: RepairEngine get() = lama ?: fallback
 
     private fun describeBrains(): String = buildString {
@@ -237,6 +242,8 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setTool(t: Tool) = _ui.update { it.copy(tool = t) }
 
+    fun toggleShadowCatcher() = _ui.update { it.copy(shadowCatcher = !it.shadowCatcher) }
+
     fun addShape(shape: Shape) {
         val d = doc ?: return
         clearEnhance()
@@ -289,7 +296,15 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     val ctx = CropPlanner.contextBox(grown, photo.width, photo.height)
                     val crop = saver.composite(photo, ctx, d.state.patches)
                     clock.lap("decode crop ${ctx.width}x${ctx.height}")
-                    val mask = MaskOps.grow(d.selectionMask(ctx), r)
+                    var picked = d.selectionMask(ctx)
+                    var caught = false
+                    if (_ui.value.shadowCatcher) {
+                        val shadow = ShadowFinder.find(crop, picked)
+                        if (!shadow.isEmpty()) { picked = MaskOps.union(picked, shadow); caught = true }
+                        clock.lap("shadow catcher (caught=$caught)")
+                    }
+                    shadowCaught = caught
+                    val mask = MaskOps.grow(picked, r)
                     clock.lap("mask and grow r=$r")
                     val filled = Grain.match(engine.repair(crop, mask), mask)
                     clock.lap("repair (${engine.name}) and grain match")
@@ -305,7 +320,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     display.copy(Bitmap.Config.ARGB_8888, true).also { drawPatch(it, patch, photo) }.also { clock.lap("screen copy") }
                 }
                 _ui.update {
-                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1)
+                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1, lastShadowCaught = shadowCaught)
                 }
                 publishSelection()
             } catch (e: OutOfMemoryError) {

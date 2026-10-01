@@ -150,12 +150,22 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
         // Bottom pane: hint, tools, Remove.
         FrostedPane(Modifier.padding(horizontal = 12.dp, vertical = 8.dp).fillMaxWidth()) {
             Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    ui.busy ?: ui.message ?: hintFor(ui),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (ui.message != null && ui.busy == null) p.error else p.textSoft,
-                    modifier = Modifier.fillMaxWidth().clickable(enabled = ui.message != null) { vm.dismissMessage() },
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        ui.busy ?: ui.message ?: hintFor(ui),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (ui.message != null && ui.busy == null) p.error else p.textSoft,
+                        modifier = Modifier.weight(1f).clickable(enabled = ui.message != null) { vm.dismissMessage() },
+                    )
+                    SoftButton(onClick = vm::toggleShadowCatcher, selected = ui.shadowCatcher, shape = PillShape, corner = 20.dp) {
+                        Text(
+                            if (ui.shadowCatcher) "Shadows: on" else "Shadows: off",
+                            Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (ui.shadowCatcher) p.accentDeep else p.textSoft,
+                        )
+                    }
+                }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ToolButton(Glyph.Find, "Tap", ui.tool == Tool.Tap, Modifier.weight(1f)) { vm.setTool(Tool.Tap) }
                     ToolButton(Glyph.Brush, "Brush", ui.tool == Tool.Brush, Modifier.weight(1f)) { vm.setTool(Tool.Brush) }
@@ -196,6 +206,8 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
 }
 
 private fun hintFor(ui: EditorUi): String = when {
+    ui.removals > 0 && ui.selection.isEmpty() && ui.lastShadowCaught -> "Gone, and its shadow too. Hold the eye to compare."
+    ui.removals > 0 && ui.selection.isEmpty() -> "Gone. Hold the eye to compare, or pick the next thing."
     ui.enhanced -> "Enhanced to ${ui.enhancedSize}. Hold the eye to compare, or Save."
     ui.selection.any { !(it is BrushStroke && it.erase) } -> "Wrapped in morning mist. Tap Remove, or keep adding."
     ui.tool == Tool.Tap -> "Tap what should go. Zoom in first for tiny things."
