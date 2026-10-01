@@ -28,3 +28,9 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Engine research saved in `docs/research/2026-10-01-engine-research.md` (LiteRT runs the AI chip on all five devices; LaMa repair in about 40 ms on new Galaxy chips; new one-step removers also wipe shadows).
 - Sites still blocked: `dl.google.com`, `huggingface.co`.
 - Next: Question 4 (extra features for version 1), then propose engine approaches A, B, C.
+
+## 2026-10-01, brainstorm Question 4 answered
+
+- Version 1 extras: Find distractions, Shadow catcher, Text and logo eraser. Not Enhance (later).
+- Admin also asked for an easy "draw a line around it" lasso with an automatic magnet that wraps the object, and fills that match the surroundings.
+- Next: Question 5, engine approach (A fast, B deep, C both; recommending C).
