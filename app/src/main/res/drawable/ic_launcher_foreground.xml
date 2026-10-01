@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A sun disc rising, half hidden behind a soft mist band over still water. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFF8A5C" android:pathData="M36,58a18,18 0,1 1,36 0z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M30,56c8,-4 16,-4 24,0s16,4 24,0v6c-8,4 -16,4 -24,0s-16,-4 -24,0z" />
+    <path android:fillColor="#FF2E2838" android:pathData="M36,68h36v2.5h-36z" />
+    <path android:fillColor="#992E2838" android:pathData="M42,74h24v2h-24z" />
+</vector>
