@@ -48,6 +48,25 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
         return Result(uri, name, bytes.size.toLong(), method)
     }
 
+    /** Save an enhanced picture (changed everywhere, maybe bigger): full encode, details copied. */
+    fun saveEnhanced(photo: Photo, img: Argb, format: SaveFormat): Result {
+        val original = reader.bytes(photo)
+        val bytes = when (format) {
+            SaveFormat.JPEG -> JpegEncoder.encode(img.width, img.height, img.px)
+            SaveFormat.PNG -> {
+                val bmp = Bitmap.createBitmap(img.px, img.width, img.height, Bitmap.Config.ARGB_8888)
+                val out = ByteArrayOutputStream()
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
+                bmp.recycle()
+                out.toByteArray()
+            }
+        }
+        val ext = if (format == SaveFormat.JPEG) "jpg" else "png"
+        val name = "${photo.displayName}_NanoGone.$ext"
+        val uri = write(name, if (format == SaveFormat.JPEG) "image/jpeg" else "image/png", bytes, photo, original)
+        return Result(uri, name, bytes.size.toLong(), "enhanced, ${img.width} x ${img.height}")
+    }
+
     private fun jpeg(photo: Photo, original: ByteArray, patches: List<Patch>, thumbnail: Bitmap): Pair<ByteArray, String> {
         if (photo.isJpeg) {
             try {

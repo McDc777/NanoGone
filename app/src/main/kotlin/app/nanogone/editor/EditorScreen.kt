@@ -37,6 +37,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -67,6 +71,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.magnifier
+import app.nanogone.ai.EnhanceOptions
 import app.nanogone.imaging.geom.IntRect
 import app.nanogone.save.SaveFormat
 import kotlinx.coroutines.Dispatchers
@@ -84,6 +89,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
     val p = LocalDawn.current
     val photo = ui.photo ?: return
     var showSave by remember { mutableStateOf(false) }
+    var showEnhance by remember { mutableStateOf(false) }
     val beforeSource = remember { MutableInteractionSource() }
     val showBefore by beforeSource.collectIsPressedAsState()
 
@@ -156,7 +162,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
                     ToolButton(Glyph.Loop, "Loop", ui.tool == Tool.Loop, Modifier.weight(1f)) { vm.setTool(Tool.Loop) }
                     ToolButton(Glyph.Spot, "Spot", ui.tool == Tool.Spot, Modifier.weight(1f)) { vm.setTool(Tool.Spot) }
                     ToolButton(Glyph.Eraser, "Unpick", ui.tool == Tool.Eraser, Modifier.weight(1f)) { vm.setTool(Tool.Eraser) }
-                    ToolButton(Glyph.Enhance, "Enhance", false, Modifier.weight(1f), enabled = false) {}
+                    ToolButton(Glyph.Enhance, "Enhance", ui.enhanced, Modifier.weight(1f), enabled = ui.busy == null) { showEnhance = true }
                 }
                 val canRemove = ui.selection.any { !(it is BrushStroke && it.erase) } && ui.busy == null
                 Box(
@@ -180,12 +186,17 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
         }
     }
 
+    if (showEnhance) {
+        EnhanceSheet(ui, onApply = { o -> showEnhance = false; vm.enhance(o) }, onUndo = { showEnhance = false; vm.clearEnhance() }, onDismiss = { showEnhance = false })
+    }
+
     if (showSave || ui.saved != null) {
         SaveSheet(ui, vm, onDismiss = { showSave = false; vm.dismissMessage() })
     }
 }
 
 private fun hintFor(ui: EditorUi): String = when {
+    ui.enhanced -> "Enhanced to ${ui.enhancedSize}. Hold the eye to compare, or Save."
     ui.selection.any { !(it is BrushStroke && it.erase) } -> "Wrapped in morning mist. Tap Remove, or keep adding."
     ui.tool == Tool.Tap -> "Tap what should go. Zoom in first for tiny things."
     ui.tool == Tool.Brush -> "Paint over what should go. Pinch to zoom in for tiny things."
@@ -441,3 +452,74 @@ private fun FormatChoice(title: String, detail: String, selected: Boolean, enabl
 
 private fun mb(bytes: Long): String = if (bytes >= 1_000_000) "%.1f MB".format(bytes / 1_000_000f) else "${max(1, bytes / 1000)} KB"
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EnhanceSheet(ui: EditorUi, onApply: (EnhanceOptions) -> Unit, onUndo: () -> Unit, onDismiss: () -> Unit) {
+    val p = LocalDawn.current
+    var light by remember { mutableStateOf(true) }
+    var sharper by remember { mutableStateOf(false) }
+    var bigger by remember { mutableStateOf(1) }
+    var strength by remember { mutableFloatStateOf(0.8f) }
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = state, containerColor = p.surface) {
+        Column(Modifier.padding(horizontal = 20.dp).padding(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text("Enhance", style = MaterialTheme.typography.headlineMedium, color = p.text)
+            Text(
+                "Changes the whole photo on purpose. Do your removals first.",
+                style = MaterialTheme.typography.bodyMedium, color = p.textSoft,
+            )
+            EnhanceSwitch("Light and colour", "Better brightness, contrast and colour, like a pro editor.", light) { light = it }
+            EnhanceSwitch(
+                "Sharper and cleaner",
+                if (ui.canUpscale) "Removes blur and grain. Same size." else "Waking up, try again in a moment.",
+                sharper && ui.canUpscale,
+            ) { sharper = it }
+            Text("Bigger", style = MaterialTheme.typography.titleMedium, color = p.text)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                for ((label, value) in listOf("Same size" to 1, "2x" to 2, "4x" to 4)) {
+                    SoftButton(
+                        onClick = { bigger = value },
+                        selected = bigger == value,
+                        enabled = value == 1 || ui.canUpscale,
+                        modifier = Modifier.weight(1f).height(48.dp),
+                    ) { Text(label, style = MaterialTheme.typography.labelLarge, color = if (bigger == value) p.accentDeep else p.text) }
+                }
+            }
+            Text("Face fix: coming soon.", style = MaterialTheme.typography.bodyMedium, color = p.textSoft)
+            Text("Strength ${(strength * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, color = p.text)
+            Slider(
+                value = strength, onValueChange = { strength = it }, valueRange = 0.2f..1f,
+                colors = SliderDefaults.colors(thumbColor = p.accent, activeTrackColor = p.accent, inactiveTrackColor = p.textSoft.copy(alpha = 0.25f)),
+            )
+            Box(
+                Modifier.fillMaxWidth().height(54.dp).clip(PillShape)
+                    .background(Brush.horizontalGradient(listOf(p.accent, p.gold)))
+                    .clickable(enabled = light || sharper || bigger > 1) {
+                        onApply(EnhanceOptions(lightAndColour = light, sharper = sharper, bigger = bigger, strength = strength))
+                    },
+                contentAlignment = Alignment.Center,
+            ) { Text("Enhance", style = MaterialTheme.typography.titleLarge, color = p.text) }
+            if (ui.enhanced) {
+                SoftButton(onClick = onUndo, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                    Text("Go back to the un-enhanced photo", style = MaterialTheme.typography.labelLarge, color = p.text)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EnhanceSwitch(title: String, detail: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    val p = LocalDawn.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = p.text)
+            Text(detail, style = MaterialTheme.typography.bodyMedium, color = p.textSoft)
+        }
+        Switch(
+            checked = checked, onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = p.accent, checkedThumbColor = p.surface, uncheckedTrackColor = p.textSoft.copy(alpha = 0.2f)),
+        )
+    }
+}

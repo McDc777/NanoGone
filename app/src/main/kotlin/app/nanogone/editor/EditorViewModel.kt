@@ -6,11 +6,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.nanogone.ai.EnhanceOptions
+import app.nanogone.ai.Enhancer
 import app.nanogone.ai.LamaEngine
 import app.nanogone.ai.MagicTap
 import app.nanogone.ai.TfliteModel
 import app.nanogone.imaging.geom.CropPlanner
 import app.nanogone.imaging.image.Argb
+import app.nanogone.imaging.image.Grain
 import app.nanogone.imaging.geom.IntRect
 import app.nanogone.imaging.image.Paste
 import app.nanogone.imaging.mask.MaskOps
@@ -54,6 +57,10 @@ data class EditorUi(
     val lastFormat: SaveFormat = SaveFormat.JPEG,
     /** Which brains are running and on which chip (shown on the welcome screen). */
     val brains: String = "waking the brains",
+    /** Enhance has been applied to the whole photo (Save writes the enhanced picture). */
+    val enhanced: Boolean = false,
+    val enhancedSize: String? = null,
+    val canUpscale: Boolean = false,
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -64,11 +71,70 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     private val fallback: RepairEngine = SmoothFillEngine()
     @Volatile private var lama: RepairEngine? = null
     @Volatile private var tapper: MagicTap? = null
+    @Volatile private var enhancer: Enhancer? = null
+    private var enhanced: Argb? = null
     private val engine: RepairEngine get() = lama ?: fallback
 
     private fun describeBrains(): String = buildString {
         append(lama?.name ?: "smooth fill (no AI brain)")
         tapper?.let { append(" · magic tap on ${it.backend}") }
+    }
+
+    /** Enhance the whole photo (after removals). Save then writes the enhanced picture. */
+    fun enhance(o: EnhanceOptions) {
+        val photo = _ui.value.photo ?: return
+        val d = doc ?: return
+        val e = enhancer
+        val outPixels = photo.width.toLong() * photo.height * o.bigger * o.bigger
+        if (outPixels > Enhancer.MAX_OUTPUT_PIXELS) {
+            _ui.update { it.copy(message = "That would be ${outPixels / 1_000_000} MP. Bigger works up to ${Enhancer.MAX_OUTPUT_PIXELS / 1_000_000} MP for now. Try 2x or same size.") }
+            return
+        }
+        if (e == null) {
+            _ui.update { it.copy(message = "Enhance is still waking up. Try again in a moment.") }
+            return
+        }
+        _ui.update { it.copy(busy = "Enhancing") }
+        viewModelScope.launch {
+            try {
+                val (result, shown) = withContext(Dispatchers.Default) {
+                    val clock = StageClock("enhance")
+                    val full = saver.composite(photo, d.image, d.state.patches)
+                    val screen = _ui.value.display ?: error("no screen copy")
+                    val spx = IntArray(screen.width * screen.height)
+                    screen.getPixels(spx, 0, screen.width, 0, 0, screen.width, screen.height)
+                    val preview = Argb(screen.width, screen.height, spx)
+                    clock.lap("read photo")
+                    var last = -1
+                    val out = e.enhance(full, preview, o) { f ->
+                        val pct = (f * 100).toInt()
+                        if (pct != last) { last = pct; _ui.update { it.copy(busy = "Enhancing $pct%") } }
+                    }
+                    clock.lap("enhance ${out.width}x${out.height} on ${e.backend}")
+                    val bmp = Bitmap.createBitmap(out.px, out.width, out.height, Bitmap.Config.ARGB_8888)
+                    val k = minOf(1f, 2560f / maxOf(out.width, out.height))
+                    val small = if (k < 1f) Bitmap.createScaledBitmap(bmp, (out.width * k).toInt(), (out.height * k).toInt(), true).also { bmp.recycle() } else bmp
+                    out to small.copy(Bitmap.Config.ARGB_8888, true)
+                }
+                enhanced = result
+                _ui.update {
+                    it.copy(busy = null, display = shown, version = it.version + 1, enhanced = true,
+                        enhancedSize = "${result.width} x ${result.height}")
+                }
+            } catch (oom: OutOfMemoryError) {
+                _ui.update { it.copy(busy = null, message = "Not enough memory for that size on this phone. Try a smaller Bigger.") }
+            } catch (ex: Exception) {
+                _ui.update { it.copy(busy = null, message = ex.message ?: "Enhance did not work. Try again.") }
+            }
+        }
+    }
+
+    /** Drop the enhanced version and go back to the edited photo. */
+    fun clearEnhance() {
+        if (enhanced == null) return
+        enhanced = null
+        _ui.update { it.copy(enhanced = false, enhancedSize = null) }
+        refresh()
     }
 
     /** Magic tap at image point ([x], [y]) while the person views [view] (image pixels). */
@@ -133,7 +199,9 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
             runCatching {
                 if (TfliteModel.exists(c, MagicTap.ENCODER)) tapper = MagicTap(c)
             }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
-            _ui.update { it.copy(brains = describeBrains()) }
+            runCatching { enhancer = Enhancer(c) }
+                .onFailure { android.util.Log.w("NanoGone", "enhance failed to load", it) }
+            _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true) }
         }
     }
 
@@ -163,20 +231,22 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     fun close() {
         doc = null
         base = null
-        _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains) }
+        enhanced = null
+        _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains, canUpscale = it.canUpscale) }
     }
 
     fun setTool(t: Tool) = _ui.update { it.copy(tool = t) }
 
     fun addShape(shape: Shape) {
         val d = doc ?: return
+        clearEnhance()
         d.addShape(shape)
         publishSelection()
     }
 
-    fun undo() { doc?.undo(); refresh() }
+    fun undo() { enhanced = null; _ui.update { it.copy(enhanced = false, enhancedSize = null) }; doc?.undo(); refresh() }
 
-    fun redo() { doc?.redo(); refresh() }
+    fun redo() { enhanced = null; _ui.update { it.copy(enhanced = false, enhancedSize = null) }; doc?.redo(); refresh() }
 
     fun clearSelection() { doc?.clearSelection(); publishSelection() }
 
@@ -221,8 +291,8 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     clock.lap("decode crop ${ctx.width}x${ctx.height}")
                     val mask = MaskOps.grow(d.selectionMask(ctx), r)
                     clock.lap("mask and grow r=$r")
-                    val filled = engine.repair(crop, mask)
-                    clock.lap("repair (${engine.name})")
+                    val filled = Grain.match(engine.repair(crop, mask), mask)
+                    clock.lap("repair (${engine.name}) and grain match")
                     val result = crop.copy()
                     Paste.feathered(result, filled, 0, 0, mask, feather = maxOf(1.5f, r / 2f))
                     clock.lap("paste")
@@ -279,9 +349,11 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         _ui.update { it.copy(busy = "Saving a perfect copy", lastFormat = format) }
         viewModelScope.launch {
             try {
+                val e = enhanced
                 val result = withContext(Dispatchers.IO) {
                     val clock = StageClock("save")
-                    saver.save(photo, d.state.patches, format, shown).also { clock.lap("${format.name} ${it.method}") }
+                    (if (e != null) saver.saveEnhanced(photo, e, format) else saver.save(photo, d.state.patches, format, shown))
+                        .also { clock.lap("${format.name} ${it.method}") }
                 }
                 _ui.update { it.copy(busy = null, saved = result) }
             } catch (e: OutOfMemoryError) {
