@@ -30,3 +30,9 @@ cases = [
 for name, w, h, mode, opts in cases:
     picture(w, h, mode).save(os.path.join(OUT, name), "JPEG", **opts)
     print(name)
+
+# Raw RGB dumps (Pillow's decode) so tests can build "edited result" pixels from real decoded originals.
+for name in ["rgb420_q75.jpg", "rgb444_q95.jpg", "gray_q85.jpg", "rgb420_restart.jpg", "rgb422_q90.jpg"]:
+    img = Image.open(os.path.join(OUT, name)).convert("RGB")
+    with open(os.path.join(OUT, name.replace(".jpg", ".rgb")), "wb") as f:
+        f.write(img.tobytes())
