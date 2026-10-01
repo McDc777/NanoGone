@@ -1,0 +1,32 @@
+name: probe
+on:
+  push:
+    paths: [".github/workflows/probe.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check tools and network
+        run: |
+          mkdir -p out
+          {
+            echo "date: $(date -u)"
+            echo "ANDROID_HOME=$ANDROID_HOME"
+            ls $ANDROID_HOME/platforms $ANDROID_HOME/build-tools 2>&1
+            java -version 2>&1
+            curl -s -o /dev/null -w "hf %{http_code}\n" https://huggingface.co/api/models/qualcomm/LaMa-Dilated
+            curl -s -o /dev/null -w "google maven %{http_code}\n" https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
+            nproc; free -g | head -2; df -h / | tail -1
+          } > out/probe.txt 2>&1
+      - name: Publish result to ci-results branch
+        run: |
+          git config --global user.email "ci@nanogone"
+          git config --global user.name "nanogone-ci"
+          cd out
+          git init -q -b ci-results
+          git add probe.txt
+          git commit -qm "probe ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" ci-results:ci-results-probe
