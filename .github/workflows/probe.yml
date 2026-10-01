@@ -20,6 +20,14 @@ jobs:
             curl -s -o /dev/null -w "hf %{http_code}\n" https://huggingface.co/api/models/qualcomm/LaMa-Dilated
             curl -s -o /dev/null -w "google maven %{http_code}\n" https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
             nproc; free -g | head -2; df -h / | tail -1
+            g=https://dl.google.com/dl/android/maven2
+            for a in com/android/tools/build/gradle androidx/compose/compose-bom androidx/activity/activity-compose androidx/lifecycle/lifecycle-runtime-compose androidx/exifinterface/exifinterface androidx/datastore/datastore-preferences androidx/core/core-ktx com/google/ai/edge/litert/litert androidx/navigation/navigation-compose androidx/compose/material3/material3; do
+              echo "$a: $(curl -s $g/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | grep -vE 'alpha|beta|rc|dev' | tail -4 | tr '\n' ' ')"
+            done
+            m=https://repo1.maven.org/maven2
+            for a in com/google/dagger/hilt-android io/github/takahirom/roborazzi/roborazzi org/robolectric/robolectric; do
+              echo "$a: $(curl -s $m/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | grep -vE 'alpha|beta|rc|dev' | tail -3 | tr '\n' ' ')"
+            done
           } > out/probe.txt 2>&1
       - name: Publish result to ci-results branch
         run: |
