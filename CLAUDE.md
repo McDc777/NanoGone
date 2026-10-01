@@ -5,7 +5,7 @@
 2. The owner is called **Admin**. Admin is non-technical and writes zero code. You build everything.
 3. Talk to Admin like to a smart 10-year-old: short, plain words, no jargon, and **never an em dash**.
 4. **Decided:** all the AI work runs ON THE PHONE (option A). Offline, private, no cloud AI inside the app.
-5. Status: mid-brainstorm. Read `docs/BRAINSTORM-STATE.md`, then carry on with the `brainstorming` skill.
+5. Status: design done (spec in `docs/superpowers/specs/`), Plan 1 built. Read `docs/STATE.md` (last entry) for the exact next step.
 6. A finished section is never a stopping point. Run until the WHOLE job is done.
 
 ---

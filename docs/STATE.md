@@ -60,3 +60,4 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Note: Maven Central sometimes answers 429 (too many requests). Just rerun; a second mirror (repo1) is set.
 - STILL BLOCKED: `dl.google.com` (Android SDK and Google's Maven, so no APK yet) and `huggingface.co` (AI model files).
 - Next: Plan 2 (Android app shell, Dawn Mist theme, open and save a copy using :core:imaging) as soon as `dl.google.com` is allowed; Plan 3 (AI brains) needs `huggingface.co`.
+- Also written: `ART_DIRECTION.md` (Dawn Mist, gate answers A1 to A9 with the owner override) and Plan 2 `docs/superpowers/plans/2026-10-01-plan-2-app-shell.md` (first installable APK). Plan 2 starts with the SDK install once `dl.google.com` is allowed.
