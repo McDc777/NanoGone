@@ -1,0 +1,54 @@
+name: build
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "*.md"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: build
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build and test
+        run: |
+          set +e
+          ./gradlew :core:imaging:test :app:testDebugUnitTest :app:assembleDebug --stacktrace --no-daemon > build.log 2>&1
+          echo $? > status.txt
+          exit 0
+      - name: Collect results
+        run: |
+          mkdir -p out
+          cp status.txt out/
+          tail -n 400 build.log > out/build-tail.log
+          grep -nE "^e: |error:|FAILED|What went wrong" -A 6 build.log | head -n 300 > out/errors.log || true
+          for f in $(find . -path "*/test-results/*" -name "*.xml"); do grep -ho 'testsuite name="[^"]*" tests="[0-9]*" skipped="[0-9]*" failures="[0-9]*" errors="[0-9]*"' "$f"; done > out/tests.txt || true
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          if [ -f "$APK" ]; then cp "$APK" out/NanoGone-debug.apk; ls -la "$APK" > out/apk.txt; fi
+          echo "${GITHUB_SHA}" > out/commit.txt
+      - name: Publish results branch
+        run: |
+          cd out
+          git init -q -b ci-results
+          git config user.email "ci@nanogone"
+          git config user.name "nanogone-ci"
+          git add -A
+          git commit -qm "build ${GITHUB_SHA} status $(cat status.txt)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" ci-results:ci-results
+      - name: Publish APK release
+        if: hashFiles('out/NanoGone-debug.apk') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete debug-latest --yes --cleanup-tag || true
+          gh release create debug-latest out/NanoGone-debug.apk --title "NanoGone debug (latest)" --notes "Built from ${GITHUB_SHA}. On your phone: open this page, tap NanoGone-debug.apk, allow installing from this source." --prerelease
