@@ -9,28 +9,19 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Qualcomm model catalogue
+      - name: LiteRT options API
         continue-on-error: true
         run: |
           set +e
           mkdir -p out && cd out
-          curl -s "https://huggingface.co/api/models?author=qualcomm&limit=500" | python3 -c "import json,sys; [print(m['id']) for m in json.load(sys.stdin)]" | sort > qualcomm-models.txt
-          for r in EasyOCR DeepLabV3-Plus-MobileNet Mask2Former DETR-ResNet50 RTMDet Yolo-NAS FastSam-S PaddleOCR Face-Det-Lite MediaPipe-Face-Detection GFPGAN; do
-            echo "== $r" >> picks.txt
-            curl -sL "https://huggingface.co/qualcomm/$r/raw/main/release_assets.json" | grep -E '"download_url"|tflite' | head -6 >> picks.txt
-            curl -sL "https://huggingface.co/qualcomm/$r/raw/main/LICENSE" | head -3 >> picks.txt
-          done
-      - name: Library versions
-        continue-on-error: true
-        run: |
-          cd out
-          g=https://dl.google.com/dl/android/maven2
-          for a in com/google/mlkit/text-recognition com/google/mediapipe/tasks-vision com/google/mlkit/object-detection; do
-            echo "$a: $(curl -s $g/$a/maven-metadata.xml | grep -o '<version>[^<]*' | sed 's/<version>//' | tail -4 | tr '\n' ' ')"
-          done > versions.txt
-          for m in efficientdet_lite2/float32/latest/efficientdet_lite2.tflite efficientdet_lite0/float32/latest/efficientdet_lite0.tflite; do
-            echo "$m $(curl -s -o /dev/null -w '%{http_code} %{size_download}' https://storage.googleapis.com/mediapipe-models/object_detector/$m)"
-          done >> versions.txt
+          g=https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert
+          curl -sfo a.aar $g/litert-api/2.2.0/litert-api-2.2.0.aar; unzip -qo a.aar -d x; unzip -qo x/classes.jar -d c
+          curl -sfo b.aar $g/litert/2.2.0/litert-2.2.0.aar; unzip -qo b.aar -d y; unzip -qo y/classes.jar -d c
+          for k in 'CompiledModel$CpuOptions' 'CompiledModel$CpuOptions$Key' 'CompiledModel$GpuOptions' 'CompiledModel$GpuOptions$Precision' 'CompiledModel$QualcommOptions' 'CompiledModel$QualcommOptions$HtpPerformanceMode' 'Environment$Option' 'BuiltinNpuAcceleratorProvider' 'NpuAcceleratorProvider' 'NpuCompatibilityChecker' 'NpuCompatibilityChecker$Companion'; do
+            echo "== $k"; javap -cp c "com.google.ai.edge.litert.$k"
+          done > options-api.txt 2>&1
+          ls y/jni/arm64-v8a >> options-api.txt
+          rm -rf x y c *.aar
       - name: Publish
         if: always()
         run: |
