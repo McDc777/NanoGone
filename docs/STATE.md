@@ -83,3 +83,14 @@ Built and pushed (each push builds on GitHub, runs tests, drives the app in an e
 - The APK is now a full-speed build (release, signed with the debug key), because debuggable builds ran 50 to 100 times slower.
 
 Not built yet: deep brain (SDXL-class one-step remover), Face fix, Ultra HDR gain-map repair (gain map is dropped for now), streaming save for 200 MP PNG, NPU (AI chip) path (GPU then CPU for now), zoom-aware magic tap is partial (whole-photo view when not zoomed).
+
+## 2026-10-01, speed, quality and handover
+
+- AI chip first: on Galaxy Ultras the brains try the NPU (AI chip), then the graphics chip, then all main-chip cores. GPU programs are cached so the second start is fast.
+- Shadow catcher and selection grow now work only near the object (much faster on big photos).
+- Fill quality: LaMa and AOT-GAN were compared on test photos; they are about equal, so LaMa stays. Big removals now get a detail pass (Real-ESRGAN on the filled part before it is stretched back), so they are crisp, not a soft smear. Grain matching then adds the photo's own texture.
+- Emulator test now also runs Find distractions and opens the Enhance panel (screenshots in `ci-results`, folder `smoke/`).
+- Written: `docs/HOW-TO-INSTALL.md` (install and test guide for Admin), `docs/design/slop-audit-2026-10-01.md` (design check: passes), design ledger row.
+- Last full emulator run: magic tap picked the bin, removal and save worked, same size, EXIF kept, only pixels around the bin changed.
+- Not built yet: deep brain (SDXL-class remover for very big objects), Face fix, Ultra HDR gain-map repair, streaming save for 200 MP PNG, Bigger above 64 MP, shared-element move from welcome to editor.
+- Next step: Admin installs from https://github.com/McDc777/NanoGone/releases/tag/debug-latest and reports speed and quality on each Galaxy. Then build the deep brain and Face fix.
