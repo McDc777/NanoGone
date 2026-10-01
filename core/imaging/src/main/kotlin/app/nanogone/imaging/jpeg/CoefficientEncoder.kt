@@ -10,30 +10,32 @@ object CoefficientEncoder {
     fun encode(p: ParsedJpeg, coeffs: Coefficients): Result {
         val dcIds = p.scan.components.map { it.td }.distinct()
         val acIds = p.scan.components.map { it.ta }.distinct()
-        val dcFreq = dcIds.associateWith { LongArray(256) }
-        val acFreq = acIds.associateWith { LongArray(256) }
+        val dcFreq = Array(4) { LongArray(256) }
+        val acFreq = Array(4) { LongArray(256) }
         walk(p, coeffs, object : Sink {
-            override fun dc(table: Int, symbol: Int, extra: Int, extraBits: Int) { dcFreq.getValue(table)[symbol]++ }
-            override fun ac(table: Int, symbol: Int, extra: Int, extraBits: Int) { acFreq.getValue(table)[symbol]++ }
+            override fun dc(table: Int, symbol: Int, extra: Int, extraBits: Int) { dcFreq[table][symbol]++ }
+            override fun ac(table: Int, symbol: Int, extra: Int, extraBits: Int) { acFreq[table][symbol]++ }
             override fun restart(n: Int) {}
         })
-        val dcT = dcFreq.mapValues { HuffmanOptimizer.build(it.value) }
-        val acT = acFreq.mapValues { HuffmanOptimizer.build(it.value) }
+        val dcArr = arrayOfNulls<HuffmanTable>(4)
+        val acArr = arrayOfNulls<HuffmanTable>(4)
+        for (id in dcIds) dcArr[id] = HuffmanOptimizer.build(dcFreq[id])
+        for (id in acIds) acArr[id] = HuffmanOptimizer.build(acFreq[id])
         val w = BitWriter()
         walk(p, coeffs, object : Sink {
             override fun dc(table: Int, symbol: Int, extra: Int, extraBits: Int) {
-                val t = dcT.getValue(table)
+                val t = dcArr[table]!!
                 w.put(t.codeOf[symbol], t.sizeOf[symbol])
                 if (extraBits > 0) w.put(extra, extraBits)
             }
             override fun ac(table: Int, symbol: Int, extra: Int, extraBits: Int) {
-                val t = acT.getValue(table)
+                val t = acArr[table]!!
                 w.put(t.codeOf[symbol], t.sizeOf[symbol])
                 if (extraBits > 0) w.put(extra, extraBits)
             }
             override fun restart(n: Int) = w.restart(n)
         })
-        return Result(dcT, acT, w.finish())
+        return Result(dcIds.associateWith { dcArr[it]!! }, acIds.associateWith { acArr[it]!! }, w.finish())
     }
 
     private interface Sink {

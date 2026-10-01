@@ -75,8 +75,7 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
                     val thumb = thumbnailJpeg(thumbnail)
                     var bytes = original
                     if (patches.isEmpty()) {
-                        val p = JpegParser.parse(bytes)
-                        bytes = app.nanogone.imaging.jpeg.JpegWriter.write(p, app.nanogone.imaging.jpeg.CoefficientDecoder.decode(p), CopyCleaner.forCopy(thumb))
+                        bytes = app.nanogone.imaging.jpeg.JpegWriter.copy(bytes, CopyCleaner.forCopy(thumb))
                     }
                     patches.forEachIndexed { k, patch ->
                         val region = CropPlanner.alignOut(patch.rect, info.mcuWidth, info.mcuHeight, photo.width, photo.height)
@@ -88,7 +87,7 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
                         val rewrite: (Segment) -> Segment? = if (k == patches.lastIndex) CopyCleaner.forCopy(thumb) else { s -> s }
                         bytes = BlockPatcher.patch(bytes, region, pixels.px, changed, rewrite)
                     }
-                    return bytes to "only the changed squares rewritten"
+                    return bytes to (if (patches.isEmpty()) "picture data copied exactly" else "only the changed squares rewritten")
                 }
             } catch (_: UnsupportedJpegException) {
                 // Progressive or unusual JPEG: fall through to a full top-quality encode.

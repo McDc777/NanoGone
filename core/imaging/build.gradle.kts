@@ -15,4 +15,5 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     maxHeapSize = "2g"
+    System.getProperty("bigJpeg")?.let { systemProperty("bigJpeg", it) }
 }

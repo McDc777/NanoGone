@@ -27,6 +27,25 @@ object JpegWriter {
         return out.toByteArray()
     }
 
+    /**
+     * Copy without touching any picture data: the original tables and entropy bytes are written
+     * as they are, only the metadata goes through [rewrite]. Instant, and bit-exact pixels.
+     */
+    fun copy(original: ByteArray, rewrite: (Segment) -> Segment?): ByteArray {
+        val p = JpegParser.parse(original)
+        val out = ByteArrayOutputStream(original.size)
+        out.write(0xFF); out.write(0xD8)
+        for (s in p.segments) {
+            val keepAsIs = s.marker == 0xC0 || s.marker == 0xC1 || s.marker == 0xC4 || s.marker == 0xDD || s.marker == 0xDB
+            val r = if (keepAsIs) s else rewrite(s) ?: continue
+            segment(out, r.marker, r.data)
+        }
+        segment(out, 0xDA, sos(p))
+        out.write(p.entropy)
+        out.write(0xFF); out.write(0xD9)
+        return out.toByteArray()
+    }
+
     internal fun segment(out: ByteArrayOutputStream, marker: Int, data: ByteArray) {
         val len = data.size + 2
         require(len <= 0xFFFF) { "segment too long" }

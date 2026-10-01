@@ -19,6 +19,12 @@ android {
         debug {
             isMinifyEnabled = false
         }
+        // The APK Admin installs: full speed (not debuggable), signed with the debug key so it
+        // installs like any test app.
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 
     compileOptions {

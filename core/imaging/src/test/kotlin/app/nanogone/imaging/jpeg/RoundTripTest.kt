@@ -27,6 +27,18 @@ class RoundTripTest {
     }
 
     @Test
+    fun `copy keeps the picture data byte for byte and drops trailing data`() {
+        for (name in Fixtures.patchable) {
+            val original = Fixtures.bytes(name) + "TRAILER".toByteArray()
+            val copy = JpegWriter.copy(original) { it }
+            val a = JpegParser.parse(original)
+            val b = JpegParser.parse(copy)
+            assertArrayEquals(a.entropy, b.entropy, name)
+            assertEquals(0, b.trailing.size)
+        }
+    }
+
+    @Test
     fun `optimizer gives every used symbol a code of at most 16 bits`() {
         val freq = LongArray(256) { if (it % 3 == 0) (it * 7919L % 1000) + 1 else 0 }
         val t = HuffmanOptimizer.build(freq)

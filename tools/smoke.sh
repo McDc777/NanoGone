@@ -39,12 +39,16 @@ ID=$(adb shell content query --uri content://media/external/images/media --proje
 echo "media id $ID"
 adb shell am start -a android.intent.action.EDIT -d content://media/external/images/media/$ID -t image/jpeg --grant-read-uri-permission -n app.nanogone/.MainActivity
 wait_for "Remove" 60; sleep 3; shot 02-editor
+# Test 1: magic tap on the bin, then Remove.
 read TX TY TT TB <<< "$(find_bounds NanoGone)"
 read RX RY RT RB <<< "$(find_bounds Remove)"
 # The photo sits between the top pane and the bottom pane; the bin is in its middle.
 TOPP=$((TB + 40)); BOTP=$((RT - 330))
 MIDY=$(((TOPP + BOTP) / 2)); MIDX=540
-adb shell input swipe $MIDX $((MIDY - 60)) $MIDX $((MIDY + 120)) 900
+read KX KY KT KB <<< "$(find_bounds Tap)"
+adb shell input tap $KX $KY; sleep 1
+START=$(date +%s); adb shell input tap $MIDX $((MIDY + 20)); sleep 1
+wait_gone "Finding its edges" 180; echo "magic tap took $(( $(date +%s) - START ))s" >> $OUT/timing.txt
 sleep 2; shot 03-selected
 read RX RY RT RB <<< "$(find_bounds Remove)"
 adb shell input tap $RX $RY
