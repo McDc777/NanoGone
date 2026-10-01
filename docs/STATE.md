@@ -94,3 +94,4 @@ Not built yet: deep brain (SDXL-class one-step remover), Face fix, Ultra HDR gai
 - Last full emulator run: magic tap picked the bin, removal and save worked, same size, EXIF kept, only pixels around the bin changed.
 - Not built yet: deep brain (SDXL-class remover for very big objects), Face fix, Ultra HDR gain-map repair, streaming save for 200 MP PNG, Bigger above 64 MP, shared-element move from welcome to editor.
 - Next step: Admin installs from https://github.com/McDc777/NanoGone/releases/tag/debug-latest and reports speed and quality on each Galaxy. Then build the deep brain and Face fix.
+- Later the same day: the fast brain now sees 1.5x the object size around it (was 0.75x). Beach test: no bright glow at the horizon, patch blends better. Full emulator run passed (42 tests, removal and save checked, Find and Enhance panels shown). Emulator removal is slow (about 8 minutes on 2 plain cores, no AI chip); real Galaxy phones use the AI chip or graphics chip.
