@@ -38,7 +38,11 @@ class Enhancer(context: Context) : AutoCloseable {
         return cur
     }
 
+    /** Real detail for a small image, [scale] 2 or 4 times bigger. Null if the brain is missing. */
+    fun detail(src: Argb, scale: Int): Argb? = if (esrgan == null) null else upscale(src, scale) {}
+
     /** Real-ESRGAN x4 over the whole photo, returned at [scale] times the input size. */
+    @Synchronized
     private fun upscale(src: Argb, scale: Int, progress: (Float) -> Unit): Argb {
         val model = esrgan!!
         val down = 4 / scale

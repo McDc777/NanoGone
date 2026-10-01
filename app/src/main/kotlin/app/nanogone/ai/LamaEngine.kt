@@ -2,6 +2,7 @@ package app.nanogone.ai
 
 import android.content.Context
 import app.nanogone.editor.RepairEngine
+import app.nanogone.imaging.geom.IntRect
 import app.nanogone.imaging.image.Argb
 import app.nanogone.imaging.mask.Mask
 
@@ -10,11 +11,16 @@ import app.nanogone.imaging.mask.Mask
  * The crop is scaled so its longer side is 512 (small crops are scaled up, so tiny objects get
  * the model's full attention), the rest of the square is filled by repeating the edge and
  * marked as known, and only the filled pixels are scaled back to full detail.
+ * When the crop is much bigger than 512, the fill is first given real detail by [detailer]
+ * (Real-ESRGAN, 2x or 4x) so a big removal is not a soft, stretched patch.
  */
 class LamaEngine(context: Context) : RepairEngine, AutoCloseable {
 
     private val model = TfliteModel(context, ASSET)
     override val name = "LaMa on ${model.backend}"
+
+    /** Makes a small image 2x or 4x bigger with real detail. Set once the Enhance brain is up. */
+    @Volatile var detailer: ((Argb, Int) -> Argb)? = null
 
     private val image = FloatArray(S * S * 3)
     private val holes = FloatArray(S * S)
@@ -47,12 +53,32 @@ class LamaEngine(context: Context) : RepairEngine, AutoCloseable {
             painted.px[i] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
         }
         val result = crop.copy()
+        val detail = if (scale < 0.67f) addDetail(painted, mask, scale, sw, sh) else null
         for (y in 0 until crop.height) for (x in 0 until crop.width) {
-            if (mask[x, y]) {
-                result[x, y] = Bilinear.sample(painted, ((x + 0.5f) * scale - 0.5f).coerceIn(0f, sw - 1f), ((y + 0.5f) * scale - 0.5f).coerceIn(0f, sh - 1f))
+            if (!mask[x, y]) continue
+            val mx = ((x + 0.5f) * scale - 0.5f).coerceIn(0f, sw - 1f)
+            val my = ((y + 0.5f) * scale - 0.5f).coerceIn(0f, sh - 1f)
+            result[x, y] = if (detail == null) Bilinear.sample(painted, mx, my) else {
+                val (img, area, k) = detail
+                Bilinear.sample(img, (mx - area.left + 0.5f) * k - 0.5f, (my - area.top + 0.5f) * k - 0.5f)
             }
         }
         return result
+    }
+
+    /** The filled part of [painted] (in model pixels), made [k] times bigger with real detail. */
+    private fun addDetail(painted: Argb, mask: Mask, scale: Float, sw: Int, sh: Int): Triple<Argb, IntRect, Int>? {
+        val d = detailer ?: return null
+        val b = mask.bounds() ?: return null
+        val area = IntRect(
+            (b.left * scale).toInt() - 6, (b.top * scale).toInt() - 6,
+            (b.right * scale).toInt() + 7, (b.bottom * scale).toInt() + 7,
+        ).intersect(IntRect(0, 0, sw, sh))
+        if (area.width < 2 || area.height < 2) return null
+        val k = if (scale < 0.4f) 4 else 2
+        return runCatching { Triple(d(painted.crop(area), k), area, k) }
+            .onFailure { android.util.Log.w("NanoGone", "detail pass failed", it) }
+            .getOrNull()
     }
 
     /** True if the area of the crop that this model pixel covers touches the hole. */

@@ -294,6 +294,9 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
             }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
             runCatching { enhancer = Enhancer(c) }
                 .onFailure { android.util.Log.w("NanoGone", "enhance failed to load", it) }
+            (lama as? LamaEngine)?.let { l ->
+                enhancer?.takeIf { it.canUpscale }?.let { e -> l.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
+            }
             _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true) }
         }
     }
