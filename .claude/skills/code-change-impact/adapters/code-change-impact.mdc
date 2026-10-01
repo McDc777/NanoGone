@@ -1,0 +1,72 @@
+---
+description: Trace the impact / blast radius of a code change and prove it didn't break other features — run after a fix, before commit/PR/push. Language- and framework-agnostic; works by discovering the project's own conventions. Apply when the user asks "did this break anything", "what else does this affect", "check the impact", "side effects", "is this safe to merge", "regression check", or after editing shared/core code, a public symbol, a type/interface, a serialized contract, a DB schema/migration, a registry, a feature flag, or global config/styles.
+globs:
+alwaysApply: false
+---
+
+# Code Change Impact (Cursor rule)
+
+A fix is "done" only when you know what it touched *besides* the target. Find
+the ripples, then prove nothing else broke. Run against the VCS diff.
+
+## Procedure
+
+**0. Discover.** Establish the repo root + diff; languages (from manifests); the
+project's own **typecheck/build/test/lint** commands (read scripts/Makefile/CI,
+don't guess); and the import style + path aliases. A repo may mix stacks.
+
+**1. Epicenter.** `git diff HEAD` (or `git diff <base>...HEAD`); read the hunks.
+Classify each changed file: shared/core · public/exported symbol · type/interface/
+schema · serialized contract (REST/GraphQL/DTO/proto) · config/registry · DB
+schema/migration · global config/styles · build/deps · generated/duplicated twin ·
+or a local leaf.
+
+**2. Reverse dependencies.** For each changed symbol, grep who imports the module
+and who calls the symbol (this language's import form). Build directly-impacted +
+transitively-impacted, then map to runnable surfaces (route/endpoint/command/job).
+
+**3. Behavioral impact.** Per site: shape/signature/default/side-effect/invariant
+change, or internal/safe? Split build-caught ripples (typed langs) from **silent
+ripples** — cache/memo keys, changed default/sort, serialization/enum drift,
+global/persisted state, concurrency & transactions, locale/format, regex/
+validation, flag defaults, theme/i18n. Check **mirror/twin files**: regenerate
+generated code, sync cross-language duplicated constants. One side edited without
+the other is an impact finding even if it compiles.
+
+**4. Verify.** Run discovered commands cheapest-first, scaled to reach:
+typecheck → build → tests (prefer targeted) → lint. Then exercise the impacted
+surfaces and watch logs/errors. Green local ≠ deployed.
+
+**5. Report** with the template below.
+
+## Report template (always)
+
+```
+# Code Change Impact: <one-line description>
+## Verdict: SAFE | SAFE WITH CAVEATS | IMPACT FOUND
+## Epicenter
+- <file:line> — <coupling class> — <what changed>
+## Blast radius
+### Directly impacted
+- <file / surface> — <route/endpoint/command> — <why> — risk: High|Med|Low
+### Transitively impacted — <…> (or none)
+## Mirror / twin files — <file to sync, in sync? yes/NO> (or none)
+## Silent-risk callouts (build won't catch) — <…> (or none)
+## Verification
+- typecheck/build/tests: PASS/FAIL
+- surfaces exercised: <list> → clean? errors?
+## Residual risk & manual checklist
+- [ ] <not auto-verifiable>
+```
+
+**Verdict** — SAFE: traced, twins synced, checks pass, surfaces clean, no silent
+risk. SAFE WITH CAVEATS: passes, residual manual checks remain. IMPACT FOUND: a
+twin out of sync, a consumer breaks, or a silent ripple confirmed — state it with
+file + fix.
+
+**Scope discipline.** Analyze, don't silently fix unrelated code. Match effort to
+reach. When unsure a ripple is real, put it on the checklist, don't declare SAFE.
+
+> Per-language grep recipes, verify-command detection, the coupling taxonomy, and
+> the full silent-risk catalog live in `references/recipes.md` of the
+> code-change-impact bundle — consult it when available.

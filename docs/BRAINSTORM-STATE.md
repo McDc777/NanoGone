@@ -1,0 +1,57 @@
+# NanoGone brainstorm: where we are
+
+**TL;DR**
+1. Goal: a free Android app that removes objects from photos, better than Google Photos and Samsung Gallery.
+2. Decided: option **A**, all AI work runs on the phone (offline, private).
+3. Waiting on Admin: **Question 2, which phone** (model name from Settings > About phone).
+4. Next: more questions one at a time, then 2-3 engine approaches, then the design in sections.
+5. Then: write the spec, self-review it, Admin reviews it, then the `writing-plans` skill.
+6. Started 2026-10-01 on Admin's PC, moved to a Claude Code cloud session the same day.
+
+---
+
+## Admin's request (their own words, kept exactly)
+
+> I want a super intelligent, powerful and user-friendly android app with abilities to remove objects from images.
+> currently, Google Photo app does that but it's not user-friendly at all! the final image size and aspect ratio is just smaller than the original, sometimes it pulls the colors from near by subjects into the area that was meant to remove the object from, it has lot's of limitations and very slow. It can't select very small objects! its magnet selection (which is designed to correctly identify the borders of the object) drift on random bases and select other close objects. and etc.
+> The other app that can also do object removal, is the Samsung Gallery app, which usually do a good job but for example even to remove a piece of rubbish in the background of a Family photo, it add a large note "Ai Generated image" which basically makes the image useless in case we wanted to add it on our social media. It also has some of the problems that Google Photo object remover has like inability to remove small objects.
+> Currently, there are so many other strong and very good Object removal apps on Google Play Store and Samsung Galaxy store, that can do what I want and ensure the image quality is even better than the original image, but they all are there for purchase or subscription, which I don't want to do.
+> So, tell me the plan and how you can make the app and what features you have in mind and how you want to implement those features?
+
+## The complaints we must beat
+
+1. Output is smaller than the original and the aspect ratio changes.
+2. Colours from nearby subjects bleed into the removed area.
+3. Very slow, many limits.
+4. Cannot select very small objects.
+5. The "magnet" edge selection drifts and grabs nearby objects.
+6. Samsung stamps "AI generated" on the photo, which ruins it for social media.
+
+## First ideas shown to Admin (not yet approved as a design)
+
+1. **Same size, same shape, same quality:** repaint only the pixels inside the selection; every other pixel stays byte-for-byte the same; keep the original size, aspect ratio and photo details (date, place).
+2. **No "AI generated" stamp**, ever.
+3. **Tiny objects:** deep zoom, a magnifier bubble under the finger, a fine brush, and a one-tap spot remover for dust and specks.
+4. **Selection that does not drift:** tap the object and a cut-out model (Segment-Anything style) hugs its edge; tap to add, "minus" tap to remove; it only grows where you tap.
+5. **No borrowed colours:** a stronger repair model plus a "don't copy from here" brush.
+6. Opens straight from Samsung Gallery and Google Photos via Share.
+7. Speed target: rough preview in about a second, full quality in a few seconds (to be measured on the real phone).
+
+## Decisions
+
+| # | Question | Admin's answer |
+|---|---|---|
+| 1 | Where does the heavy AI work run? A phone only / B phone + PC / C phone + cloud | **A, phone only** (2026-10-01) |
+| 2 | Which phone runs the app? | *waiting* |
+
+## Brainstorm checklist (the `brainstorming` skill)
+
+- [x] 1. Explore project context (new, empty project)
+- [ ] 2. Visual companion: offer it only when a question is truly visual
+- [ ] 3. Clarifying questions, one at a time (phone model is next; later: save as copy vs replace, must-have features for version 1)
+- [ ] 4. Propose 2-3 engine approaches (which on-phone models for selecting and for repairing) with a recommendation
+- [ ] 5. Present the design in sections, Admin approves each
+- [ ] 6. Write the spec to `docs/superpowers/specs/2026-10-01-nanogone-design.md` and commit
+- [ ] 7. Spec self-review
+- [ ] 8. Admin reviews the written spec
+- [ ] 9. `writing-plans`
