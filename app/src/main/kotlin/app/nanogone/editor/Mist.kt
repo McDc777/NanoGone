@@ -115,6 +115,20 @@ private fun pass(nc: Canvas, shapes: List<Shape>, color: Color, alpha: Float, wi
                 paint.style = Paint.Style.FILL
                 nc.drawCircle(s.cx, s.cy, s.radius * widthScale, paint)
             }
+            is MaskShape -> {
+                val a = Bitmap.createBitmap(s.mask.width, s.mask.height, Bitmap.Config.ALPHA_8)
+                val bytes = ByteArray(s.mask.width * s.mask.height) { if (s.mask.bits[it]) -1 else 0 }
+                a.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(bytes))
+                val dst = android.graphics.RectF(s.rect.left.toFloat(), s.rect.top.toFloat(), s.rect.right.toFloat(), s.rect.bottom.toFloat())
+                if (s.erase) {
+                    val e = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT) }
+                    nc.drawBitmap(a, null, dst, e)
+                } else {
+                    paint.style = Paint.Style.FILL
+                    nc.drawBitmap(a, null, dst, paint)
+                }
+                a.recycle()
+            }
         }
     }
     nc.restoreToCount(layer)

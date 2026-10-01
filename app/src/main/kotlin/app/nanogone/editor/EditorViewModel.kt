@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-enum class Tool { Brush, Loop, Spot, Eraser }
+enum class Tool { Tap, Brush, Loop, Spot, Eraser }
 
 /** Logs how long each step takes (tag NanoGone), so speed can be checked on real phones. */
 class StageClock(private val job: String) {
@@ -39,7 +39,7 @@ data class EditorUi(
     val original: Bitmap? = null,
     val version: Int = 0,
     val selection: List<Shape> = emptyList(),
-    val tool: Tool = Tool.Brush,
+    val tool: Tool = Tool.Tap,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
     val busy: String? = null,
@@ -48,6 +48,8 @@ data class EditorUi(
     val message: String? = null,
     val saved: Saver.Result? = null,
     val lastFormat: SaveFormat = SaveFormat.JPEG,
+    /** Which brains are running and on which chip (shown on the welcome screen). */
+    val brains: String = "waking the brains",
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -55,7 +57,59 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     private val reader = PhotoReader(app.contentResolver)
     private val saver = Saver(app.contentResolver, reader, app.cacheDir)
     private val prefs = app.getSharedPreferences("nanogone", Context.MODE_PRIVATE)
-    private val engine: RepairEngine = SmoothFillEngine()
+    private val fallback: RepairEngine = SmoothFillEngine()
+    @Volatile private var lama: RepairEngine? = null
+    @Volatile private var tapper: app.nanogone.ai.MagicTap? = null
+    private val engine: RepairEngine get() = lama ?: fallback
+
+    private fun describeBrains(): String = buildString {
+        append(lama?.name ?: "smooth fill (no AI brain)")
+        tapper?.let { append(" · magic tap on ${it.backend}") }
+    }
+
+    /** Magic tap at image point ([x], [y]) while the person views [view] (image pixels). */
+    fun magicTap(view: IntRect, x: Float, y: Float) {
+        val t = tapper
+        val photo = _ui.value.photo ?: return
+        val d = doc ?: return
+        if (t == null) {
+            _ui.update { it.copy(message = "Magic tap is still waking up. Try again in a moment, or use the brush.") }
+            return
+        }
+        _ui.update { it.copy(busy = "Finding its edges") }
+        viewModelScope.launch {
+            try {
+                val shape = withContext(Dispatchers.Default) {
+                    val clock = StageClock("magic tap")
+                    val full = view.width >= photo.width * 0.8f && view.height >= photo.height * 0.8f
+                    val pixels = if (full) {
+                        val bmp = _ui.value.display ?: error("no screen copy")
+                        val px = IntArray(bmp.width * bmp.height)
+                        bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+                        val whole = app.nanogone.imaging.image.Argb(bmp.width, bmp.height, px)
+                        val sx = bmp.width.toFloat() / photo.width
+                        val r = IntRect((view.left * sx).toInt(), (view.top * sx).toInt(), minOf(bmp.width, (view.right * sx).toInt()), minOf(bmp.height, (view.bottom * sx).toInt()))
+                        whole.crop(r)
+                    } else {
+                        var sample = 1
+                        while (maxOf(view.width, view.height) / (sample * 2) >= 1024) sample *= 2
+                        reader.region(photo, view, sample)
+                    }
+                    clock.lap("view pixels ${pixels.width}x${pixels.height}")
+                    t.select(view, pixels, _ui.value.version, x, y).also { clock.lap("outline") }
+                }
+                if (shape == null) {
+                    _ui.update { it.copy(busy = null, message = "Nothing clear to pick there. Try the brush or a loop.") }
+                } else {
+                    d.addShape(shape)
+                    _ui.update { it.copy(busy = null) }
+                    publishSelection()
+                }
+            } catch (e: Exception) {
+                _ui.update { it.copy(busy = null, message = e.message ?: "Magic tap did not work. Try the brush.") }
+            }
+        }
+    }
 
     private var doc: EditDocument? = null
     private var base: Bitmap? = null
@@ -64,6 +118,21 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         EditorUi(lastFormat = runCatching { SaveFormat.valueOf(prefs.getString("format", "JPEG")!!) }.getOrDefault(SaveFormat.JPEG)),
     )
     val ui: StateFlow<EditorUi> = _ui.asStateFlow()
+
+    init {
+        // Wake the brains as soon as the app opens, so the first removal is quick.
+        viewModelScope.launch(Dispatchers.Default) {
+            val c = getApplication<Application>()
+            runCatching {
+                if (app.nanogone.ai.TfliteModel.exists(c, app.nanogone.ai.LamaEngine.ASSET)) lama = app.nanogone.ai.LamaEngine(c)
+            }.onFailure { android.util.Log.w("NanoGone", "fast brain failed to load", it) }
+            runCatching {
+                if (app.nanogone.ai.TfliteModel.exists(c, app.nanogone.ai.MagicTap.ENCODER)) tapper = app.nanogone.ai.MagicTap(c)
+            }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
+            _ui.update { it.copy(brains = describeBrains()) }
+        }
+    }
+
 
     fun open(uri: Uri) {
         _ui.update { it.copy(busy = "Opening your photo", message = null, saved = null) }
@@ -90,7 +159,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     fun close() {
         doc = null
         base = null
-        _ui.update { EditorUi(lastFormat = it.lastFormat) }
+        _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains) }
     }
 
     fun setTool(t: Tool) = _ui.update { it.copy(tool = t) }

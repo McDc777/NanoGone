@@ -34,6 +34,20 @@ class Spot(val cx: Float, val cy: Float, val radius: Float) : Shape {
     )
 }
 
+/**
+ * An outline found by magic tap: [mask] stretched over [rect] (image pixels). The mask may be
+ * smaller than the rect (outlines of huge photos are kept at a sensible size).
+ */
+class MaskShape(val rect: IntRect, val mask: Mask, val erase: Boolean = false) : Shape {
+    override fun bounds(): IntRect = rect
+
+    fun at(x: Int, y: Int): Boolean {
+        val mx = ((x - rect.left + 0.5f) * mask.width / rect.width).toInt().coerceIn(0, mask.width - 1)
+        val my = ((y - rect.top + 0.5f) * mask.height / rect.height).toInt().coerceIn(0, mask.height - 1)
+        return mask[mx, my]
+    }
+}
+
 /** One finished removal: the repaired pixels of [rect] and which of them changed. */
 class Patch(val rect: IntRect, val pixels: IntArray, val changed: Mask)
 
@@ -72,7 +86,7 @@ class EditDocument(val width: Int, val height: Int) {
 
     /** Bounds of the current selection, clipped to the image; null if nothing is selected. */
     fun selectionBounds(): IntRect? {
-        val adds = state.selection.filter { !(it is BrushStroke && it.erase) }
+        val adds = state.selection.filter { !(it is BrushStroke && it.erase) && !(it is MaskShape && it.erase) }
         if (adds.isEmpty()) return null
         var r = adds.first().bounds()
         for (s in adds.drop(1)) {
@@ -93,6 +107,12 @@ class EditDocument(val width: Int, val height: Int) {
                 when (s) {
                     is BrushStroke -> stroke(m, rect, s)
                     is Spot -> disc(m, rect, s.cx, s.cy, s.radius, true)
+                    is MaskShape -> {
+                        val o = s.rect.intersect(rect)
+                        if (!o.isEmpty) for (y in o.top until o.bottom) for (x in o.left until o.right) {
+                            if (s.at(x, y)) m[x - rect.left, y - rect.top] = !s.erase
+                        }
+                    }
                     is Loop -> {
                         val xs = FloatArray(s.xs.size) { s.xs[it] - rect.left }
                         val ys = FloatArray(s.ys.size) { s.ys[it] - rect.top }

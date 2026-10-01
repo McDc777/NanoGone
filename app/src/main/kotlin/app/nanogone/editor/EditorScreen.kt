@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.magnifier
+import app.nanogone.imaging.geom.IntRect
 import app.nanogone.save.SaveFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -136,6 +137,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
             lifting = lifting,
             lift = lift.value,
             onShape = vm::addShape,
+            onTap = vm::magicTap,
             modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
         )
 
@@ -149,11 +151,11 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth().clickable(enabled = ui.message != null) { vm.dismissMessage() },
                 )
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ToolButton(Glyph.Find, "Tap", ui.tool == Tool.Tap, Modifier.weight(1f)) { vm.setTool(Tool.Tap) }
                     ToolButton(Glyph.Brush, "Brush", ui.tool == Tool.Brush, Modifier.weight(1f)) { vm.setTool(Tool.Brush) }
                     ToolButton(Glyph.Loop, "Loop", ui.tool == Tool.Loop, Modifier.weight(1f)) { vm.setTool(Tool.Loop) }
                     ToolButton(Glyph.Spot, "Spot", ui.tool == Tool.Spot, Modifier.weight(1f)) { vm.setTool(Tool.Spot) }
                     ToolButton(Glyph.Eraser, "Unpick", ui.tool == Tool.Eraser, Modifier.weight(1f)) { vm.setTool(Tool.Eraser) }
-                    ToolButton(Glyph.Find, "Find", false, Modifier.weight(1f), enabled = false) {}
                     ToolButton(Glyph.Enhance, "Enhance", false, Modifier.weight(1f), enabled = false) {}
                 }
                 val canRemove = ui.selection.any { !(it is BrushStroke && it.erase) } && ui.busy == null
@@ -185,6 +187,7 @@ fun EditorScreen(ui: EditorUi, vm: EditorViewModel, onBack: () -> Unit) {
 
 private fun hintFor(ui: EditorUi): String = when {
     ui.selection.any { !(it is BrushStroke && it.erase) } -> "Wrapped in morning mist. Tap Remove, or keep adding."
+    ui.tool == Tool.Tap -> "Tap what should go. Zoom in first for tiny things."
     ui.tool == Tool.Brush -> "Paint over what should go. Pinch to zoom in for tiny things."
     ui.tool == Tool.Loop -> "Draw a loop around what should go."
     ui.tool == Tool.Spot -> "Tap a speck, a spot or a bit of dust."
@@ -225,6 +228,7 @@ private fun PhotoCanvas(
     lifting: ImageBitmap?,
     lift: Float,
     onShape: (Shape) -> Unit,
+    onTap: (IntRect, Float, Float) -> Unit,
     modifier: Modifier,
 ) {
     val p = LocalDawn.current
@@ -313,6 +317,14 @@ private fun PhotoCanvas(
                             Tool.Brush -> onShape(BrushStroke(xs, ys, brushScreenPx / scale, erase = false))
                             Tool.Eraser -> onShape(BrushStroke(xs, ys, brushScreenPx / scale, erase = true))
                             Tool.Spot -> onShape(Spot(xs.last(), ys.last(), spotScreenPx / scale))
+                            Tool.Tap -> {
+                                val corners = listOf(Offset(0f, 0f), Offset(box.width.toFloat(), 0f), Offset(0f, box.height.toFloat()), Offset(box.width.toFloat(), box.height.toFloat())).map { toImage(it) }
+                                val view = IntRect(
+                                    corners.minOf { it.x }.toInt(), corners.minOf { it.y }.toInt(),
+                                    kotlin.math.ceil(corners.maxOf { it.x }).toInt(), kotlin.math.ceil(corners.maxOf { it.y }).toInt(),
+                                ).intersect(IntRect(0, 0, photo.width, photo.height))
+                                if (!view.isEmpty) onTap(view, xs.last(), ys.last())
+                            }
                             Tool.Loop -> if (live.size >= 3) onShape(Loop(xs, ys))
                         }
                     }
@@ -343,6 +355,7 @@ private fun PhotoCanvas(
                         when (ui.tool) {
                             Tool.Loop -> drawLiveTrail(live, 4f * pxPerScreen, p.mist, loop = true)
                             Tool.Spot -> drawLiveTrail(listOf(live.last()), spotScreenPx * pxPerScreen, p.mist, loop = false)
+                            Tool.Tap -> drawLiveTrail(listOf(live.last()), 6f * pxPerScreen, p.accent, loop = false)
                             Tool.Eraser -> drawLiveTrail(live, brushScreenPx * pxPerScreen, p.textSoft, loop = false)
                             Tool.Brush -> drawLiveTrail(live, brushScreenPx * pxPerScreen, p.mist, loop = false)
                         }

@@ -32,7 +32,7 @@ import app.nanogone.ui.PillShape
 
 /** Welcome: the one huge type moment, and the way in. */
 @Composable
-fun HomeScreen(busy: String?, message: String?, onPick: () -> Unit) {
+fun HomeScreen(busy: String?, message: String?, brains: String, onPick: () -> Unit) {
     val p = LocalDawn.current
     val rise = remember { Animatable(0f) }
     LaunchedEffect(Unit) { rise.animateTo(1f, tween(1400, easing = FastOutSlowInEasing)) }
@@ -76,6 +76,7 @@ fun HomeScreen(busy: String?, message: String?, onPick: () -> Unit) {
                 color = if (message != null) p.error else p.textSoft,
             )
         }
-        Spacer(Modifier.height(24.dp))
+        Text(brains, style = MaterialTheme.typography.labelSmall, color = p.textSoft)
+        Spacer(Modifier.height(16.dp))
     }
 }

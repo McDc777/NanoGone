@@ -62,17 +62,21 @@ class PhotoReader(private val resolver: ContentResolver) {
         return if (bmp.isMutable) bmp else bmp.copy(Bitmap.Config.ARGB_8888, true)
     }
 
-    /** Full-detail pixels of [rect] from the original file. */
-    fun region(photo: Photo, rect: IntRect): Argb {
+    /** Pixels of [rect] from the original file, full detail unless [sample] > 1 (then 1/sample size). */
+    fun region(photo: Photo, rect: IntRect, sample: Int = 1): Argb {
         val decoder = requireNotNull(resolver.openInputStream(photo.uri)) { "Cannot read the photo." }.use { BitmapRegionDecoder.newInstance(it) }
             ?: error("Cannot read this photo in pieces.")
         try {
-            val opts = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+            val opts = BitmapFactory.Options().apply {
+                inPreferredConfig = Bitmap.Config.ARGB_8888
+                inSampleSize = sample
+            }
             val bmp = decoder.decodeRegion(Rect(rect.left, rect.top, rect.right, rect.bottom), opts)
-            val px = IntArray(rect.width * rect.height)
-            bmp.getPixels(px, 0, rect.width, 0, 0, rect.width, rect.height)
+            val px = IntArray(bmp.width * bmp.height)
+            bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+            val out = Argb(bmp.width, bmp.height, px)
             bmp.recycle()
-            return Argb(rect.width, rect.height, px)
+            return out
         } finally {
             decoder.recycle()
         }

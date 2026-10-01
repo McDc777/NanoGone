@@ -20,6 +20,20 @@ jobs:
           distribution: temurin
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
+      - name: Fetch AI brains into the app
+        run: |
+          set -e
+          mkdir -p app/src/main/assets/models /tmp/m
+          B=https://qaihub-public-assets.s3.us-west-2.amazonaws.com/qai-hub-models/models
+          get() { curl -sfL "$B/$1" -o /tmp/m/z.zip && unzip -qo /tmp/m/z.zip -d /tmp/m/x && rm /tmp/m/z.zip; }
+          get lama_dilated/releases/v0.63.0/lama_dilated-tflite-float.zip
+          get mobilesam/releases/v0.63.0/mobilesam-tflite-float.zip
+          get real_esrgan_x4plus/releases/v0.63.0/real_esrgan_x4plus-tflite-float.zip
+          cp "$(find /tmp/m/x -name lama_dilated.tflite)" app/src/main/assets/models/lama.tflite
+          cp "$(find /tmp/m/x -name encoder.tflite)" app/src/main/assets/models/sam_encoder.tflite
+          cp "$(find /tmp/m/x -name decoder.tflite)" app/src/main/assets/models/sam_decoder.tflite
+          cp "$(find /tmp/m/x -name real_esrgan_x4plus.tflite)" app/src/main/assets/models/esrgan_x4.tflite
+          ls -la app/src/main/assets/models
       - name: Build and test
         run: |
           set +e
