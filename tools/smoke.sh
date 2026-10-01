@@ -42,12 +42,27 @@ wait_for "Remove" 60; sleep 3; shot 02-editor
 # Test 1: magic tap on the bin, then Remove.
 read TX TY TT TB <<< "$(find_bounds NanoGone)"
 read RX RY RT RB <<< "$(find_bounds Remove)"
-# The photo sits between the top pane and the bottom pane; the bin is in its middle.
-TOPP=$((TB + 40)); BOTP=$((RT - 330))
-MIDY=$(((TOPP + BOTP) / 2)); MIDX=540
+# Find the photo area (largest plain view between the panes) and aim at the bin centre (2000, 1490) of 4000 x 3000.
+read MIDX MIDY <<< "$(python3 - <<'PY'
+import re
+xml = open("out/smoke/ui.xml", encoding="utf-8").read()
+best = None
+for m in re.finditer(r'<node [^>]*>', xml):
+    n = m.group(0)
+    b = list(map(int, re.findall(r'\d+', re.search(r'bounds="([^"]*)"', n).group(1))))
+    w, h = b[2] - b[0], b[3] - b[1]
+    if 'text=""' in n and b[1] > 250 and h < 1700 and w > 800 and h > 600:
+        if best is None or w * h > best[2] * best[3]: best = (b[0], b[1], w, h)
+x, y, w, h = best
+fit = min(w / 4000, h / 3000)
+ox = x + (w - 4000 * fit) / 2; oy = y + (h - 3000 * fit) / 2
+print(int(ox + 2000 * fit), int(oy + 1490 * fit))
+PY
+)"
+echo "aim $MIDX $MIDY" > $OUT/aim.txt
 read KX KY KT KB <<< "$(find_bounds Tap)"
 adb shell input tap $KX $KY; sleep 1
-START=$(date +%s); adb shell input tap $MIDX $((MIDY + 20)); sleep 1
+START=$(date +%s); adb shell input tap $MIDX $MIDY; sleep 1
 wait_gone "Finding its edges" 180; echo "magic tap took $(( $(date +%s) - START ))s" >> $OUT/timing.txt
 sleep 2; shot 03-selected
 read RX RY RT RB <<< "$(find_bounds Remove)"

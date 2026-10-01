@@ -15,14 +15,28 @@ object ShadowFinder {
 
     /** @return the shadow (not including the object itself), or an empty mask. */
     fun find(img: Argb, obj: Mask): Mask {
+        // Work only in a window around the object: the shadow cannot be further than the reach.
+        val b = obj.bounds() ?: return Mask(img.width, img.height)
+        val pad = (1.5f * sqrt(obj.count().toFloat())).toInt() + 34
+        val win = app.nanogone.imaging.geom.IntRect(b.left - pad, b.top - pad, b.right + pad, b.bottom + pad)
+            .intersect(app.nanogone.imaging.geom.IntRect(0, 0, img.width, img.height))
+        if (win.width == img.width && win.height == img.height) return findIn(img, obj)
+        val subMask = Mask(win.width, win.height)
+        for (y in 0 until win.height) for (x in 0 until win.width) subMask[x, y] = obj[win.left + x, win.top + y]
+        val found = findIn(img.crop(win), subMask)
+        val out = Mask(img.width, img.height)
+        for (y in 0 until win.height) for (x in 0 until win.width) if (found[x, y]) out[win.left + x, win.top + y] = true
+        return out
+    }
+
+    private fun findIn(img: Argb, obj: Mask): Mask {
         val w = img.width
         val h = img.height
         val out = Mask(w, h)
         val area = obj.count()
         if (area == 0) return out
         val reach = 1.5f * sqrt(area.toFloat())
-        val outside = Mask(w, h, BooleanArray(w * h) { !obj.bits[it] })
-        val dist = MaskOps.distanceToOff(outside) // distance from the object, for pixels outside it
+        val dist = MaskOps.distanceFrom(obj) // distance from the object
 
         // The lit ground: pixels 4 to 30 px around the object; take a bright-ish level (70th
         // percentile) so the shadow itself does not drag the reference down.

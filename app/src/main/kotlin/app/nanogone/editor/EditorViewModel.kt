@@ -285,6 +285,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         // Wake the brains as soon as the app opens, so the first removal is quick.
         viewModelScope.launch(Dispatchers.Default) {
             val c = getApplication<Application>()
+            TfliteModel.prepareNpu(c)
             runCatching {
                 if (TfliteModel.exists(c, LamaEngine.ASSET)) lama = LamaEngine(c)
             }.onFailure { android.util.Log.w("NanoGone", "fast brain failed to load", it) }

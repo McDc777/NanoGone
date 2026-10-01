@@ -118,9 +118,32 @@ object MaskOps {
         return out
     }
 
+    /**
+     * For every pixel, the Euclidean distance to the nearest ON pixel of [m] (0 on the mask).
+     * Unlike [distanceToOff], the picture's border means nothing here. Infinite if [m] is empty.
+     */
+    fun distanceFrom(m: Mask): FloatArray {
+        val g = FloatArray(m.width * m.height) { if (m.bits[it]) 0f else 1e20f }
+        edt2d(g, m.width, m.height)
+        for (i in g.indices) g[i] = sqrt(g[i])
+        return g
+    }
+
     /** Grow the mask by [radius] pixels (a round brush, exact distance). */
     fun grow(m: Mask, radius: Int): Mask {
         if (radius <= 0) return m.copy()
+        // Only the area near the mask can change: work in that window.
+        val b = m.bounds() ?: return m.copy()
+        val wl = maxOf(0, b.left - radius); val wt = maxOf(0, b.top - radius)
+        val wr = minOf(m.width, b.right + radius); val wb = minOf(m.height, b.bottom + radius)
+        if (wl > 0 || wt > 0 || wr < m.width || wb < m.height) {
+            val sub = Mask(wr - wl, wb - wt)
+            for (y in 0 until sub.height) for (x in 0 until sub.width) sub[x, y] = m[wl + x, wt + y]
+            val grown = grow(sub, radius)
+            val out = m.copy()
+            for (y in 0 until sub.height) for (x in 0 until sub.width) if (grown[x, y]) out[wl + x, wt + y] = true
+            return out
+        }
         val w = m.width
         val h = m.height
         val grid = FloatArray(w * h) { if (m.bits[it]) 0f else 1e20f }

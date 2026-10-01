@@ -20,8 +20,7 @@ object Grain {
         val w = filled.width
         val h = filled.height
         // Ring: pixels outside the hole, 2 to 14 pixels away from it.
-        val inv = Mask(w, h, BooleanArray(w * h) { !mask.bits[it] })
-        val dOut = MaskOps.distanceToOff(inv)
+        val dOut = MaskOps.distanceFrom(mask)
         val ring = ArrayList<Int>()
         for (i in 0 until w * h) if (!mask.bits[i] && dOut[i] in 2f..14f) ring.add(i)
         if (ring.size < 16) return filled.copy()
