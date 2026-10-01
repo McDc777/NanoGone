@@ -40,3 +40,9 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Engine: both brains. Fast brain (LaMa class) for live preview and most fixes; deep brain (one-step SDXL-class remover, OSOR or TurboClear by bake-off) for big objects, shadows and reflections. Fast one gets built first.
 - Research file extended with deep brain candidates and helper models.
 - Next: present the design to Admin in 6 parts (journey, selecting, repairing, saving, look, safety nets and testing).
+
+## 2026-10-01, design parts 1 to 5 approved, look options published
+
+- Approved: Part 1 journey, Part 2 picking (plus Enhance added), Part 3 filling the hole, Part 4 Enhance (all four tools), Part 5 saving (Save offers JPEG and PNG).
+- Part 6 (look): three art directions built as a try-it page: `docs/design/nanogone-looks.html`, published at https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB . A: The Invisible Mender (weave). B: The Conservator's Lamp (UV torch compare). C: Fresh Powder (snowfall). Recommending B.
+- Next: Admin picks a look, then Part 7 (safety nets and testing), then write the spec.

@@ -80,3 +80,4 @@
 - Part 3 (filling the hole): approved.
 - Part 4 (Enhance): approved.
 - Part 5 (saving): approved, with one change from Admin: "can you please add both options to chose". So Save offers **Top-quality JPEG** and **Lossless PNG** side by side, each with its estimated file size, remembering the last pick. (For a JPEG original with only removals, the JPEG choice is the "only changed squares rewritten" file.)
+- Part 6 (look): three directions shown on a try-it page (docs/design/nanogone-looks.html, https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB). Waiting for Admin's pick. Recommended: B, The Conservator's Lamp.
