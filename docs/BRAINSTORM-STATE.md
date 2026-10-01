@@ -80,4 +80,6 @@
 - Part 3 (filling the hole): approved.
 - Part 4 (Enhance): approved.
 - Part 5 (saving): approved, with one change from Admin: "can you please add both options to chose". So Save offers **Top-quality JPEG** and **Lossless PNG** side by side, each with its estimated file size, remembering the last pick. (For a JPEG original with only removals, the JPEG choice is the "only changed squares rewritten" file.)
-- Part 6 (look): three directions shown on a try-it page (docs/design/nanogone-looks.html, https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB). Waiting for Admin's pick. Recommended: B, The Conservator's Lamp.
+- Part 6 (look): three directions shown on a try-it page (docs/design/nanogone-looks.html, https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB). Admin did not pick A, B or C. Admin gave their own direction, word for word:
+  > "Cloudy glass neomorphism, soft pastel dawn gradients, luminous frosted acrylic. A warm morning mist blurs over the selected area and evaporates smoothly into clear air when you remove it."
+  This is an **owner override** under the anti-generic law (glass and pastel gradients are allowed because Admin asked, with a dawn story behind them). Building it as **Look D, "Dawn Mist"** on the same try-it page for Admin to confirm.
