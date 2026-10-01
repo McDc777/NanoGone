@@ -44,7 +44,7 @@
 | 1 | Where does the heavy AI work run? A phone only / B phone + PC / C phone + cloud | **A, phone only** (2026-10-01) |
 | 2 | Which phone runs the app? | **Galaxy S23 Ultra, S24 Ultra, S25 Ultra, S26 Ultra and Galaxy Tab A11+ 5G.** Use ALL the power the phone has (AI chip, graphics chip, all cores) for the best result. (2026-10-01) |
 | 3 | Save as a copy, or replace the original? | **Save a copy.** The original stays untouched. The new photo goes into its own **"NanoGone"** folder (shows as a NanoGone album in Gallery). (2026-10-01) |
-| 4 | Must-have extra features for version 1? | **Find distractions, Shadow catcher, Text and logo eraser** (Enhance left for later). Admin also wrote, word for word: "user-friendly, easy to draw a line around the object, enhanced and automatic magnet so it automatically identify and wrap around the object. the background of the removed object must match the surroundings." (2026-10-01) |
+| 4 | Must-have extra features for version 1? | **Find distractions, Shadow catcher, Text and logo eraser.** UPDATE during design Part 2: Admin said "you forgot the image enhancement!", so **Enhance is IN version 1** too. Admin also wrote, word for word: "user-friendly, easy to draw a line around the object, enhanced and automatic magnet so it automatically identify and wrap around the object. the background of the removed object must match the surroundings." (2026-10-01) |
 | 5 | Which engine approach (A fast, B deep, C both)? | **C, both brains.** Fast brain for live preview and most fixes; deep brain for big objects plus their shadows and reflections. Build the fast one first. (2026-10-01) |
 
 ## Brainstorm checklist (the `brainstorming` skill)
@@ -70,3 +70,8 @@
 - **Smart lasso:** draw a rough loop around the object with one finger. The AI then hugs the object's real edge, but ONLY inside your loop, so it can never jump to a nearby object (this fixes the Google "magnet drift").
 - **Automatic magnet:** a single tap also works: the AI finds the whole object and wraps it. Plus and minus taps fix any mistake.
 - **Fill must match the surroundings:** colour, light, texture and camera grain of the fill must blend with the area around it. The "don't copy from here" brush stays for hard cases.
+
+## Design approval log
+
+- Part 1 (how it works): approved.
+- Part 2 (picking what to remove): Admin added **image enhancement** to version 1. Asking what Enhance should do.
