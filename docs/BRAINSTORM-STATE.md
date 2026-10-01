@@ -83,3 +83,9 @@
 - Part 6 (look): three directions shown on a try-it page (docs/design/nanogone-looks.html, https://claude.ai/artifact/7M7S7fUqtbHdvaQ6wmqstB). Admin did not pick A, B or C. Admin gave their own direction, word for word:
   > "Cloudy glass neomorphism, soft pastel dawn gradients, luminous frosted acrylic. A warm morning mist blurs over the selected area and evaporates smoothly into clear air when you remove it."
   This is an **owner override** under the anti-generic law (glass and pastel gradients are allowed because Admin asked, with a dawn story behind them). Building it as **Look D, "Dawn Mist"** on the same try-it page for Admin to confirm.
+
+## Admin's standing order (2026-10-01)
+
+> "can you please stop asking and pick all of the best options and just get to get it done?"
+
+So: no more questions. Look D "Dawn Mist" (Admin's own words) is locked. Part 7 (safety nets and testing) is decided by me. The spec review gate is waived by Admin; go straight to the plan and the build.
