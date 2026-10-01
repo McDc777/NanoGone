@@ -2,69 +2,57 @@ package app.nanogone.ai
 
 import android.content.Context
 import android.util.Log
-import org.tensorflow.lite.Delegate
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
+import com.google.ai.edge.litert.Accelerator
+import com.google.ai.edge.litert.CompiledModel
+import com.google.ai.edge.litert.TensorBuffer
 import java.io.Closeable
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
 
 /**
- * One AI brain file from the app's assets. Uses the graphics chip first, then every main-chip
- * core (no speed caps). [backend] says which one is running.
+ * One AI brain file from the app's assets, run by LiteRT's CompiledModel. Tries the graphics
+ * chip first (with the main chip for any step the graphics chip cannot do), then the main
+ * chip alone. [backend] says which one is running. Inputs and outputs are float arrays in the
+ * model's own order.
  */
 class TfliteModel(context: Context, asset: String) : Closeable {
 
-    val interpreter: Interpreter
+    private val model: CompiledModel
     val backend: String
-    private var gpu: Delegate? = null
+    private val inputs: List<TensorBuffer>
+    private val outputs: List<TensorBuffer>
 
     init {
-        val model = map(context, asset)
-        var made: Interpreter? = null
-        var used = "CPU x${Runtime.getRuntime().availableProcessors()}"
+        var made: CompiledModel? = null
+        var used = "CPU"
         try {
-            val d = GpuDelegate()
-            gpu = d
-            made = Interpreter(model, Interpreter.Options().addDelegate(d))
+            made = CompiledModel.create(context.assets, asset, CompiledModel.Options(Accelerator.GPU, Accelerator.CPU))
             used = "GPU"
         } catch (t: Throwable) {
-            Log.i("NanoGone", "$asset: GPU not available (${t.message}), using all CPU cores")
-            runCatching { gpu?.close() }
-            gpu = null
+            Log.i("NanoGone", "$asset: graphics chip not available (${t.message}), using the main chip")
         }
-        interpreter = made ?: Interpreter(
-            model,
-            Interpreter.Options().setNumThreads(Runtime.getRuntime().availableProcessors()).setUseXNNPACK(true),
-        )
+        model = made ?: CompiledModel.create(context.assets, asset, CompiledModel.Options(Accelerator.CPU))
         backend = used
+        inputs = model.createInputBuffers()
+        outputs = model.createOutputBuffers()
         Log.i("NanoGone", "$asset loaded on $backend")
     }
 
-    fun inputIndex(name: String, fallback: Int): Int = runCatching { interpreter.getInputIndex(name) }.getOrDefault(fallback)
-
-    fun outputIndex(name: String, fallback: Int): Int = runCatching { interpreter.getOutputIndex(name) }.getOrDefault(fallback)
+    /** Run once. Each input array goes to the matching model input; returns every output. */
+    @Synchronized
+    fun run(vararg ins: FloatArray): List<FloatArray> {
+        require(ins.size == inputs.size) { "model wants ${inputs.size} inputs, got ${ins.size}" }
+        ins.forEachIndexed { i, a -> inputs[i].writeFloat(a) }
+        model.run(inputs, outputs)
+        return outputs.map { it.readFloat() }
+    }
 
     override fun close() {
-        interpreter.close()
-        runCatching { gpu?.close() }
+        inputs.forEach { runCatching { it.close() } }
+        outputs.forEach { runCatching { it.close() } }
+        runCatching { model.close() }
     }
 
     companion object {
         fun exists(context: Context, asset: String): Boolean =
-            runCatching { context.assets.openFd(asset).close(); true }.getOrDefault(false)
-
-        private fun map(context: Context, asset: String): MappedByteBuffer {
-            context.assets.openFd(asset).use { fd ->
-                FileInputStream(fd.fileDescriptor).use { input ->
-                    return input.channel.map(FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength)
-                }
-            }
-        }
-
-        fun floatBuffer(count: Int): ByteBuffer = ByteBuffer.allocateDirect(count * 4).order(ByteOrder.nativeOrder())
+            runCatching { context.assets.open(asset).close(); true }.getOrDefault(false)
     }
 }

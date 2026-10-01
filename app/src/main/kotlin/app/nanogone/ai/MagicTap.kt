@@ -20,12 +20,8 @@ class MagicTap(context: Context) : AutoCloseable {
     private val decoder = TfliteModel(context, DECODER)
     val backend: String get() = encoder.backend
 
-    private val image = TfliteModel.floatBuffer(E * E * 3)
-    private val embeddings = TfliteModel.floatBuffer(64 * 64 * 256)
-    private val coords = TfliteModel.floatBuffer(2)
-    private val labels = TfliteModel.floatBuffer(1)
-    private val masks = TfliteModel.floatBuffer(256 * 256)
-    private val scores = TfliteModel.floatBuffer(1)
+    private val image = FloatArray(E * E * 3)
+    private var embeddings = FloatArray(64 * 64 * 256)
 
     private var cachedView: IntRect? = null
     private var cachedVersion = -1
@@ -44,21 +40,10 @@ class MagicTap(context: Context) : AutoCloseable {
             cachedView = view
             cachedVersion = version
         }
-        coords.rewind(); labels.rewind(); masks.rewind(); scores.rewind(); embeddings.rewind()
-        coords.putFloat((tapX - view.left) * viewScale)
-        coords.putFloat((tapY - view.top) * viewScale)
-        labels.putFloat(1f)
-        coords.rewind(); labels.rewind()
-        val inputs = arrayOfNulls<Any>(3)
-        inputs[decoder.inputIndex("image_embeddings", 0)] = embeddings
-        inputs[decoder.inputIndex("point_coords", 1)] = coords
-        inputs[decoder.inputIndex("point_labels", 2)] = labels
-        val outMasks = decoder.outputIndex("masks", 0)
-        val outScores = decoder.outputIndex("scores", 1)
-        decoder.interpreter.runForMultipleInputsOutputs(inputs, mapOf(outMasks to masks, outScores to scores))
-        masks.rewind(); scores.rewind()
-        val logits = FloatArray(256 * 256) { masks.getFloat() }
-        Log.i("NanoGone", "magic tap score ${scores.getFloat(0)}")
+        val coords = floatArrayOf((tapX - view.left) * viewScale, (tapY - view.top) * viewScale)
+        val result = decoder.run(embeddings, coords, floatArrayOf(1f))
+        val logits = result[0]
+        Log.i("NanoGone", "magic tap score ${result.getOrNull(1)?.firstOrNull()}")
         // Build the outline at up to 2048 px on the long side; it is stretched over the view later.
         val q = minOf(1f, 2048f / maxOf(view.width, view.height))
         val mw = maxOf(1, (view.width * q).toInt())
@@ -89,21 +74,20 @@ class MagicTap(context: Context) : AutoCloseable {
         val sw = (view.width * viewScale).toInt().coerceIn(1, E)
         val sh = (view.height * viewScale).toInt().coerceIn(1, E)
         val px = pixels.width.toFloat() / view.width
-        image.rewind()
         for (y in 0 until E) for (x in 0 until E) {
+            val i = (y * E + x) * 3
             if (x < sw && y < sh) {
                 val u = ((x + 0.5f) / viewScale) * px - 0.5f
                 val v = ((y + 0.5f) / viewScale) * px - 0.5f
                 val p = Bilinear.sample(pixels, u.coerceIn(0f, pixels.width - 1f), v.coerceIn(0f, pixels.height - 1f))
-                image.putFloat(((p shr 16) and 0xFF) / 255f)
-                image.putFloat(((p shr 8) and 0xFF) / 255f)
-                image.putFloat((p and 0xFF) / 255f)
+                image[i] = ((p shr 16) and 0xFF) / 255f
+                image[i + 1] = ((p shr 8) and 0xFF) / 255f
+                image[i + 2] = (p and 0xFF) / 255f
             } else {
-                image.putFloat(0f); image.putFloat(0f); image.putFloat(0f)
+                image[i] = 0f; image[i + 1] = 0f; image[i + 2] = 0f
             }
         }
-        image.rewind(); embeddings.rewind()
-        encoder.interpreter.run(image, embeddings)
+        embeddings = encoder.run(image)[0]
     }
 
     private fun bilinear(a: FloatArray, fx: Float, fy: Float): Float {

@@ -16,19 +16,16 @@ class LamaEngine(context: Context) : RepairEngine, AutoCloseable {
     private val model = TfliteModel(context, ASSET)
     override val name = "LaMa on ${model.backend}"
 
-    private val image = TfliteModel.floatBuffer(S * S * 3)
-    private val mask = TfliteModel.floatBuffer(S * S)
-    private val out = TfliteModel.floatBuffer(S * S * 3)
-    private val inImage = model.inputIndex("image", 0)
-    private val inMask = model.inputIndex("mask", 1)
+    private val image = FloatArray(S * S * 3)
+    private val holes = FloatArray(S * S)
 
     @Synchronized
     override fun repair(crop: Argb, mask: Mask): Argb {
         val scale = S.toFloat() / maxOf(crop.width, crop.height)
         val sw = minOf(S, Math.round(crop.width * scale).coerceAtLeast(1))
         val sh = minOf(S, Math.round(crop.height * scale).coerceAtLeast(1))
-        image.rewind(); this.mask.rewind()
         for (y in 0 until S) for (x in 0 until S) {
+            val i = y * S + x
             // Inside the scaled crop: sample it; outside: repeat the nearest edge (known pixels).
             val cx = minOf(x, sw - 1)
             val cy = minOf(y, sh - 1)
@@ -36,26 +33,17 @@ class LamaEngine(context: Context) : RepairEngine, AutoCloseable {
             val fy = ((cy + 0.5f) / scale - 0.5f).coerceIn(0f, crop.height - 1f)
             val hole = x < sw && y < sh && maskAt(mask, fx, fy)
             val p = Bilinear.sample(crop, fx, fy)
-            if (hole) {
-                image.putFloat(0f); image.putFloat(0f); image.putFloat(0f)
-            } else {
-                image.putFloat(((p shr 16) and 0xFF) / 255f)
-                image.putFloat(((p shr 8) and 0xFF) / 255f)
-                image.putFloat((p and 0xFF) / 255f)
-            }
-            this.mask.putFloat(if (hole) 1f else 0f)
+            image[i * 3] = if (hole) 0f else ((p shr 16) and 0xFF) / 255f
+            image[i * 3 + 1] = if (hole) 0f else ((p shr 8) and 0xFF) / 255f
+            image[i * 3 + 2] = if (hole) 0f else (p and 0xFF) / 255f
+            holes[i] = if (hole) 1f else 0f
         }
-        image.rewind(); this.mask.rewind(); out.rewind()
-        val inputs = arrayOfNulls<Any>(2)
-        inputs[inImage] = image
-        inputs[inMask] = this.mask
-        model.interpreter.runForMultipleInputsOutputs(inputs, mapOf(0 to out))
-        out.rewind()
+        val out = model.run(image, holes)[0]
         val painted = Argb(S, S)
         for (i in 0 until S * S) {
-            val r = (out.getFloat() * 255f + 0.5f).toInt().coerceIn(0, 255)
-            val g = (out.getFloat() * 255f + 0.5f).toInt().coerceIn(0, 255)
-            val b = (out.getFloat() * 255f + 0.5f).toInt().coerceIn(0, 255)
+            val r = (out[i * 3] * 255f + 0.5f).toInt().coerceIn(0, 255)
+            val g = (out[i * 3 + 1] * 255f + 0.5f).toInt().coerceIn(0, 255)
+            val b = (out[i * 3 + 2] * 255f + 0.5f).toInt().coerceIn(0, 255)
             painted.px[i] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
         }
         val result = crop.copy()
