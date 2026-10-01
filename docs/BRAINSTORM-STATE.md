@@ -3,7 +3,7 @@
 **TL;DR**
 1. Goal: a free Android app that removes objects from photos, better than Google Photos and Samsung Gallery.
 2. Decided: option **A**, all AI work runs on the phone (offline, private).
-3. Phones: Galaxy S23 to S26 Ultra plus Galaxy Tab A11+ 5G, full power. Saves a copy in a "NanoGone" folder. Extras: find distractions, shadow catcher, text and logo eraser, plus an easy draw-around lasso with a smart magnet. Waiting on **Question 5, engine approach**.
+3. Phones: Galaxy S23 to S26 Ultra plus Galaxy Tab A11+ 5G, full power. Saves a copy in a "NanoGone" folder. Extras: find distractions, shadow catcher, text and logo eraser, plus an easy draw-around lasso with a smart magnet. Engine: **both brains** (fast + deep). Now presenting the design in sections.
 4. Next: more questions one at a time, then 2-3 engine approaches, then the design in sections.
 5. Then: write the spec, self-review it, Admin reviews it, then the `writing-plans` skill.
 6. Started 2026-10-01 on Admin's PC, moved to a Claude Code cloud session the same day.
@@ -45,14 +45,14 @@
 | 2 | Which phone runs the app? | **Galaxy S23 Ultra, S24 Ultra, S25 Ultra, S26 Ultra and Galaxy Tab A11+ 5G.** Use ALL the power the phone has (AI chip, graphics chip, all cores) for the best result. (2026-10-01) |
 | 3 | Save as a copy, or replace the original? | **Save a copy.** The original stays untouched. The new photo goes into its own **"NanoGone"** folder (shows as a NanoGone album in Gallery). (2026-10-01) |
 | 4 | Must-have extra features for version 1? | **Find distractions, Shadow catcher, Text and logo eraser** (Enhance left for later). Admin also wrote, word for word: "user-friendly, easy to draw a line around the object, enhanced and automatic magnet so it automatically identify and wrap around the object. the background of the removed object must match the surroundings." (2026-10-01) |
-| 5 | Which engine approach (A fast, B deep, C both)? | *waiting* |
+| 5 | Which engine approach (A fast, B deep, C both)? | **C, both brains.** Fast brain for live preview and most fixes; deep brain for big objects plus their shadows and reflections. Build the fast one first. (2026-10-01) |
 
 ## Brainstorm checklist (the `brainstorming` skill)
 
 - [x] 1. Explore project context (new, empty project)
 - [ ] 2. Visual companion: offer it only when a question is truly visual
 - [x] 3. Clarifying questions, one at a time (phones, save-as-copy, version 1 extras answered)
-- [ ] 4. Propose 2-3 engine approaches (which on-phone models for selecting and for repairing) with a recommendation
+- [x] 4. Propose 2-3 engine approaches (Admin chose C, both brains)
 - [ ] 5. Present the design in sections, Admin approves each
 - [ ] 6. Write the spec to `docs/superpowers/specs/2026-10-01-nanogone-design.md` and commit
 - [ ] 7. Spec self-review

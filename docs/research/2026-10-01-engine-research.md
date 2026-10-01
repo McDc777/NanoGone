@@ -73,6 +73,19 @@ Design ideas:
 - **B. One deep engine:** a one-step diffusion remover for every job. Best on big objects and shadows, but each fix takes seconds, the model is several GB, and the Tab may not cope.
 - **C. Both (likely recommendation):** fast engine for live previews and small or medium jobs; deep engine for big objects and shadows, on the Ultras (and on the Tab if it fits). All the shared tricks above in both.
 
+## 7. More findings (after Admin chose "both brains")
+
+Deep brain candidates (one step, removes shadows and reflections, SDXL size):
+- **OSOR-SDXL** (ECCV 2026): built on `diffusers/stable-diffusion-xl-1.0-inpainting-0.1`. Code on GitHub (Zhouqm-Git/osor), weights on Hugging Face (QinmingZhou/OSOR, mirror eerie-road/osor-sdxl). Has an "alpha head" that copes with rough masks.
+- **TurboClear** (2026): one SDXL UNet pass. Code Apache 2.0, weights on Hugging Face (JGuo666/TurboClear); needs the ObjectClear base model too (check its licence). Peak about 8 GB on a server GPU before any phone tuning.
+- **FlashClear** (2026): few-step version of ObjectClear (SDXL + LoRA). Code status unclear.
+- Plan: a bake-off on our test photos picks the winner. Memory need on the phone after tuning: roughly 3 GB, so the 12 and 16 GB Ultras are the main target. The Tab A11+ gets it only if tests show it fits.
+
+Helpers for the version 1 extras:
+- **Find distractions:** RF-DETR-Seg Nano to Large (Apache 2.0, Jan 2026), 33.6M to 36.2M params, instance masks for people and objects. Wires: Adobe "Automatic High Resolution Wire Segmentation and Removal" (CVPR 2023, WireSegHR dataset, code adobe-research/auto-wire-removal; check licence).
+- **Shadow catcher:** instance shadow detection pairs each object with its shadow. FastInstShadow (2025, light FIS-D1 variant, fastest and most accurate on SOAP) or SSISv2 (TPAMI 2023). The deep brain also removes shadows by itself.
+- **Text and logo eraser:** an offline text finder (PaddleOCR detection, Apache 2.0, or Google ML Kit bundled text recognition, works offline). Logos: tap with the magnet.
+
 ## Sources (web search, 2026-10-01)
 
 - LiteRT Qualcomm NPU: https://developers.google.com/edge/litert/next/qualcomm
@@ -91,4 +104,9 @@ Design ideas:
 - TurboClear: https://arxiv.org/abs/2608.01288 , https://huggingface.co/JGuo666/TurboClear
 - OSOR: https://arxiv.org/html/2606.28094
 - FlashClear: https://arxiv.org/html/2605.09003
+- OSOR: https://arxiv.org/abs/2606.28094 , https://huggingface.co/eerie-road/osor-sdxl
+- TurboClear code: https://github.com/GuoCalix/TurboClear
+- RF-DETR: https://github.com/roboflow/rf-detr , https://blog.roboflow.com/rf-detr-segmentation/
+- Wire removal: https://arxiv.org/abs/2304.00221
+- FastInstShadow: https://www.researchgate.net/publication/389748319_FastInstShadow_A_Simple_Query-Based_Model_for_Instance_Shadow_Detection
 - Magic Eraser small-object complaints: https://www.androidpolice.com/users-claim-magic-eraser-has-gotten-worse/

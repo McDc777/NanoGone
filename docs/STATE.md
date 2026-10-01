@@ -34,3 +34,9 @@ Next step: once Admin answers Question 2 and the sites are allowed, rerun the to
 - Version 1 extras: Find distractions, Shadow catcher, Text and logo eraser. Not Enhance (later).
 - Admin also asked for an easy "draw a line around it" lasso with an automatic magnet that wraps the object, and fills that match the surroundings.
 - Next: Question 5, engine approach (A fast, B deep, C both; recommending C).
+
+## 2026-10-01, brainstorm Question 5 answered
+
+- Engine: both brains. Fast brain (LaMa class) for live preview and most fixes; deep brain (one-step SDXL-class remover, OSOR or TurboClear by bake-off) for big objects, shadows and reflections. Fast one gets built first.
+- Research file extended with deep brain candidates and helper models.
+- Next: present the design to Admin in 6 parts (journey, selecting, repairing, saving, look, safety nets and testing).
