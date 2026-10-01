@@ -65,6 +65,8 @@ data class EditorUi(
     /** Shadow catcher: also remove the shadow attached to what you picked. */
     val shadowCatcher: Boolean = true,
     val lastShadowCaught: Boolean = false,
+    /** True right after a removal, until the next action. */
+    val justRemoved: Boolean = false,
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -240,13 +242,14 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains, canUpscale = it.canUpscale) }
     }
 
-    fun setTool(t: Tool) = _ui.update { it.copy(tool = t) }
+    fun setTool(t: Tool) = _ui.update { it.copy(tool = t, justRemoved = false) }
 
     fun toggleShadowCatcher() = _ui.update { it.copy(shadowCatcher = !it.shadowCatcher) }
 
     fun addShape(shape: Shape) {
         val d = doc ?: return
         clearEnhance()
+        _ui.update { it.copy(justRemoved = false) }
         d.addShape(shape)
         publishSelection()
     }
@@ -320,7 +323,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     display.copy(Bitmap.Config.ARGB_8888, true).also { drawPatch(it, patch, photo) }.also { clock.lap("screen copy") }
                 }
                 _ui.update {
-                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1, lastShadowCaught = shadowCaught)
+                    it.copy(display = shown, version = it.version + 1, busy = null, removals = it.removals + 1, lastShadowCaught = shadowCaught, justRemoved = true)
                 }
                 publishSelection()
             } catch (e: OutOfMemoryError) {
