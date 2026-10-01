@@ -15,3 +15,9 @@ Sites to allow (Network access in the environment settings):
 - `huggingface.co`, `cdn-lfs.huggingface.co`, `cas-bridge.xethub.hf.co` (Hugging Face file downloads use these)
 
 Next step: once Admin answers Question 2 and the sites are allowed, rerun the tool check (install SDK, build a tiny APK, download one model file), then continue the brainstorm.
+
+## 2026-10-01, brainstorm Question 2 answered
+
+- Phones: Galaxy S23, S24, S25, S26 Ultra and Galaxy Tab A11+ 5G. Admin wants the app to use all the phone's power.
+- Sites `dl.google.com` and `huggingface.co` still blocked at this time.
+- Next: Question 3 (save as a copy or replace the original).

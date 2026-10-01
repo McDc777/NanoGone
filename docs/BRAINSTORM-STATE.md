@@ -3,7 +3,7 @@
 **TL;DR**
 1. Goal: a free Android app that removes objects from photos, better than Google Photos and Samsung Gallery.
 2. Decided: option **A**, all AI work runs on the phone (offline, private).
-3. Waiting on Admin: **Question 2, which phone** (model name from Settings > About phone).
+3. Phones: Galaxy S23 to S26 Ultra plus Galaxy Tab A11+ 5G, full power. Waiting on **Question 3, copy or replace**.
 4. Next: more questions one at a time, then 2-3 engine approaches, then the design in sections.
 5. Then: write the spec, self-review it, Admin reviews it, then the `writing-plans` skill.
 6. Started 2026-10-01 on Admin's PC, moved to a Claude Code cloud session the same day.
@@ -42,16 +42,23 @@
 | # | Question | Admin's answer |
 |---|---|---|
 | 1 | Where does the heavy AI work run? A phone only / B phone + PC / C phone + cloud | **A, phone only** (2026-10-01) |
-| 2 | Which phone runs the app? | *waiting* |
+| 2 | Which phone runs the app? | **Galaxy S23 Ultra, S24 Ultra, S25 Ultra, S26 Ultra and Galaxy Tab A11+ 5G.** Use ALL the power the phone has (AI chip, graphics chip, all cores) for the best result. (2026-10-01) |
+| 3 | Save as a copy, or replace the original? | *waiting* |
 
 ## Brainstorm checklist (the `brainstorming` skill)
 
 - [x] 1. Explore project context (new, empty project)
 - [ ] 2. Visual companion: offer it only when a question is truly visual
-- [ ] 3. Clarifying questions, one at a time (phone model is next; later: save as copy vs replace, must-have features for version 1)
+- [ ] 3. Clarifying questions, one at a time (phone answered; next: save as copy vs replace, must-have features for version 1)
 - [ ] 4. Propose 2-3 engine approaches (which on-phone models for selecting and for repairing) with a recommendation
 - [ ] 5. Present the design in sections, Admin approves each
 - [ ] 6. Write the spec to `docs/superpowers/specs/2026-10-01-nanogone-design.md` and commit
 - [ ] 7. Spec self-review
 - [ ] 8. Admin reviews the written spec
 - [ ] 9. `writing-plans`
+
+## Engine notes from the phone answer (for the design)
+
+- S23 Ultra: Snapdragon 8 Gen 2. S24 Ultra: 8 Gen 3. S25 Ultra: 8 Elite. S26 Ultra: newest Snapdragon. All have a strong AI chip (NPU).
+- Tab A11+ 5G: a MediaTek mid-range chip. It is the weakest device, so it sets the floor; it must still work, maybe a bit slower.
+- "Full power" means: run on the AI chip first, then the graphics chip, then the main chip; no speed caps; keep the screen awake while working; use the biggest model that fits in memory.
