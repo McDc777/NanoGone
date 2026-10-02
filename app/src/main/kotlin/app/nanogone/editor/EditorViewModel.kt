@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.nanogone.ai.BrainPack
+import app.nanogone.ai.DeepEngine
 import app.nanogone.ai.DistractionFinder
 import app.nanogone.ai.EnhanceOptions
 import app.nanogone.ai.Enhancer
@@ -74,6 +76,12 @@ data class EditorUi(
     val justRemoved: Boolean = false,
     /** How many things the last Find added (0 hides the hint). */
     val foundCount: Int = 0,
+    /** Deep brain pack, in plain words for the welcome screen; null hides it (phone too small). */
+    val deepStatus: String? = null,
+    /** True when the "add the deep brain" button should show. */
+    val deepCanAdd: Boolean = false,
+    /** The deep brain is improving the last removal right now. */
+    val deepWorking: Boolean = false,
 )
 
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
@@ -87,7 +95,11 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     @Volatile private var enhancer: Enhancer? = null
     private var enhanced: Argb? = null
     @Volatile private var shadowCaught = false
+    @Volatile private var caughtForDeep = false
+    @Volatile private var deepJob: Triple<Argb, app.nanogone.imaging.mask.Mask, Int>? = null
     private val engine: RepairEngine get() = lama ?: fallback
+    private val pack = BrainPack(app)
+    @Volatile private var deep: DeepEngine? = null
 
     private fun describeBrains(): String = buildString {
         append(lama?.name ?: "smooth fill (no AI brain)")
@@ -299,6 +311,82 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                 enhancer?.takeIf { it.canUpscale }?.let { e -> l.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
             }
             _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true, canFixFaces = enhancer?.canFixFaces == true) }
+            deepSelfTest(c)
+            wakeDeep()
+        }
+    }
+
+    /** A test pack (pushed by the emulator test) checks the deep brain's wiring against the PC's answer. */
+    private fun deepSelfTest(c: Application) {
+        val dir = java.io.File(c.getExternalFilesDir(null), "brains-selftest")
+        val m = BrainPack(c, dir).manifest() ?: return
+        runCatching { DeepEngine(c, dir, m, allowCpu = true).selfTest() }
+            .onSuccess { android.util.Log.i("NanoGone", "deep selftest: max diff $it") }
+            .onFailure { android.util.Log.w("NanoGone", "deep selftest: failed", it) }
+    }
+
+    /** Load the deep brain if its pack is here and the phone has room for it; show its state. */
+    private fun wakeDeep() {
+        if (!pack.deviceCanRun()) {
+            _ui.update { it.copy(deepStatus = null, deepCanAdd = false) }
+            return
+        }
+        when (val s = pack.state()) {
+            is BrainPack.State.Ready -> {
+                deep = DeepEngine(getApplication(), pack.dir, s.manifest).also { d ->
+                    enhancer?.takeIf { it.canUpscale }?.let { e -> d.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
+                }
+                _ui.update { it.copy(deepStatus = "Deep brain ready: big removals get a second, deeper pass, shadows and reflections too.", deepCanAdd = false) }
+            }
+            else -> _ui.update { it.copy(deepStatus = "Deep brain not added yet. It makes big removals look real, shadows and reflections included.", deepCanAdd = true) }
+        }
+    }
+
+    /** Fetch the deep brain pack (Wi-Fi only, about 5 GB, once). */
+    fun addDeepBrain() {
+        if (!_ui.value.deepCanAdd) return
+        _ui.update { it.copy(deepCanAdd = false, deepStatus = "Getting the deep brain ready to download") }
+        viewModelScope.launch(Dispatchers.IO) {
+            val end = pack.download { s ->
+                val text = when (s) {
+                    is BrainPack.State.Downloading -> "Adding the deep brain: %.1f of %.1f GB (Wi-Fi only, you can keep using the app)".format(s.done / 1e9, s.total / 1e9)
+                    BrainPack.State.Checking -> "Checking the deep brain files"
+                    else -> null
+                }
+                if (text != null) _ui.update { it.copy(deepStatus = text) }
+            }
+            if (end is BrainPack.State.Failed) {
+                _ui.update { it.copy(deepStatus = end.why, deepCanAdd = true) }
+            } else {
+                wakeDeep()
+            }
+        }
+    }
+
+    /**
+     * After the fast brain: on big jobs (or with a shadow) the deep brain redoes the removal and
+     * quietly swaps its better result in, as long as nothing else was removed meanwhile.
+     */
+    private fun deepUpgrade(d: EditDocument, fast: Patch, crop: Argb, picked: app.nanogone.imaging.mask.Mask, r: Int, bigJob: Boolean) {
+        val engine = deep ?: return
+        if (!bigJob) return
+        _ui.update { it.copy(deepWorking = true) }
+        viewModelScope.launch {
+            val better = withContext(Dispatchers.Default) {
+                runCatching {
+                    val clock = StageClock("deep")
+                    val mask = MaskOps.grow(picked, r)
+                    val res = engine.repair(crop, mask)
+                    clock.lap("deep brain repair ${crop.width}x${crop.height}")
+                    val filled = Grain.match(res.filled, res.changed)
+                    val out = crop.copy()
+                    Paste.feathered(out, filled, 0, 0, res.changed, feather = maxOf(1.5f, r / 2f))
+                    clock.lap("deep paste")
+                    Patch(fast.rect, out.px, res.changed)
+                }.onFailure { android.util.Log.w("NanoGone", "deep brain skipped", it) }.getOrNull()
+            }
+            if (better != null && d === doc && d.upgradePatch(fast, better)) refresh()
+            _ui.update { it.copy(deepWorking = false) }
         }
     }
 
@@ -397,6 +485,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                         clock.lap("shadow catcher (caught=$caught)")
                     }
                     shadowCaught = caught
+                    caughtForDeep = caught
                     val mask = MaskOps.grow(picked, r)
                     clock.lap("mask and grow r=$r")
                     val filled = Grain.match(engine.repair(crop, mask), mask)
@@ -404,9 +493,14 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     val result = crop.copy()
                     Paste.feathered(result, filled, 0, 0, mask, feather = maxOf(1.5f, r / 2f))
                     clock.lap("paste")
+                    deepJob = Triple(crop, picked, r)
                     Patch(ctx, result.px, mask)
                 }
                 d.addPatch(patch)
+                deepJob?.also { deepJob = null }?.let { (crop, picked, r) ->
+                    val big = caughtForDeep || picked.count() >= 0.04f * crop.width * crop.height
+                    deepUpgrade(d, patch, crop, picked, r, big)
+                }
                 val display = _ui.value.display ?: return@launch
                 val shown = withContext(Dispatchers.Default) {
                     val clock = StageClock("remove")

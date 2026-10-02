@@ -16,7 +16,9 @@ import java.io.File
  * core. [backend] says which one is running. Inputs and outputs are float arrays in the
  * model's own order.
  */
-class TfliteModel(context: Context, asset: String) : Closeable {
+class TfliteModel private constructor(context: Context, asset: String?, file: File?, allowCpu: Boolean) : Closeable {
+
+    constructor(context: Context, asset: String) : this(context, asset, null, true)
 
     private val model: CompiledModel
     val backend: String
@@ -24,14 +26,23 @@ class TfliteModel(context: Context, asset: String) : Closeable {
     private val outputs: List<TensorBuffer>
 
     init {
+        val name = asset?.substringAfterLast('/') ?: file!!.name
+        // Files of the same name but different content (test packs) must not share compiled programs.
+        val cacheKey = if (file != null) "$name-${file.length()}" else name
         val cores = Runtime.getRuntime().availableProcessors()
+        fun create(o: CompiledModel.Options, env: Environment? = null): CompiledModel = when {
+            asset != null && env != null -> CompiledModel.create(context.assets, asset, o, env)
+            asset != null -> CompiledModel.create(context.assets, asset, o)
+            env != null -> CompiledModel.create(file!!.absolutePath, o, env)
+            else -> CompiledModel.create(file!!.absolutePath, o)
+        }
         val cache = File(context.cacheDir, "gpu-programs").apply { mkdirs() }
         fun options(vararg a: Accelerator) = CompiledModel.Options(*a).apply {
             cpuOptions = CompiledModel.CpuOptions(cores, null, null)
             gpuOptions = CompiledModel.GpuOptions(
                 precision = CompiledModel.GpuOptions.Precision.FP16_WITH_FP32_ACCUM,
                 serializationDir = cache.absolutePath,
-                modelCacheKey = asset.substringAfterLast('/'),
+                modelCacheKey = cacheKey,
                 serializeProgramCache = true,
             )
         }
@@ -40,25 +51,25 @@ class TfliteModel(context: Context, asset: String) : Closeable {
         val env = npuEnvironment
         if (env != null) {
             try {
-                made = CompiledModel.create(context.assets, asset, options(Accelerator.NPU, Accelerator.GPU, Accelerator.CPU), env)
+                made = create(if (allowCpu) options(Accelerator.NPU, Accelerator.GPU, Accelerator.CPU) else options(Accelerator.NPU, Accelerator.GPU), env)
                 used = "NPU"
             } catch (t: Throwable) {
-                Log.i("NanoGone", "$asset: AI chip not usable (${t.message})")
+                Log.i("NanoGone", "$name: AI chip not usable (${t.message})")
             }
         }
         if (made == null) {
             try {
-                made = CompiledModel.create(context.assets, asset, options(Accelerator.GPU, Accelerator.CPU))
+                made = create(if (allowCpu) options(Accelerator.GPU, Accelerator.CPU) else options(Accelerator.GPU))
                 used = "GPU"
             } catch (t: Throwable) {
-                Log.i("NanoGone", "$asset: graphics chip not usable (${t.message}), using all $cores main-chip cores")
+                Log.i("NanoGone", "$name: graphics chip not usable (${t.message})" + if (allowCpu) ", using all $cores main-chip cores" else "")
             }
         }
-        model = made ?: CompiledModel.create(context.assets, asset, options(Accelerator.CPU))
+        model = made ?: if (allowCpu) create(options(Accelerator.CPU)) else throw IllegalStateException("$name needs the AI chip or graphics chip")
         backend = used
         inputs = model.createInputBuffers()
         outputs = model.createOutputBuffers()
-        Log.i("NanoGone", "$asset loaded on $backend")
+        Log.i("NanoGone", "$name loaded on $backend")
     }
 
     /** Run once. Each input array goes to the matching model input; returns every output. */
@@ -100,6 +111,12 @@ class TfliteModel(context: Context, asset: String) : Closeable {
                 Log.i("NanoGone", "AI chip: not available (${t.message})")
             }
         }
+
+        /**
+         * A brain file outside the APK (the brain pack). With [allowCpu] false it refuses to run
+         * on the main chip, for brains too big for that.
+         */
+        fun fromFile(context: Context, file: File, allowCpu: Boolean = false): TfliteModel = TfliteModel(context, null, file, allowCpu)
 
         fun exists(context: Context, asset: String): Boolean =
             runCatching { context.assets.open(asset).close(); true }.getOrDefault(false)

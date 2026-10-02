@@ -29,10 +29,19 @@ import androidx.compose.ui.unit.dp
 import app.nanogone.ui.FrostedPane
 import app.nanogone.ui.LocalDawn
 import app.nanogone.ui.PillShape
+import app.nanogone.ui.SoftButton
 
 /** Welcome: the one huge type moment, and the way in. */
 @Composable
-fun HomeScreen(busy: String?, message: String?, brains: String, onPick: () -> Unit) {
+fun HomeScreen(
+    busy: String?,
+    message: String?,
+    brains: String,
+    deepStatus: String? = null,
+    deepCanAdd: Boolean = false,
+    onAddDeep: () -> Unit = {},
+    onPick: () -> Unit,
+) {
     val p = LocalDawn.current
     val rise = remember { Animatable(0f) }
     LaunchedEffect(Unit) { rise.animateTo(1f, tween(1400, easing = FastOutSlowInEasing)) }
@@ -75,6 +84,18 @@ fun HomeScreen(busy: String?, message: String?, brains: String, onPick: () -> Un
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (message != null) p.error else p.textSoft,
             )
+        }
+        if (deepStatus != null) {
+            FrostedPane(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(deepStatus, style = MaterialTheme.typography.bodyMedium, color = p.textSoft)
+                    if (deepCanAdd) {
+                        SoftButton(onClick = onAddDeep, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                            Text("Add the deep brain (about 5 GB, Wi-Fi)", style = MaterialTheme.typography.labelLarge, color = p.text)
+                        }
+                    }
+                }
+            }
         }
         Text(brains, style = MaterialTheme.typography.labelSmall, color = p.textSoft)
         Spacer(Modifier.height(16.dp))

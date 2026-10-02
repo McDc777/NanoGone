@@ -33,7 +33,7 @@ jobs:
         run: |
           set +e
           cd out
-          for a in $(find ~/.gradle/caches -name "litert-2.2.0.aar" -o -name "litert-api-2.2.0.aar" -o -name "tasks-vision-0.10.35.aar" | head -5); do unzip -qo "$a" classes.jar -d "x$(basename $a)"; done
+          for a in $(find ~ /opt -name "litert-2.2.0.aar" -o -name "litert-api-2.2.0.aar" -o -name "tasks-vision-0.10.35.aar" 2>/dev/null | head -5); do unzip -qo "$a" classes.jar -d "x$(basename $a)"; done; ls -d x* > found.txt 2>&1
           for j in x*/classes.jar; do
             javap -cp "$j" com.google.ai.edge.litert.CompiledModel 'com.google.ai.edge.litert.CompiledModel$Companion' com.google.ai.edge.litert.TensorBuffer com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker 'com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker$FaceLandmarkerOptions$Builder' com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarkerResult 2>/dev/null
           done > api.txt

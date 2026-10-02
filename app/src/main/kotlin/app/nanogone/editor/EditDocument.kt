@@ -120,6 +120,19 @@ class EditDocument(val width: Int, val height: Int) {
     /** A removal consumes the current selection. */
     fun addPatch(patch: Patch) = push(DocState(selection = emptyList(), patches = state.patches + patch))
 
+    /**
+     * The deep brain finished a better version of [old]: swap it in everywhere in the history, so
+     * undo still steps over the whole removal. Only while [old] is the newest removal.
+     */
+    fun upgradePatch(old: Patch, better: Patch): Boolean {
+        if (state.patches.lastOrNull() !== old) return false
+        for (i in history.indices) {
+            val s = history[i]
+            if (s.patches.any { it === old }) history[i] = s.copy(patches = s.patches.map { if (it === old) better else it })
+        }
+        return true
+    }
+
     fun undo() { if (canUndo) index-- }
 
     fun redo() { if (canRedo) index++ }

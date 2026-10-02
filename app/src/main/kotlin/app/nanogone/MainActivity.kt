@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 val ui by vm.ui.collectAsStateWithLifecycle()
                 DawnBackground {
                     if (ui.photo == null) {
-                        HomeScreen(ui.busy, ui.message, ui.brains) {
+                        HomeScreen(ui.busy, ui.message, ui.brains, ui.deepStatus, ui.deepCanAdd, onAddDeep = vm::addDeepBrain) {
                             picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         }
                     } else {
