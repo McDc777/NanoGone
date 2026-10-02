@@ -1,0 +1,5 @@
+(00:00) [START] Write Model to Bytes
+(00:01) [ DONE] Write Model to Bytes (+00:01)
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+ERROR: Subgraph reshaping is enabled by default, TFLITE_XNNPACK_DELEGATE_FLAG_ENABLE_SUBGRAPH_RESHAPING is deprecated and will be removed in the future.
+gfpgan max diff 9.059906005859375e-06
