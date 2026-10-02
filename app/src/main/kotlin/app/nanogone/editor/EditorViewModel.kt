@@ -319,7 +319,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     /** A test pack (pushed by the emulator test) checks the deep brain's wiring against the PC's answer. */
     private fun deepSelfTest(c: Application) {
         val dir = java.io.File(c.getExternalFilesDir(null), "brains-selftest")
-        if (!dir.exists()) return
+        if (!dir.exists()) { android.util.Log.i("NanoGone", "deep selftest: no test pack"); return }
         val m = BrainPack(c, dir).manifest()
         if (m == null) {
             android.util.Log.w("NanoGone", "deep selftest: no readable manifest in $dir (files: ${dir.list()?.joinToString()})")
