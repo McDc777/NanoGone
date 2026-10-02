@@ -29,6 +29,7 @@ class Enhancer(context: Context) : AutoCloseable {
 
     private val faces: FaceFixer? = runCatching { FaceFixer(context) }.getOrNull()
     val canFixFaces: Boolean get() = faces?.available == true
+    val faceBackend: String get() = faces?.backend ?: "none"
     val backend: String get() = esrgan?.backend ?: "none"
 
     fun enhance(img: Argb, preview: Argb, o: EnhanceOptions, progress: (Float) -> Unit): Argb {

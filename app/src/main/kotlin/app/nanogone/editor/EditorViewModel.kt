@@ -104,6 +104,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     private fun describeBrains(): String = buildString {
         append(lama?.name ?: "smooth fill (no AI brain)")
         tapper?.let { append(" · magic tap on ${it.backend}") }
+        enhancer?.takeIf { it.canFixFaces }?.let { append(" · face fix on ${it.faceBackend}") }
     }
 
     /** Enhance the whole photo (after removals). Save then writes the enhanced picture. */
