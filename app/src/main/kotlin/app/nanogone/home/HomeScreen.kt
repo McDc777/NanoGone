@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.nanogone.ui.FrostedPane
 import app.nanogone.ui.LocalDawn
@@ -52,15 +54,22 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Spacer(Modifier.weight(1f))
-        Text(
-            "NanoGone",
-            style = MaterialTheme.typography.displayLarge,
-            color = p.text,
-            modifier = Modifier.graphicsLayer {
-                alpha = rise.value
-                translationY = (1f - rise.value) * 40.dp.toPx()
-            },
-        )
+        // The one huge type moment, always on one line: as big as the width allows, at most the display size.
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val display = MaterialTheme.typography.displayLarge
+            val fit = with(LocalDensity.current) { (maxWidth.toPx() / 6.2f).toSp() }
+            Text(
+                "NanoGone",
+                style = display.copy(fontSize = if (fit < display.fontSize) fit else display.fontSize),
+                color = p.text,
+                maxLines = 1,
+                softWrap = false,
+                modifier = Modifier.graphicsLayer {
+                    alpha = rise.value
+                    translationY = (1f - rise.value) * 40.dp.toPx()
+                },
+            )
+        }
         Text(
             "Tap it, loop it, brush it. It lifts away like morning mist, and every other pixel stays exactly as it was.",
             style = MaterialTheme.typography.bodyLarge,
