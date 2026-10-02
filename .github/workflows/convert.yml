@@ -1,0 +1,78 @@
+name: convert-brains
+# Turns the big brains into phone files and attaches them to the "brains-v1" release.
+# Face fix (GFPGAN v1.4) ships inside the APK; the deep brain (OSOR-SDXL) is the brain pack.
+on:
+  push:
+    branches: [main]
+    paths: ["tools/convert/**", ".github/workflows/convert.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: convert
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Room to work (disk and swap)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android "$AGENT_TOOLSDIRECTORY" /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
+          sudo docker image prune -af >/dev/null 2>&1 || true
+          sudo swapoff -a || true
+          sudo mkdir -p /mnt/w && sudo chown $USER /mnt/w
+          sudo fallocate -l 40G /mnt/swapfile && sudo chmod 600 /mnt/swapfile && sudo mkswap /mnt/swapfile && sudo swapon /mnt/swapfile
+          free -g; df -h / /mnt
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Tools
+        run: |
+          pip install -q torch==2.13.0 torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q litert-torch==0.9.4 ai-edge-litert==2.2.0 diffusers==0.40.0 transformers==5.18.0 peft==0.21.2 accelerate==1.15.0 safetensors==0.8.0 huggingface_hub==1.33.0 scikit-image pillow
+          mkdir -p out
+      - name: Face fix (GFPGAN v1.4)
+        run: |
+          curl -sfL -o /mnt/w/GFPGANv1.4.pth https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth
+          python -u tools/convert/convert_gfpgan.py /mnt/w/GFPGANv1.4.pth /mnt/w/gfpgan.tflite 2>&1 | grep -v "^W1\|^I0" | tee out/gfpgan.log
+          rm /mnt/w/GFPGANv1.4.pth
+      - name: Fetch deep brain sources
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: "0"
+        run: |
+          python - <<'PY'
+          from huggingface_hub import snapshot_download, hf_hub_download
+          snapshot_download("diffusers/stable-diffusion-xl-1.0-inpainting-0.1", local_dir="/mnt/w/base", allow_patterns=[
+              "unet/config.json", "unet/diffusion_pytorch_model.fp16.safetensors",
+              "text_encoder/config.json", "text_encoder/model.fp16.safetensors",
+              "text_encoder_2/config.json", "text_encoder_2/model.fp16.safetensors",
+              "tokenizer/*", "tokenizer_2/*", "scheduler/*", "model_index.json"])
+          snapshot_download("madebyollin/sdxl-vae-fp16-fix", local_dir="/mnt/w/vae", allow_patterns=["config.json", "diffusion_pytorch_model.safetensors"])
+          hf_hub_download("QinmingZhou/OSOR", "osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth", local_dir="/mnt/w/osor")
+          PY
+          du -sh /mnt/w/* | tee out/sources.txt
+      - name: Deep brain (OSOR-SDXL, split into parts)
+        run: |
+          python -u tools/convert/convert_osor.py /mnt/w/base /mnt/w/vae /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/deep 2>&1 | grep -v "^W1\|^I0" | tee out/osor.log
+          test -f /mnt/w/deep/brains.json
+          cp /mnt/w/deep/*.png /mnt/w/deep/brains.json out/
+      - name: Attach to the brains-v1 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view brains-v1 >/dev/null 2>&1 || gh release create brains-v1 --title "NanoGone brains v1" --notes "AI brain files. The app fetches the deep brain pack from here once, over Wi-Fi." --prerelease
+          gh release upload brains-v1 /mnt/w/gfpgan.tflite /mnt/w/deep/*.tflite /mnt/w/deep/brains.json --clobber
+          gh release view brains-v1 --json assets --jq '.assets[] | "\(.name) \(.size)"' | tee out/release.txt
+      - name: Publish results
+        if: always()
+        run: |
+          echo "${GITHUB_SHA}" > out/commit.txt
+          echo "${{ job.status }}" > out/status.txt
+          cd out && git init -q -b r && git config user.email ci@nanogone && git config user.name nanogone-ci
+          git add -A && git commit -qm convert
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" r:ci-results-convert
