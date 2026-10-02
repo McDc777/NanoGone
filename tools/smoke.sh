@@ -30,6 +30,10 @@ wait_for() { # wait until text $1 appears (max $2 seconds)
   done; echo "never found: $1"; }
 adb install -r out/NanoGone-debug.apk
 python3 tools/make_test_photo.py /tmp/test_beach.jpg
+# Ultra HDR version (the bin glows), so the test also checks the HDR layer is repaired.
+if [ -x /tmp/ultrahdr_app ]; then
+  python3 tools/make_uhdr.py /tmp/ultrahdr_app /tmp/test_beach.jpg /tmp/test_beach_hdr.jpg --red-glows && mv /tmp/test_beach_hdr.jpg /tmp/test_beach.jpg
+fi
 adb push /tmp/test_beach.jpg /sdcard/Pictures/test_beach.jpg
 adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/test_beach.jpg
 sleep 4

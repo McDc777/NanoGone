@@ -62,6 +62,15 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
           pip install -q pillow
+      - name: Ultra HDR tool (makes the test photo HDR)
+        if: hashFiles('out/NanoGone-debug.apk') != ''
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y -q libjpeg-dev >/dev/null
+          git clone -q --depth 1 https://github.com/google/libultrahdr.git /tmp/uhdr
+          cmake -S /tmp/uhdr -B /tmp/uhdr/build -DUHDR_BUILD_TESTS=0 -DUHDR_BUILD_DEPS=0 >/dev/null
+          make -C /tmp/uhdr/build -j4 ultrahdr_app >/dev/null
+          cp /tmp/uhdr/build/ultrahdr_app /tmp/ultrahdr_app
       - name: Smoke test on an emulator
         id: smoke
         if: hashFiles('out/NanoGone-debug.apk') != ''

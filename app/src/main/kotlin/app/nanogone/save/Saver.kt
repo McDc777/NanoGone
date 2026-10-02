@@ -3,6 +3,7 @@ package app.nanogone.save
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -19,6 +20,7 @@ import app.nanogone.imaging.jpeg.JpegEncoder
 import app.nanogone.imaging.jpeg.JpegParser
 import app.nanogone.imaging.jpeg.JpegProbe
 import app.nanogone.imaging.jpeg.Segment
+import app.nanogone.imaging.jpeg.UltraHdr
 import app.nanogone.imaging.jpeg.UnsupportedJpegException
 import app.nanogone.imaging.mask.Mask
 import java.io.ByteArrayOutputStream
@@ -39,7 +41,7 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
     fun save(photo: Photo, patches: List<Patch>, format: SaveFormat, thumbnail: Bitmap): Result {
         val original = reader.bytes(photo)
         val (bytes, method) = when (format) {
-            SaveFormat.JPEG -> jpeg(photo, original, patches, thumbnail)
+            SaveFormat.JPEG -> jpeg(photo, original, patches, thumbnail).let { (b, m) -> withHdr(original, b, photo, patches, m) }
             SaveFormat.PNG -> png(photo, patches) to "lossless PNG"
         }
         val ext = if (format == SaveFormat.JPEG) "jpg" else "png"
@@ -49,10 +51,12 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
     }
 
     /** Save an enhanced picture (changed everywhere, maybe bigger): full encode, details copied. */
-    fun saveEnhanced(photo: Photo, img: Argb, format: SaveFormat): Result {
+    fun saveEnhanced(photo: Photo, img: Argb, format: SaveFormat, patches: List<Patch> = emptyList()): Result {
         val original = reader.bytes(photo)
+        var method = "enhanced, ${img.width} x ${img.height}"
         val bytes = when (format) {
-            SaveFormat.JPEG -> JpegEncoder.encode(img.width, img.height, img.px)
+            // The gain map is resolution-free, so it still fits a bigger picture.
+            SaveFormat.JPEG -> withHdr(original, JpegEncoder.encode(img.width, img.height, img.px), photo, patches, method).also { method = it.second }.first
             SaveFormat.PNG -> {
                 val bmp = Bitmap.createBitmap(img.px, img.width, img.height, Bitmap.Config.ARGB_8888)
                 val out = ByteArrayOutputStream()
@@ -64,7 +68,7 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
         val ext = if (format == SaveFormat.JPEG) "jpg" else "png"
         val name = "${photo.displayName}_NanoGone.$ext"
         val uri = write(name, if (format == SaveFormat.JPEG) "image/jpeg" else "image/png", bytes, photo, original)
-        return Result(uri, name, bytes.size.toLong(), "enhanced, ${img.width} x ${img.height}")
+        return Result(uri, name, bytes.size.toLong(), method)
     }
 
     private fun jpeg(photo: Photo, original: ByteArray, patches: List<Patch>, thumbnail: Bitmap): Pair<ByteArray, String> {
@@ -95,6 +99,28 @@ class Saver(private val resolver: ContentResolver, private val reader: PhotoRead
         }
         val full = composite(photo, IntRect(0, 0, photo.width, photo.height), patches)
         return JpegEncoder.encode(photo.width, photo.height, full.px) to "top-quality JPEG"
+    }
+
+    /**
+     * Ultra HDR photos keep their brightness layer (gain map): the same hole is filled in it, then
+     * it is joined to the new picture. Anything that fails leaves a plain (non-HDR) copy.
+     */
+    private fun withHdr(original: ByteArray, picture: ByteArray, photo: Photo, patches: List<Patch>, method: String): Pair<ByteArray, String> {
+        val gm = runCatching { UltraHdr.find(original) }.getOrNull() ?: return picture to method
+        return runCatching {
+            val bmp = requireNotNull(BitmapFactory.decodeByteArray(gm.jpeg, 0, gm.jpeg.size)) { "gain map unreadable" }
+            val px = Argb(bmp.width, bmp.height)
+            bmp.getPixels(px.px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+            bmp.recycle()
+            val hole = UltraHdr.hole(px.width, px.height, photo.width, photo.height, patches.map { it.rect to it.changed })
+            val fixed = UltraHdr.repair(gm.jpeg, px, hole)
+            val out = UltraHdr.assemble(picture, fixed, gm.isoVersion)
+            android.util.Log.i("NanoGone", "save: HDR gain map ${px.width}x${px.height} kept, ${hole.count()} gain pixels refilled")
+            out to "$method, HDR kept"
+        }.getOrElse {
+            android.util.Log.w("NanoGone", "save: HDR gain map could not be kept", it)
+            picture to method
+        }
     }
 
     private fun png(photo: Photo, patches: List<Patch>): ByteArray {

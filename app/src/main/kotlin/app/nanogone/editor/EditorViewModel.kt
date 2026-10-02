@@ -459,7 +459,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                 val e = enhanced
                 val result = withContext(Dispatchers.IO) {
                     val clock = StageClock("save")
-                    (if (e != null) saver.saveEnhanced(photo, e, format) else saver.save(photo, d.state.patches, format, shown))
+                    (if (e != null) saver.saveEnhanced(photo, e, format, d.state.patches) else saver.save(photo, d.state.patches, format, shown))
                         .also { clock.lap("${format.name} ${it.method}") }
                 }
                 _ui.update { it.copy(busy = null, saved = result) }
