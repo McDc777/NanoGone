@@ -245,15 +245,17 @@ for gi, g in enumerate(groups):
     path = export(part, part_args(part, state[cases[0][0]]), f"{OUT}/osor_unet_{gi}.tflite", fp16=True)
     n_par = sum(p.numel() for p in part.parameters())
     worst = 0.0
-    for name, _, _ in cases:
+    for ci, (name, _, _) in enumerate(cases):
         s = state[name]
         args = part_args(part, s)
         with torch.no_grad():
             want = part(*args)
         want = list(want) if isinstance(want, tuple) else [want]
-        got, order, det_in, det_out = run_tfl(path, args)
-        assert len(got) == len(want), (len(got), len(want))
-        worst = max(worst, max(float((g_ - w_).abs().max()) for g_, w_ in zip(got, want)))
+        if ci == 0:  # check each converted part on one photo; the full chain is checked on all below
+            got, order, det_in, det_out = run_tfl(path, args)
+            assert len(got) == len(want), (len(got), len(want))
+            worst = max(worst, max(float((g_ - w_).abs().max()) for g_, w_ in zip(got, want)))
+            del got
         r = part_done(part, s, want)
         if r is not None:
             final[name] = r

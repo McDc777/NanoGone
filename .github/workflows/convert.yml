@@ -58,6 +58,9 @@ jobs:
           du -sh /mnt/w/* | tee out/sources.txt
       - name: Deep brain (OSOR-SDXL, split into parts)
         run: |
+          # Progress report every 10 minutes (branch ci-results-convert-progress).
+          ( while true; do sleep 600; d=$(mktemp -d); cp out/*.log out/*.txt "$d"/ 2>/dev/null; free -g > "$d/memory.txt"; df -h /mnt >> "$d/memory.txt"
+            (cd "$d" && git init -q -b p && git config user.email ci@nanogone && git config user.name nanogone-ci && echo "${GITHUB_SHA}" > commit.txt && git add -A && git commit -qm progress && git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" p:ci-results-convert-progress) >/dev/null 2>&1; done ) &
           python -u tools/convert/convert_osor.py /mnt/w/base /mnt/w/vae /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/deep 2>&1 | grep -v "^W1\|^I0" | tee out/osor.log
           test -f /mnt/w/deep/brains.json
           cp /mnt/w/deep/*.png /mnt/w/deep/brains.json out/
