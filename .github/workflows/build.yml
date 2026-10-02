@@ -25,6 +25,8 @@ jobs:
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
       - name: Fetch AI brains into the app
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
           mkdir -p app/src/main/assets/models /tmp/m
@@ -40,7 +42,7 @@ jobs:
           curl -sfL https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/latest/efficientdet_lite2.tflite -o app/src/main/assets/models/objects.tflite
           curl -sfL https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task -o app/src/main/assets/models/face_landmarker.task
           # Face fix brain, converted by convert.yml (missing until that has run once: the app then hides Face fix).
-          curl -sfL "https://github.com/${GITHUB_REPOSITORY}/releases/download/brains-v1/gfpgan.tflite" -o app/src/main/assets/models/gfpgan.tflite || rm -f app/src/main/assets/models/gfpgan.tflite
+          gh release download brains-v1 -p gfpgan.tflite -D app/src/main/assets/models --clobber || echo "face fix brain not on brains-v1 yet"
           ls -la app/src/main/assets/models
       - name: Build and test
         run: |

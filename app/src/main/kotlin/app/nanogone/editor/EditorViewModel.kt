@@ -370,6 +370,23 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Import the deep brain pack from files the person picked (brains.json plus the brain files). */
+    fun importDeepBrain(uris: List<Uri>) {
+        if (uris.isEmpty()) return
+        _ui.update { it.copy(deepCanAdd = false, deepStatus = "Copying the deep brain") }
+        viewModelScope.launch(Dispatchers.IO) {
+            val end = pack.importFrom(getApplication<Application>().contentResolver, uris) { s ->
+                val text = when (s) {
+                    is BrainPack.State.Downloading -> "Copying the deep brain: %.1f of %.1f GB".format(s.done / 1e9, s.total / 1e9)
+                    BrainPack.State.Checking -> "Checking the deep brain files"
+                    else -> null
+                }
+                if (text != null) _ui.update { it.copy(deepStatus = text) }
+            }
+            if (end is BrainPack.State.Failed) _ui.update { it.copy(deepStatus = end.why, deepCanAdd = true) } else wakeDeep()
+        }
+    }
+
     /**
      * After the fast brain: on big jobs (or with a shadow) the deep brain redoes the removal and
      * quietly swaps its better result in, as long as nothing else was removed meanwhile.

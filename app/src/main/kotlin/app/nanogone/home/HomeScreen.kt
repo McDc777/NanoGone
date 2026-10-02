@@ -40,6 +40,7 @@ fun HomeScreen(
     deepStatus: String? = null,
     deepCanAdd: Boolean = false,
     onAddDeep: () -> Unit = {},
+    onImportDeep: () -> Unit = {},
     onPick: () -> Unit,
 ) {
     val p = LocalDawn.current
@@ -92,6 +93,9 @@ fun HomeScreen(
                     if (deepCanAdd) {
                         SoftButton(onClick = onAddDeep, modifier = Modifier.fillMaxWidth().height(48.dp)) {
                             Text("Add the deep brain (about 5 GB, Wi-Fi)", style = MaterialTheme.typography.labelLarge, color = p.text)
+                        }
+                        SoftButton(onClick = onImportDeep, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                            Text("Or import it from files on this phone", style = MaterialTheme.typography.labelLarge, color = p.text)
                         }
                     }
                 }

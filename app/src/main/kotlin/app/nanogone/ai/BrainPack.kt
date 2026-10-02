@@ -101,15 +101,58 @@ class BrainPack(private val context: Context, val dir: File = File(context.getEx
             onState(State.Downloading(done, m.totalBytes))
             if (ids.isNotEmpty()) delay(1000)
         }
+        return finish(m, manifestText, onState)
+    }
+
+    /**
+     * Import the pack from files already on the phone (brains.json plus every brain file, for
+     * example downloaded from the release page). Copies, then checks every fingerprint.
+     */
+    fun importFrom(resolver: android.content.ContentResolver, uris: List<Uri>, onState: (State) -> Unit): State {
+        dir.mkdirs()
+        File(dir, VERIFIED).delete()
+        val named = uris.associateBy { u ->
+            resolver.query(u, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+                if (c.moveToFirst()) c.getString(0) else null
+            } ?: u.lastPathSegment.orEmpty().substringAfterLast('/')
+        }
+        val mUri = named[MANIFEST] ?: return State.Failed("Pick brains.json too, together with the brain files.").also(onState)
+        val text = resolver.openInputStream(mUri)?.use { it.readBytes().decodeToString() }
+            ?: return State.Failed("Could not read brains.json.").also(onState)
+        val m = runCatching { parse(text) }.getOrNull() ?: return State.Failed("That brains.json is not a NanoGone brain list.").also(onState)
+        val missing = m.files.filter { it.first !in named && File(dir, it.first).length() != it.second }
+        if (missing.isNotEmpty()) return State.Failed("Missing ${missing.size} file(s), for example ${missing.first().first}. Pick them all.").also(onState)
+        var done = 0L
+        for ((name, size, _) in m.files) {
+            val u = named[name]
+            if (u == null) { done += size; continue }
+            val target = File(dir, name)
+            resolver.openInputStream(u)?.use { input ->
+                target.outputStream().use { out ->
+                    val buf = ByteArray(1 shl 20)
+                    while (true) {
+                        val n = input.read(buf)
+                        if (n < 0) break
+                        out.write(buf, 0, n)
+                        done += n
+                        if (done % (64L shl 20) < n) onState(State.Downloading(done, m.totalBytes))
+                    }
+                }
+            } ?: return State.Failed("Could not read $name.").also(onState)
+        }
+        return finish(m, text, onState)
+    }
+
+    private fun finish(m: Manifest, text: String, onState: (State) -> Unit): State {
         onState(State.Checking)
         for ((name, size, sha) in m.files) {
             val file = File(dir, name)
             if (file.length() != size || sha256(file) != sha) {
                 file.delete()
-                return State.Failed("A brain file arrived damaged ($name). Try again.").also(onState)
+                return State.Failed("A brain file is damaged or from another version ($name). Try again.").also(onState)
             }
         }
-        File(dir, MANIFEST).writeText(manifestText)
+        File(dir, MANIFEST).writeText(text)
         File(dir, VERIFIED).writeText("ok")
         Log.i("NanoGone", "brain pack ready: ${m.files.size} files, ${m.totalBytes / 1_000_000} MB")
         return State.Ready(m).also(onState)
