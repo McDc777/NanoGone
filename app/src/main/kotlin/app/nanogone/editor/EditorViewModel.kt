@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 enum class Tool { Tap, Brush, Loop, Spot, Eraser }
@@ -90,9 +91,6 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     private val saver = Saver(app.contentResolver, reader, app.cacheDir)
     private val prefs = app.getSharedPreferences("nanogone", Context.MODE_PRIVATE)
     private val fallback: RepairEngine = SmoothFillEngine()
-    @Volatile private var lama: RepairEngine? = null
-    @Volatile private var tapper: MagicTap? = null
-    @Volatile private var enhancer: Enhancer? = null
     private var enhanced: Argb? = null
     @Volatile private var shadowCaught = false
     @Volatile private var caughtForDeep = false
@@ -164,8 +162,6 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         refresh()
     }
 
-    @Volatile private var distractions: DistractionFinder? = null
-    @Volatile private var texts: TextFinder? = null
 
     /** Find distractions (people in the background, clutter) or text, and add them to the selection. */
     fun find(what: FindWhat) {
@@ -300,20 +296,26 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.Default) {
             val c = getApplication<Application>()
             c.getExternalFilesDir("brains-selftest") // made by the app, so a test pack copied in stays readable
-            TfliteModel.prepareNpu(c)
-            runCatching {
-                if (TfliteModel.exists(c, LamaEngine.ASSET)) lama = LamaEngine(c)
-            }.onFailure { android.util.Log.w("NanoGone", "fast brain failed to load", it) }
-            runCatching {
-                if (TfliteModel.exists(c, MagicTap.ENCODER)) tapper = MagicTap(c)
-            }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
-            runCatching { enhancer = Enhancer(c) }
-                .onFailure { android.util.Log.w("NanoGone", "enhance failed to load", it) }
-            (lama as? LamaEngine)?.let { l ->
-                enhancer?.takeIf { it.canUpscale }?.let { e -> l.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
+            // One set of brains for the whole app, however many windows are open.
+            brainLock.withLock {
+                if (!warmed) {
+                    TfliteModel.prepareNpu(c)
+                    runCatching {
+                        if (TfliteModel.exists(c, LamaEngine.ASSET)) lama = LamaEngine(c)
+                    }.onFailure { android.util.Log.w("NanoGone", "fast brain failed to load", it) }
+                    runCatching {
+                        if (TfliteModel.exists(c, MagicTap.ENCODER)) tapper = MagicTap(c)
+                    }.onFailure { android.util.Log.w("NanoGone", "magic tap failed to load", it) }
+                    runCatching { enhancer = Enhancer(c) }
+                        .onFailure { android.util.Log.w("NanoGone", "enhance failed to load", it) }
+                    (lama as? LamaEngine)?.let { l ->
+                        enhancer?.takeIf { it.canUpscale }?.let { e -> l.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
+                    }
+                    deepSelfTest(c)
+                    warmed = true
+                }
             }
             _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true, canFixFaces = enhancer?.canFixFaces == true) }
-            deepSelfTest(c)
             wakeDeep()
         }
     }
@@ -589,5 +591,16 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                 _ui.update { it.copy(busy = null, message = e.message ?: "Saving did not work. Try again.") }
             }
         }
+    }
+
+    private companion object {
+        // Brains live once per app process (each is hundreds of MB).
+        val brainLock = kotlinx.coroutines.sync.Mutex()
+        @Volatile var warmed = false
+        @Volatile var lama: RepairEngine? = null
+        @Volatile var tapper: MagicTap? = null
+        @Volatile var enhancer: Enhancer? = null
+        @Volatile var distractions: DistractionFinder? = null
+        @Volatile var texts: TextFinder? = null
     }
 }

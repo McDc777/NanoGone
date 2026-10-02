@@ -19,9 +19,9 @@ import kotlin.math.min
  */
 class FaceFixer(context: Context) : AutoCloseable {
 
-    private val gfpgan: TfliteModel? =
-        if (TfliteModel.exists(context, ASSET)) runCatching { TfliteModel(context, ASSET) }
-            .onFailure { Log.w("NanoGone", "face fix brain failed to load", it) }.getOrNull() else null
+    private val appContext = context.applicationContext
+    private val hasBrain = TfliteModel.exists(context, ASSET)
+    @Volatile private var lastBackend = "ready"
 
     private val landmarker: FaceLandmarker? = runCatching {
         FaceLandmarker.createFromOptions(
@@ -35,8 +35,8 @@ class FaceFixer(context: Context) : AutoCloseable {
         )
     }.onFailure { Log.w("NanoGone", "face finder failed to load", it) }.getOrNull()
 
-    val available: Boolean get() = gfpgan != null && landmarker != null
-    val backend: String get() = gfpgan?.backend ?: "none"
+    val available: Boolean get() = hasBrain && landmarker != null
+    val backend: String get() = if (available) lastBackend else "none"
 
     /** Five points per face, in image pixels: left eye, right eye, nose tip, left and right mouth corner. */
     fun findFaces(img: Argb): List<FloatArray> {
@@ -99,10 +99,18 @@ class FaceFixer(context: Context) : AutoCloseable {
 
     /** Restore every face. [strength] 0..1 blends between the photo and the restored faces. */
     fun fix(img: Argb, strength: Float, progress: (Float) -> Unit = {}): Argb {
-        val model = gfpgan ?: return img
+        if (!hasBrain) return img
         val faces = findFaces(img)
         Log.i("NanoGone", "face fix: ${faces.size} faces")
         if (faces.isEmpty()) return img
+        // The 600 MB face brain is loaded only while fixing, then let go.
+        return TfliteModel(appContext, ASSET).use { model ->
+            lastBackend = model.backend
+            restore(model, img, faces, strength, progress)
+        }
+    }
+
+    private fun restore(model: TfliteModel, img: Argb, faces: List<FloatArray>, strength: Float, progress: (Float) -> Unit): Argb {
         val out = img.copy()
         val input = FloatArray(S * S * 3)
         faces.forEachIndexed { n, five ->
@@ -199,7 +207,6 @@ class FaceFixer(context: Context) : AutoCloseable {
     }
 
     override fun close() {
-        gfpgan?.close()
         runCatching { landmarker?.close() }
     }
 
