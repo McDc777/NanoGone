@@ -30,8 +30,9 @@ wait_for() { # wait until text $1 appears (max $2 seconds)
   done; echo "never found: $1"; }
 adb install -r out/NanoGone-debug.apk
 # Tiny fake deep brain + the PC's answers: the app checks its deep-brain wiring at start.
-adb shell mkdir -p /sdcard/Android/data/app.nanogone/files/brains-selftest
-adb push tools/testdata/deep_selftest/. /sdcard/Android/data/app.nanogone/files/brains-selftest/ > $OUT/selftest-push.txt 2>&1
+# First start lets the app make its own folder (folders made by adb are not readable to it).
+adb shell am start -n app.nanogone/.MainActivity; sleep 15; adb shell am force-stop app.nanogone
+for f in tools/testdata/deep_selftest/*; do adb push "$f" /sdcard/Android/data/app.nanogone/files/brains-selftest/ >> $OUT/selftest-push.txt 2>&1; done
 adb shell ls -la /sdcard/Android/data/app.nanogone/files/brains-selftest/ >> $OUT/selftest-push.txt 2>&1
 python3 tools/make_test_photo.py /tmp/test_beach.jpg
 # Ultra HDR version (the bin glows), so the test also checks the HDR layer is repaired.
