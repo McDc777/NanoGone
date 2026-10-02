@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import app.nanogone.ui.FrostedPane
 import app.nanogone.ui.LocalDawn
@@ -57,10 +58,14 @@ fun HomeScreen(
         // The one huge type moment, always on one line: as big as the width allows, at most the display size.
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val display = MaterialTheme.typography.displayLarge
-            val fit = with(LocalDensity.current) { (maxWidth.toPx() / 6.2f).toSp() }
+            val measurer = rememberTextMeasurer()
+            val room = with(LocalDensity.current) { maxWidth.toPx() }
+            // Measure the real width at full size, then shrink just enough (2% spare) to fit.
+            val full = measurer.measure("NanoGone", display, maxLines = 1, softWrap = false).size.width
+            val k = if (full > room * 0.98f) room * 0.98f / full else 1f
             Text(
                 "NanoGone",
-                style = display.copy(fontSize = if (fit < display.fontSize) fit else display.fontSize),
+                style = display.copy(fontSize = display.fontSize * k, lineHeight = display.lineHeight * k),
                 color = p.text,
                 maxLines = 1,
                 softWrap = false,
