@@ -4,7 +4,7 @@ name: convert-brains
 on:
   push:
     branches: [main]
-    paths: ["tools/convert/**", ".github/workflows/convert.yml"]
+    paths: ["tools/convert/convert_osor.py", "tools/convert/osor_parts.py", ".github/workflows/convert.yml"]
   workflow_dispatch:
 permissions:
   contents: write
