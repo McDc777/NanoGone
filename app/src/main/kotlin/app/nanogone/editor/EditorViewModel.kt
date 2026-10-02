@@ -298,6 +298,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         // Wake the brains as soon as the app opens, so the first removal is quick.
         viewModelScope.launch(Dispatchers.Default) {
             val c = getApplication<Application>()
+            c.getExternalFilesDir("brains-selftest") // made by the app, so a test pack copied in stays readable
             TfliteModel.prepareNpu(c)
             runCatching {
                 if (TfliteModel.exists(c, LamaEngine.ASSET)) lama = LamaEngine(c)

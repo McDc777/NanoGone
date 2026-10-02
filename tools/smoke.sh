@@ -31,7 +31,9 @@ wait_for() { # wait until text $1 appears (max $2 seconds)
 adb install -r out/NanoGone-debug.apk
 # Tiny fake deep brain + the PC's answers: the app checks its deep-brain wiring at start.
 # First start lets the app make its own folder (folders made by adb are not readable to it).
-adb shell am start -n app.nanogone/.MainActivity; sleep 15; adb shell am force-stop app.nanogone
+adb shell am start -n app.nanogone/.MainActivity
+for i in $(seq 1 60); do adb shell ls -d /sdcard/Android/data/app.nanogone/files/brains-selftest >/dev/null 2>&1 && break; sleep 1; done
+adb shell am force-stop app.nanogone
 for f in tools/testdata/deep_selftest/*; do adb push "$f" /sdcard/Android/data/app.nanogone/files/brains-selftest/ >> $OUT/selftest-push.txt 2>&1; done
 adb shell ls -la /sdcard/Android/data/app.nanogone/files/brains-selftest/ >> $OUT/selftest-push.txt 2>&1
 python3 tools/make_test_photo.py /tmp/test_beach.jpg
