@@ -1,0 +1,47 @@
+name: compile-check
+# Fast feedback: compile the app (no models, no emulator) for pushes to the "wip" branch.
+on:
+  push:
+    branches: [wip]
+permissions:
+  contents: write
+concurrency:
+  group: compile
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Compile
+        run: |
+          mkdir -p out
+          set +e
+          ./gradlew --no-daemon -q :app:compileReleaseKotlin > out/compile.log 2>&1
+          echo $? > out/exit.txt
+          grep -E "^e: |error:" out/compile.log | head -60 > out/errors.txt
+      - name: API listing (LiteRT and MediaPipe face classes)
+        run: |
+          set +e
+          cd out
+          for a in $(find ~/.gradle/caches -name "litert-2.2.0.aar" -o -name "litert-api-2.2.0.aar" -o -name "tasks-vision-0.10.35.aar" | head -5); do unzip -qo "$a" classes.jar -d "x$(basename $a)"; done
+          for j in x*/classes.jar; do
+            javap -cp "$j" com.google.ai.edge.litert.CompiledModel 'com.google.ai.edge.litert.CompiledModel$Companion' com.google.ai.edge.litert.TensorBuffer com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker 'com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker$FaceLandmarkerOptions$Builder' com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarkerResult 2>/dev/null
+          done > api.txt
+          rm -rf x*
+      - name: Publish
+        if: always()
+        run: |
+          echo "${GITHUB_SHA}" > out/commit.txt
+          cd out && git init -q -b r && git config user.email ci@nanogone && git config user.name nanogone-ci
+          git add -A && git commit -qm compile
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" r:ci-results-wip

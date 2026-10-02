@@ -2,7 +2,7 @@ name: build
 on:
   push:
     branches: [main]
-    paths-ignore: ["docs/**", "*.md", ".github/workflows/probe.yml", ".github/workflows/convert.yml", "tools/convert/**"]
+    paths-ignore: ["docs/**", "*.md", ".github/workflows/probe.yml", ".github/workflows/convert.yml", ".github/workflows/compile.yml", "tools/convert/**"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -38,6 +38,9 @@ jobs:
           cp "$(find /tmp/m/x -name decoder.tflite)" app/src/main/assets/models/sam_decoder.tflite
           cp "$(find /tmp/m/x -name real_esrgan_x4plus.tflite)" app/src/main/assets/models/esrgan_x4.tflite
           curl -sfL https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/latest/efficientdet_lite2.tflite -o app/src/main/assets/models/objects.tflite
+          curl -sfL https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task -o app/src/main/assets/models/face_landmarker.task
+          # Face fix brain, converted by convert.yml (missing until that has run once: the app then hides Face fix).
+          curl -sfL "https://github.com/${GITHUB_REPOSITORY}/releases/download/brains-v1/gfpgan.tflite" -o app/src/main/assets/models/gfpgan.tflite || rm -f app/src/main/assets/models/gfpgan.tflite
           ls -la app/src/main/assets/models
       - name: Build and test
         run: |

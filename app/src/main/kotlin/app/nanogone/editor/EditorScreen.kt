@@ -478,6 +478,7 @@ private fun EnhanceSheet(ui: EditorUi, onApply: (EnhanceOptions) -> Unit, onUndo
     val p = LocalDawn.current
     var light by remember { mutableStateOf(true) }
     var sharper by remember { mutableStateOf(false) }
+    var faceFix by remember { mutableStateOf(false) }
     var bigger by remember { mutableStateOf(1) }
     var strength by remember { mutableFloatStateOf(0.8f) }
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -505,7 +506,11 @@ private fun EnhanceSheet(ui: EditorUi, onApply: (EnhanceOptions) -> Unit, onUndo
                     ) { Text(label, style = MaterialTheme.typography.labelLarge, color = if (bigger == value) p.accentDeep else p.text) }
                 }
             }
-            Text("Face fix: coming soon.", style = MaterialTheme.typography.bodyMedium, color = p.textSoft)
+            EnhanceSwitch(
+                "Face fix",
+                if (ui.canFixFaces) "Brings back sharp eyes, skin and hair on blurry faces." else "Waking up, try again in a moment.",
+                faceFix && ui.canFixFaces,
+            ) { faceFix = it }
             Text("Strength ${(strength * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, color = p.text)
             Slider(
                 value = strength, onValueChange = { strength = it }, valueRange = 0.2f..1f,
@@ -514,8 +519,8 @@ private fun EnhanceSheet(ui: EditorUi, onApply: (EnhanceOptions) -> Unit, onUndo
             Box(
                 Modifier.fillMaxWidth().height(54.dp).clip(PillShape)
                     .background(Brush.horizontalGradient(listOf(p.accent, p.gold)))
-                    .clickable(enabled = light || sharper || bigger > 1) {
-                        onApply(EnhanceOptions(lightAndColour = light, sharper = sharper, bigger = bigger, strength = strength))
+                    .clickable(enabled = light || sharper || faceFix || bigger > 1) {
+                        onApply(EnhanceOptions(lightAndColour = light, sharper = sharper, bigger = bigger, strength = strength, faceFix = faceFix && ui.canFixFaces))
                     },
                 contentAlignment = Alignment.Center,
             ) { Text("Enhance", style = MaterialTheme.typography.titleLarge, color = p.text) }

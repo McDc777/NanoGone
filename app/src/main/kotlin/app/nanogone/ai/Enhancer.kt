@@ -10,8 +10,10 @@ data class EnhanceOptions(
     val sharper: Boolean = false,
     /** 1 = same size, 2 or 4 = bigger. */
     val bigger: Int = 1,
-    /** 0..1, how strong Light and colour and Sharper are. */
+    /** 0..1, how strong Light and colour, Sharper and Face fix are. */
     val strength: Float = 0.8f,
+    /** Restore faces (GFPGAN). */
+    val faceFix: Boolean = false,
 )
 
 /**
@@ -24,15 +26,23 @@ class Enhancer(context: Context) : AutoCloseable {
     private val esrgan: TfliteModel? =
         if (TfliteModel.exists(context, ASSET)) runCatching { TfliteModel(context, ASSET) }.getOrNull() else null
     val canUpscale: Boolean get() = esrgan != null
+
+    private val faces: FaceFixer? = runCatching { FaceFixer(context) }.getOrNull()
+    val canFixFaces: Boolean get() = faces?.available == true
     val backend: String get() = esrgan?.backend ?: "none"
 
     fun enhance(img: Argb, preview: Argb, o: EnhanceOptions, progress: (Float) -> Unit): Argb {
         var cur = img
         if (o.lightAndColour) cur = AutoTone.analyse(preview).apply(cur, o.strength)
         progress(0.05f)
+        val faceShare = if (o.faceFix && canFixFaces) 0.3f else 0f
         if ((o.sharper || o.bigger > 1) && esrgan != null) {
-            val restored = upscale(cur, o.bigger, progress)
+            val restored = upscale(cur, o.bigger) { progress(0.05f + (0.95f - faceShare) * (it - 0.05f) / 0.95f) }
             cur = if (o.bigger == 1) blend(cur, restored, o.strength) else restored
+        }
+        if (faceShare > 0f) {
+            val start = 1f - faceShare
+            cur = faces!!.fix(cur, o.strength) { progress(start + faceShare * it) }
         }
         progress(1f)
         return cur
@@ -105,7 +115,10 @@ class Enhancer(context: Context) : AutoCloseable {
         return out
     }
 
-    override fun close() { esrgan?.close() }
+    override fun close() {
+        esrgan?.close()
+        faces?.close()
+    }
 
     companion object {
         const val ASSET = "models/esrgan_x4.tflite"

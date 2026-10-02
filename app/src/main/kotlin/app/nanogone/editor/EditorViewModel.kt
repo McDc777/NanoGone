@@ -66,6 +66,7 @@ data class EditorUi(
     val enhanced: Boolean = false,
     val enhancedSize: String? = null,
     val canUpscale: Boolean = false,
+    val canFixFaces: Boolean = false,
     /** Shadow catcher: also remove the shadow attached to what you picked. */
     val shadowCatcher: Boolean = true,
     val lastShadowCaught: Boolean = false,
@@ -297,7 +298,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
             (lama as? LamaEngine)?.let { l ->
                 enhancer?.takeIf { it.canUpscale }?.let { e -> l.detailer = { img, k -> e.detail(img, k) ?: error("no detail brain") } }
             }
-            _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true) }
+            _ui.update { it.copy(brains = describeBrains(), canUpscale = enhancer?.canUpscale == true, canFixFaces = enhancer?.canFixFaces == true) }
         }
     }
 
@@ -328,7 +329,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         doc = null
         base = null
         enhanced = null
-        _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains, canUpscale = it.canUpscale) }
+        _ui.update { EditorUi(lastFormat = it.lastFormat, brains = it.brains, canUpscale = it.canUpscale, canFixFaces = it.canFixFaces) }
     }
 
     fun setTool(t: Tool) = _ui.update { it.copy(tool = t, justRemoved = false) }
