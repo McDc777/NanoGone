@@ -21,12 +21,16 @@ jobs:
     steps:
       - name: Room to work (disk and swap)
         run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android "$AGENT_TOOLSDIRECTORY" /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
           sudo docker image prune -af >/dev/null 2>&1 || true
-          sudo swapoff -a || true
-          sudo mkdir -p /mnt/w && sudo chown $USER /mnt/w
-          sudo fallocate -l 40G /mnt/swapfile && sudo chmod 600 /mnt/swapfile && sudo mkswap /mnt/swapfile && sudo swapon /mnt/swapfile
-          free -g; df -h / /mnt
+          df -h / /mnt || true
+          # Work on whichever disk has more room; swap only from space beyond the 40 GB the work needs.
+          ROOT=$(df --output=avail -BG / | tail -1 | tr -dc 0-9); MNT=$(df --output=avail -BG /mnt 2>/dev/null | tail -1 | tr -dc 0-9)
+          if [ "$(df --output=source /mnt | tail -1)" != "$(df --output=source / | tail -1)" ] && [ "${MNT:-0}" -gt "$ROOT" ]; then BASE=/mnt; FREE=$MNT; else BASE=$HOME; FREE=$ROOT; fi
+          sudo mkdir -p $BASE/w && sudo chown $USER $BASE/w && sudo ln -sfn $BASE/w /mnt/w
+          SWAP=$(( FREE - 40 )); [ $SWAP -gt 24 ] && SWAP=24
+          if [ $SWAP -ge 4 ]; then sudo swapoff -a || true; sudo fallocate -l ${SWAP}G $BASE/w/swapfile && sudo chmod 600 $BASE/w/swapfile && sudo mkswap $BASE/w/swapfile >/dev/null && sudo swapon $BASE/w/swapfile; fi
+          echo "work disk $BASE, free ${FREE}G, swap ${SWAP}G"; free -g; df -h $BASE
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
