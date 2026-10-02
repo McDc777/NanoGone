@@ -44,7 +44,7 @@ android {
 
     androidResources {
         // Models are memory-mapped straight from the APK, so they must not be compressed.
-        noCompress += "tflite"
+        noCompress += listOf("tflite", "task")
     }
 
     packaging {
