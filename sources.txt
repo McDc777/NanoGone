@@ -1,0 +1,2 @@
+6.4G	/mnt/w/base
+2.9G	/mnt/w/osor
