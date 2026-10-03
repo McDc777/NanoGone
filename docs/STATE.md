@@ -111,3 +111,4 @@ Not built yet: deep brain (SDXL-class one-step remover), Face fix, Ultra HDR gai
 - Also fixed: the welcome title now fits on one line (measured), brains load once per app (the test phone had run out of memory), face fix brain loads only while fixing.
 - Open: the private project means phones cannot download the pack themselves; for now import the files by hand (docs/HOW-TO-INSTALL.md step 7). Not yet run on a real Galaxy (the test computer has no graphics chip for it).
 - Live progress page: https://claude.ai/artifact/4qMS18PCARXn67u9Q8YVKA
+- 2026-10-03: Admin made the GitHub project public. Checked: brains.json and the brain files download with no login, and a full part matches its fingerprint. The in-app "Add the deep brain" button now works on its own.
