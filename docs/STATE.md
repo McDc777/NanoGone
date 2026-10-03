@@ -102,3 +102,12 @@ Not built yet: deep brain (SDXL-class one-step remover), Face fix, Ultra HDR gai
 - **Face fix: built.** Enhance has a Face fix switch: MediaPipe finds every face (also on tiles, for small faces), each is lined up to GFPGAN v1.4's 512 template, restored and blended back softly by the strength slider. GFPGAN was converted to phone format here (one step rewritten into an equal, phone-friendly form; matches the original to 0.00001) and tested on a blurred face: clear eyes, skin and hair come back.
 - **Deep brain: built, converting.** OSOR (ECCV 2026, MIT code, SDXL-Inpainting base, OpenRAIL++) one-step remover that also wipes shadows and reflections. `tools/convert/convert_osor.py` merges its LoRA, bakes the fixed prompt and time step, and splits the UNet into phone-sized parts (fp16 weights, each under 2 GB), plus the VAE (fp16-fix). `convert.yml` runs it on GitHub and attaches the files to the `brains-v1` release. The app downloads this pack once on Wi-Fi (welcome screen button, phones with 8 GB or more), then after a big removal (4% of the crop or a shadow) the deep brain redoes it and swaps its result in; undo still covers the whole removal. A tiny fake pack checks the wiring on the emulator against the PC's answers.
 - **Fast compile check:** pushing to branch `wip` compiles the app on GitHub in a few minutes (`compile.yml`, results in `ci-results-wip`).
+
+## 2026-10-03, deep brain converted
+
+- The deep brain (OSOR on SDXL-Inpainting) is converted and attached to the `brains-v1` release: 8 UNet parts plus the picture encoder and decoder, 4.8 GB, `brains.json` with fingerprints.
+- Checked on GitHub: every part matches PyTorch (worst 0.009), and the whole phone chain matches PyTorch on two test photos (mean difference 0.00 of 255). It removes the shuttle and rebuilds the cup rim cleanly (`ci-results-convert-run`, check_*.png).
+- What made it work: GitHub machines for this private project have 7 GB of memory, so the job runs on one machine, step by step, each part loading only its own weights (`tools/convert/osor_stage.py`, `.github/workflows/convert.yml`).
+- Also fixed: the welcome title now fits on one line (measured), brains load once per app (the test phone had run out of memory), face fix brain loads only while fixing.
+- Open: the private project means phones cannot download the pack themselves; for now import the files by hand (docs/HOW-TO-INSTALL.md step 7). Not yet run on a real Galaxy (the test computer has no graphics chip for it).
+- Live progress page: https://claude.ai/artifact/4qMS18PCARXn67u9Q8YVKA

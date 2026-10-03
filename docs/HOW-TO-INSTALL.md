@@ -7,7 +7,7 @@
 4. Open NanoGone once with Wi-Fi on: on Galaxy Ultras it fetches the AI chip's helper library one time. After that it works fully offline.
 5. Open any photo in Samsung Gallery or Google Photos, tap **Share**, pick **NanoGone**. Or open NanoGone and tap **Choose a photo**.
 6. Copies are saved in the **NanoGone** album. Your original is never changed.
-7. On a Galaxy Ultra, tap **Add the deep brain** on the welcome screen once, on Wi-Fi (about 5 GB). After that, big removals get a second, deeper pass that also cleans shadows and reflections.
+7. Deep brain (Galaxy Ultras, about 4.8 GB, once): on the phone, open https://github.com/McDc777/NanoGone/releases/tag/brains-v1 (logged in), download `brains.json` and the 10 `osor_...tflite` files. In NanoGone tap **Or import it from files on this phone** and pick all 11 files. After that, big removals get a second, deeper pass that also cleans shadows and reflections. (The **Add the deep brain** button downloads by itself, but only once the brain files are on a public page; see "Open question" below.)
 
 ## Quick tour
 
@@ -44,3 +44,7 @@ Galaxy photos that glow brighter on HDR screens (Ultra HDR) keep that glow in th
 - Bigger is limited to results up to 64 MP for now.
 - The deep brain needs a phone with 8 GB of memory or more (all the Galaxy Ultras). On the Tab it is hidden for now.
 - Very large PNG saves (200 MP) may run out of memory.
+
+## Open question
+
+The project on GitHub is private, so the app cannot download the deep brain by itself. Either make the project public, or keep it private and import the files by hand as in step 7.
