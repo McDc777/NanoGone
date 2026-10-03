@@ -1,8 +1,7 @@
 name: convert-brains
-# Deep brain (OSOR-SDXL) to phone files, in pieces that each fit one GitHub machine:
-# merge (LoRA into the UNet) -> parts (one machine per part, in parallel) + vae -> finish (whole-chain check,
-# brains.json, attach to the brains-v1 release). Big in-between files travel through the temporary
-# "brains-work" release, because private projects have little build-file storage.
+# Deep brain (OSOR-SDXL) to phone files on one 7 GB GitHub machine, one step per process:
+# merge the LoRA, then each part with only its own weights, then the picture coder, then a whole-chain
+# check against PyTorch. A progress report goes to the branch ci-results-convert-run after every part.
 on:
   push:
     branches: [main]
@@ -18,21 +17,20 @@ defaults:
     shell: bash
 env:
   GH_TOKEN: ${{ github.token }}
-  PIP_TOOLS: litert-torch==0.9.4 ai-edge-litert==2.2.0 diffusers==0.40.0 transformers==5.18.0 safetensors==0.8.0 huggingface_hub==1.33.0 scikit-image pillow
 jobs:
-  merge:
+  convert:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
       - name: Room to work
-        run: bash tools/convert/room.sh
+        run: mkdir -p out && bash tools/convert/room.sh 25 2>&1 | tee out/room.txt
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
       - name: Tools
         run: |
           pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install -q $PIP_TOOLS
+          pip install -q litert-torch==0.9.4 ai-edge-litert==2.2.0 diffusers==0.40.0 transformers==5.18.0 safetensors==0.8.0 huggingface_hub==1.33.0 scikit-image pillow
       - name: Fetch sources
         run: |
           python - <<'PY'
@@ -42,117 +40,41 @@ jobs:
               "text_encoder/config.json", "text_encoder/model.fp16.safetensors",
               "text_encoder_2/config.json", "text_encoder_2/model.fp16.safetensors",
               "tokenizer/*", "tokenizer_2/*", "scheduler/*", "model_index.json"])
+          snapshot_download("madebyollin/sdxl-vae-fp16-fix", local_dir="/mnt/w/vae", allow_patterns=["config.json", "diffusion_pytorch_model.safetensors"])
           hf_hub_download("QinmingZhou/OSOR", "osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth", local_dir="/mnt/w/osor")
           PY
-          mkdir -p out; du -sh /mnt/w/base /mnt/w/osor | tee out/sources.txt
-      - name: Merge
+          du -sh /mnt/w/base /mnt/w/vae /mnt/w/osor | tee out/sources.txt
+      - name: Merge, then free the sources
         run: |
-          python -u tools/convert/osor_stage.py merge /mnt/w/base /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/work 2>&1 | grep -v "^W1\|^I0" | tee out/merge.log
-          test -f /mnt/w/work/count.json
-      - name: Hand over to the part machines
+          S=tools/convert/osor_stage.py
+          python -u $S merge /mnt/w/base /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/work 2>&1 | grep -v "^W1\|^I0" | tee out/convert.log
+          rm -rf /mnt/w/base /mnt/w/osor
+          python -u $S prep /mnt/w/work /mnt/w/vae 2>&1 | grep -v "^W1\|^I0" | tee -a out/convert.log
+          bash tools/convert/publish.sh run
+      - name: Parts, one process each
         run: |
-          gh release delete brains-work --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create brains-work --title "NanoGone brains (work in progress)" --notes "Temporary files while converting. Removed when done." --prerelease
-          cd /mnt/w/work && split -b 1900M -d unet.safetensors unet.safetensors.part- && rm unet.safetensors
-          gh release upload brains-work unet.safetensors.part-* unet_config.json constants.pt count.json --clobber
-      - name: Publish log
-        if: always()
-        run: bash tools/convert/publish.sh merge
-
-  vae:
-    needs: merge
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - name: Convert the picture encoder and decoder
+          S=tools/convert/osor_stage.py
+          N=$(python -c "import json;print(json.load(open('/mnt/w/work/count.json'))['count'])")
+          for i in $(seq 0 $((N - 1))); do
+            python -u $S part $i /mnt/w/work /mnt/w/parts 2>&1 | grep -v "^W1\|^I0" | tee -a out/convert.log
+            test -f /mnt/w/parts/osor_unet_$i.json
+            free -g | sed -n 2,3p | tee -a out/convert.log
+            bash tools/convert/publish.sh run
+          done
+      - name: Picture coder and whole-chain check
         run: |
-          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install -q $PIP_TOOLS
-          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
-          mkdir -p out
-          python -u tools/convert/osor_stage.py vae /tmp/vae /tmp/vaeout 2>&1 | grep -v "^W1\|^I0" | tee out/vae.log
-      - name: Attach to the work release
-        run: |
-          gh release upload brains-work /tmp/vaeout/osor_vae_enc.tflite /tmp/vaeout/osor_vae_dec.tflite --clobber
-      - name: Publish log
-        if: always()
-        run: bash tools/convert/publish.sh vae
-
-  parts:
-    needs: merge
-    runs-on: ubuntu-latest
-    timeout-minutes: 150
-    strategy:
-      fail-fast: false
-      max-parallel: 6
-      matrix:
-        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Is this part needed?
-        id: need
-        run: |
-          gh release download brains-work -p count.json -D /tmp/c --clobber
-          N=$(python3 -c "import json;print(json.load(open('/tmp/c/count.json'))['count'])")
-          echo "parts: $N"; if [ ${{ matrix.part }} -lt $N ]; then echo "go=1" >> $GITHUB_OUTPUT; fi
-          [ ${{ matrix.part }} -lt 10 ] && [ $N -gt 10 ] && { echo "more than 10 parts: raise the matrix"; exit 1; } || true
-      - name: Room to work
-        if: steps.need.outputs.go == '1'
-        run: bash tools/convert/room.sh
-      - uses: actions/setup-python@v5
-        if: steps.need.outputs.go == '1'
-        with: { python-version: "3.11" }
-      - name: Tools and files
-        if: steps.need.outputs.go == '1'
-        run: |
-          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install -q $PIP_TOOLS
-          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
-          mkdir -p /mnt/w/work && cd /mnt/w/work
-          gh release download brains-work -p 'unet.safetensors.part-*' -p unet_config.json -p constants.pt -p count.json --clobber
-          cat unet.safetensors.part-* > unet.safetensors && rm unet.safetensors.part-*
-      - name: Convert part ${{ matrix.part }}
-        if: steps.need.outputs.go == '1'
-        run: |
-          mkdir -p out
-          python -u tools/convert/osor_stage.py part ${{ matrix.part }} /mnt/w/work /tmp/vae /mnt/w/parts 2>&1 | grep -v "^W1\|^I0" | tee out/part.log
-          gh release upload brains-work /mnt/w/parts/osor_unet_${{ matrix.part }}.tflite /mnt/w/parts/osor_unet_${{ matrix.part }}.json --clobber
-      - name: Publish log
-        if: always()
-        run: bash tools/convert/publish.sh part-${{ matrix.part }}
-
-  finish:
-    needs: [parts, vae]
-    runs-on: ubuntu-latest
-    timeout-minutes: 150
-    steps:
-      - uses: actions/checkout@v4
-      - name: Room to work
-        run: bash tools/convert/room.sh
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - name: Tools and files
-        run: |
-          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install -q $PIP_TOOLS
-          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
-          mkdir -p /mnt/w/work /mnt/w/parts
-          (cd /mnt/w/work && gh release download brains-work -p 'unet.safetensors.part-*' -p unet_config.json -p constants.pt -p count.json --clobber && cat unet.safetensors.part-* > unet.safetensors && rm unet.safetensors.part-*)
-          (cd /mnt/w/parts && gh release download brains-work -p 'osor_*' --clobber)
-      - name: Check the whole chain and write brains.json
-        run: |
-          mkdir -p out
-          python -u tools/convert/osor_stage.py finish /mnt/w/work /tmp/vae /mnt/w/parts /mnt/w/final 2>&1 | grep -v "^W1\|^I0" | tee out/finish.log
+          S=tools/convert/osor_stage.py
+          python -u $S vae /mnt/w/vae /mnt/w/parts 2>&1 | grep -v "^W1\|^I0" | tee -a out/convert.log
+          python -u $S finish /mnt/w/work /mnt/w/vae /mnt/w/parts /mnt/w/final 2>&1 | grep -v "^W1\|^I0" | tee -a out/convert.log
           cp /mnt/w/final/*.png /mnt/w/final/brains.json out/
       - name: Attach to brains-v1
         run: |
           gh release view brains-v1 >/dev/null 2>&1 || gh release create brains-v1 --title "NanoGone brains v1" --notes "AI brain files for NanoGone." --prerelease
-          gh release upload brains-v1 /mnt/w/parts/osor_*.tflite /mnt/w/final/brains.json --clobber
+          for f in /mnt/w/parts/osor_*.tflite /mnt/w/final/brains.json; do
+            for t in 1 2 3; do gh release upload brains-v1 "$f" --clobber 2>&1 | tee -a out/upload.log && break; sleep 20; done
+          done
           gh release view brains-v1 --json assets --jq '.assets[] | "\(.name) \(.size)"' | tee out/release.txt
-          gh release delete brains-work --yes --cleanup-tag || true
-      - name: Publish log
+          gh release delete brains-work --yes --cleanup-tag >/dev/null 2>&1 || true
+      - name: Publish results
         if: always()
-        run: bash tools/convert/publish.sh finish
+        run: bash tools/convert/publish.sh run

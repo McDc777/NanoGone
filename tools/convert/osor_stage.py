@@ -1,10 +1,12 @@
-"""OSOR-SDXL-Inpainting to LiteRT for NanoGone's deep brain, in stages that each fit one 16 GB machine.
+"""OSOR-SDXL-Inpainting to LiteRT for NanoGone's deep brain, in steps that each fit a 7 GB machine.
 
-  osor_stage.py merge  BASE OSOR_WEIGHTS WORK       fixed prompt + LoRA merged into the UNet (fp16), one layer at a time
-  osor_stage.py part I WORK VAE OUT                 converts part I only (loads the merged UNet, checks the part)
-  osor_stage.py vae    VAE OUT                      the picture encoder and decoder
-  osor_stage.py finish WORK VAE PARTS OUT           whole converted chain vs PyTorch on test photos, brains.json
+  osor_stage.py merge  BASE OSOR_WEIGHTS WORK   fixed prompt + LoRA merged into the UNet (fp16), one layer at a time
+  osor_stage.py prep   WORK VAE                 test photos encoded: the first inputs of the chain
+  osor_stage.py part I WORK OUT                 part I only: loads just its weights, runs it, converts and checks it
+  osor_stage.py vae    VAE OUT                  the picture encoder and decoder
+  osor_stage.py finish WORK VAE PARTS OUT       converted chain vs PyTorch on the test photos, brains.json
 
+Run each step in its own process (memory is given back in between).
 BASE  diffusers/stable-diffusion-xl-1.0-inpainting-0.1     VAE  madebyollin/sdxl-vae-fp16-fix
 OSOR_FAKE=1 swaps in tiny random models of the same shape, to test this script in minutes.
 """
@@ -17,7 +19,7 @@ from osor_parts import Part, constants, nchw, nhwc, plan, split  # noqa: E402
 
 FAKE = os.environ.get("OSOR_FAKE") == "1"
 T = 400
-SIZE, LAT, MAX_PARAMS = (64, 8, 400_000) if FAKE else (512, 64, 420_000_000)
+SIZE, LAT, MAX_PARAMS = (64, 8, 400_000) if FAKE else (512, 64, 300_000_000)
 PROMPT = "Remove the instance of object"
 FAKE_CFG = dict(sample_size=8, in_channels=9, out_channels=4, down_block_types=["DownBlock2D", "CrossAttnDownBlock2D", "CrossAttnDownBlock2D"],
                 up_block_types=["CrossAttnUpBlock2D", "CrossAttnUpBlock2D", "UpBlock2D"], block_out_channels=[32, 64, 128], layers_per_block=2,
@@ -171,18 +173,40 @@ def fake_checkpoint(unet):
 
 
 # ---------------------------------------------------------------- shared helpers
-def load_merged(work):
+def meta_unet(work):
+    """The merged UNet's structure with no weights loaded (weights come per part)."""
     from diffusers import UNet2DConditionModel
-    from safetensors.torch import load_file
     cfg = json.load(open(os.path.join(work, "unet_config.json")))
     with torch.device("meta"):
         unet = UNet2DConditionModel.from_config(cfg)
         old = unet.conv_out
         unet.conv_out = torch.nn.Conv2d(old.in_channels, 5, old.kernel_size, old.stride, old.padding)
-    unet.load_state_dict(load_file(os.path.join(work, "unet.safetensors")), assign=True)
     unet.eval().requires_grad_(False)
     c = torch.load(os.path.join(work, "constants.pt"))
     return unet, c["emb"].float(), c["ehs"].float(), c["acp"]
+
+
+def load_part(work, i):
+    """Part i with only its own weights read from the merged file (fp16), plus how many parts there are."""
+    from safetensors import safe_open
+    unet, emb, ehs, acp = meta_unet(work)
+    parts = make_parts(unet, emb, ehs, acp)
+    p = parts[i]
+    names = {id(m): n for n, m in unet.named_modules()}
+    owned = [n for n in (names.get(id(m)) for m in p.modules()) if n]
+    # Keep only the outermost owned modules (children are loaded with them).
+    tops = [n for n in owned if not any(n != o and n.startswith(o + ".") for o in owned)]
+    with safe_open(os.path.join(work, "unet.safetensors"), framework="pt") as f:
+        keys = list(f.keys())
+        for n in tops:
+            sub = unet.get_submodule(n)
+            sd = {k[len(n) + 1:]: f.get_tensor(k) for k in keys if k.startswith(n + ".")}
+            sub.load_state_dict(sd, assign=True, strict=True)
+    left = [n for n, t in list(p.named_parameters()) + list(p.named_buffers()) if t.is_meta]
+    if left:
+        raise SystemExit(f"part {i}: weights not loaded for {left[:3]}")
+    p.to(torch.float16)
+    return p, len(parts)
 
 
 def load_vae(vae_dir):
@@ -289,43 +313,48 @@ def export(module, args, path, fp16):
     litert_torch.convert(module, args, quant_config=quant_recipes.full_fp16_recipe() if fp16 else None).export(path)
 
 
-# ---------------------------------------------------------------- part
-def part(i, work, vae_dir, out):
-    os.makedirs(out, exist_ok=True)
-    unet, emb, ehs, acp = load_merged(work)
-    parts = make_parts(unet, emb, ehs, acp)
-    log("merged UNet loaded; parts:", len(parts), "rss", rss())
-    json.dump({"count": len(parts)}, open(os.path.join(out, "count.json"), "w"))
-    if i >= len(parts):
-        log(f"part {i}: not needed ({len(parts)} parts)")
-        return
+# ---------------------------------------------------------------- prep and part
+def prep(work, vae_dir):
     vae = load_vae(vae_dir)
-    name, img, m = test_inputs()[0]
-    with torch.no_grad():
-        z_lq = VaeEnc(vae)(img)
-    del vae
-    s = {"first": (z_lq, mask_latent(m), noise()), "h": None, "stack": [], "z_lq": z_lq, "z": None}
-    for k in range(i):  # walk the PyTorch chain up to this part, for real inputs
-        part_done(parts[k], s, run_torch(parts[k], part_args(parts[k], s)))
-        log(f"  ran part {k} in PyTorch")
-    p = parts[i]
-    args = part_args(p, s)
-    want = run_torch(p, args)
-    want = list(want) if isinstance(want, tuple) else [want]
+    for name, img, m in test_inputs():
+        with torch.no_grad():
+            z_lq = VaeEnc(vae)(img)
+        s = {"first": (z_lq, mask_latent(m), noise()), "h": None, "stack": [], "z_lq": z_lq, "z": None, "final": None}
+        torch.save(s, os.path.join(work, f"state_{name}_0.pt"))
+    log("test photos encoded")
+
+
+def part(i, work, out):
+    os.makedirs(out, exist_ok=True)
+    p, count = load_part(work, i)
+    log(f"part {i} of {count} loaded ({sum(x.numel() for x in p.parameters()) / 1e6:.0f}M params), rss {rss()}")
+    want0, args0 = None, None
+    for name, _, _ in test_inputs():
+        s = torch.load(os.path.join(work, f"state_{name}_{i}.pt"))
+        args = part_args(p, s)
+        want = run_torch(p, args)
+        want = list(want) if isinstance(want, tuple) else [want]
+        if want0 is None:
+            want0, args0 = want, args
+        r = part_done(p, s, want)
+        if r is not None:
+            s["final"] = r
+        torch.save(s, os.path.join(work, f"state_{name}_{i + 1}.pt"))
+        os.remove(os.path.join(work, f"state_{name}_{i}.pt")) if i > 0 else None
     p.to(torch.float32)
     path = os.path.join(out, f"osor_unet_{i}.tflite")
-    export(p, args, path, fp16=True)
+    export(p, args0, path, fp16=True)
     p.to(torch.float16)
     gc.collect()
     log(f"part {i} converted: {os.path.getsize(path) / 1e9:.2f} GB, rss {rss()}")
-    got, info = run_tfl(path, args)
-    assert len(got) == len(want), (len(got), len(want))
-    worst = max(float((g - w).abs().max()) for g, w in zip(got, want))
+    got, info = run_tfl(path, args0)
+    assert len(got) == len(want0), (len(got), len(want0))
+    worst = max(float((g - w).abs().max()) for g, w in zip(got, want0))
     spec = {"file": f"osor_unet_{i}.tflite", "pops": p.pops, "pushes": p.pushes, "h_is_skip": p.h_is_skip,
             "first": p.first is not None, "last": p.last is not None, "params": sum(x.numel() for x in p.parameters()),
             "worst_diff": worst, **info}
     json.dump(spec, open(os.path.join(out, f"osor_unet_{i}.json"), "w"), indent=1)
-    log(f"part {i}: {spec['params'] / 1e6:.0f}M params, worst diff vs PyTorch {worst:.4f}")
+    log(f"part {i}: worst difference vs PyTorch {worst:.4f}")
 
 
 # ---------------------------------------------------------------- vae
@@ -342,23 +371,20 @@ def vae_stage(vae_dir, out):
 def finish(work, vae_dir, parts_dir, out):
     from PIL import Image
     os.makedirs(out, exist_ok=True)
-    unet, emb, ehs, acp = load_merged(work)
-    parts = make_parts(unet, emb, ehs, acp)
-    specs = [json.load(open(os.path.join(parts_dir, f"osor_unet_{i}.json"))) for i in range(len(parts))]
+    count = json.load(open(os.path.join(work, "count.json")))["count"]
+    specs = [json.load(open(os.path.join(parts_dir, f"osor_unet_{i}.json"))) for i in range(count)]
+    stubs = [type("P", (), {"first": 1 if sp["first"] else None, "last": 1 if sp["last"] else None,
+                            "pops": sp["pops"], "h_is_skip": sp["h_is_skip"]}) for sp in specs]
     vae = load_vae(vae_dir)
     worst_img = 0.0
     for name, img, m in test_inputs():
+        ref = torch.load(os.path.join(work, f"state_{name}_{count}.pt"))["final"]
         with torch.no_grad():
-            z_ref = VaeEnc(vae)(img)
-        s = {"first": (z_ref, mask_latent(m), noise()), "h": None, "stack": [], "z_lq": z_ref, "z": None}
-        for p in parts:
-            r = part_done(p, s, run_torch(p, part_args(p, s)))
-        with torch.no_grad():
-            ref_img = VaeDec(vae)(r[0])[0].numpy()
+            ref_img = VaeDec(vae)(ref[0])[0].numpy()
         z_lq = run_tfl(os.path.join(parts_dir, "osor_vae_enc.tflite"), (img,))[0][0]
         s = {"first": (z_lq, mask_latent(m), noise()), "h": None, "stack": [], "z_lq": z_lq, "z": None}
-        for p, spec in zip(parts, specs):
-            r = part_done(p, s, run_tfl(os.path.join(parts_dir, spec["file"]), part_args(p, s))[0])
+        for p, sp in zip(stubs, specs):
+            r = part_done(p, s, run_tfl(os.path.join(parts_dir, sp["file"]), part_args(p, s))[0])
         z_out, alpha = r
         tfl_img = run_tfl(os.path.join(parts_dir, "osor_vae_dec.tflite"), (z_out,))[0][0][0].numpy()
         src = img[0].numpy()
@@ -369,12 +395,13 @@ def finish(work, vae_dir, parts_dir, out):
         worst_img = max(worst_img, d)
         log(f"check {name}: phone files vs PyTorch mean difference {d:.2f} of 255")
     files = []
-    for f in ["osor_vae_enc.tflite"] + [s_["file"] for s_ in specs] + ["osor_vae_dec.tflite"]:
+    for f in ["osor_vae_enc.tflite"] + [sp["file"] for sp in specs] + ["osor_vae_dec.tflite"]:
         h = hashlib.sha256()
         with open(os.path.join(parts_dir, f), "rb") as fh:
             for chunk in iter(lambda: fh.read(1 << 24), b""):
                 h.update(chunk)
         files.append({"name": f, "size": os.path.getsize(os.path.join(parts_dir, f)), "sha256": h.hexdigest()})
+    acp = torch.load(os.path.join(work, "constants.pt"))["acp"]
     manifest = {"version": 1, "size": SIZE, "latent": LAT, "t": T, "alphas_cumprod": acp, "prompt": PROMPT,
                 "parts": specs, "files": files, "check_mean_diff": worst_img}
     json.dump(manifest, open(os.path.join(out, "brains.json"), "w"), indent=1)
@@ -387,8 +414,10 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "merge":
         merge(*sys.argv[2:5])
+    elif cmd == "prep":
+        prep(*sys.argv[2:4])
     elif cmd == "part":
-        part(int(sys.argv[2]), *sys.argv[3:6])
+        part(int(sys.argv[2]), *sys.argv[3:5])
     elif cmd == "vae":
         vae_stage(*sys.argv[2:4])
     elif cmd == "finish":

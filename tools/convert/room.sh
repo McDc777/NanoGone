@@ -6,6 +6,7 @@ ROOT=$(df --output=avail -BG / | tail -1 | tr -dc 0-9); MNT=$(df --output=avail 
 if [ "$(df --output=source /mnt | tail -1)" != "$(df --output=source / | tail -1)" ] && [ "${MNT:-0}" -gt "$ROOT" ]; then BASE=/mnt/big; FREE=$MNT; else BASE=$HOME/big; FREE=$ROOT; fi
 sudo mkdir -p $BASE && sudo chown $USER $BASE
 [ -e /mnt/w ] || sudo ln -s $BASE /mnt/w
-SWAP=$(( FREE - 40 )); [ $SWAP -gt 24 ] && SWAP=24
+RESERVE=${1:-40}
+SWAP=$(( FREE - RESERVE )); [ $SWAP -gt 24 ] && SWAP=24
 if [ $SWAP -ge 4 ]; then sudo swapoff -a || true; sudo fallocate -l ${SWAP}G $BASE/swapfile && sudo chmod 600 $BASE/swapfile && sudo mkswap $BASE/swapfile >/dev/null && sudo swapon $BASE/swapfile; fi
 echo "work disk $BASE, free ${FREE}G, swap ${SWAP}G"; free -g; df -h $BASE
