@@ -1,0 +1,5 @@
+original (4000, 3000) saved (4000, 3000) same size: True
+saved EXIF model: NanoGone Test Cam date: 2026:10:01 09:30:00
+pixels changed: 82042 (0.68% of photo) inside box [1871, 1296, 2128, 1664]
+redness left where the bin was (0 means gone, about 160 means still there): -62
+HDR: gain map kept (1000, 750); glow where the bin was: original 255, saved 17 (low means the glow went with the bin)

@@ -1,0 +1,2 @@
+total 2372
+-rwxrwx--- 1 u0_a195 media_rw 2424246 2026-10-03 07:26 test_beach_NanoGone.jpg

@@ -1,0 +1,39 @@
+tools/testdata/deep_selftest/brains.json: 1 file pushed, 0 skipped. 22.0 MB/s (9728 bytes in 0.000s)
+tools/testdata/deep_selftest/osor_unet_0.tflite: 1 file pushed, 0 skipped. 21.8 MB/s (755248 bytes in 0.033s)
+tools/testdata/deep_selftest/osor_unet_1.tflite: 1 file pushed, 0 skipped. 92.8 MB/s (731520 bytes in 0.008s)
+tools/testdata/deep_selftest/osor_unet_10.tflite: 1 file pushed, 0 skipped. 187.0 MB/s (749232 bytes in 0.004s)
+tools/testdata/deep_selftest/osor_unet_11.tflite: 1 file pushed, 0 skipped. 100.8 MB/s (956336 bytes in 0.009s)
+tools/testdata/deep_selftest/osor_unet_12.tflite: 1 file pushed, 0 skipped. 64.8 MB/s (90432 bytes in 0.001s)
+tools/testdata/deep_selftest/osor_unet_2.tflite: 1 file pushed, 0 skipped. 72.0 MB/s (2707648 bytes in 0.036s)
+tools/testdata/deep_selftest/osor_unet_3.tflite: 1 file pushed, 0 skipped. 84.1 MB/s (2836304 bytes in 0.032s)
+tools/testdata/deep_selftest/osor_unet_4.tflite: 1 file pushed, 0 skipped. 127.0 MB/s (3484528 bytes in 0.026s)
+tools/testdata/deep_selftest/osor_unet_5.tflite: 1 file pushed, 0 skipped. 177.7 MB/s (3200176 bytes in 0.017s)
+tools/testdata/deep_selftest/osor_unet_6.tflite: 1 file pushed, 0 skipped. 143.8 MB/s (3200176 bytes in 0.021s)
+tools/testdata/deep_selftest/osor_unet_7.tflite: 1 file pushed, 0 skipped. 178.8 MB/s (3036064 bytes in 0.016s)
+tools/testdata/deep_selftest/osor_unet_8.tflite: 1 file pushed, 0 skipped. 86.4 MB/s (297152 bytes in 0.003s)
+tools/testdata/deep_selftest/osor_unet_9.tflite: 1 file pushed, 0 skipped. 116.2 MB/s (831408 bytes in 0.007s)
+tools/testdata/deep_selftest/osor_vae_dec.tflite: 1 file pushed, 0 skipped. 120.3 MB/s (1103232 bytes in 0.009s)
+tools/testdata/deep_selftest/osor_vae_enc.tflite: 1 file pushed, 0 skipped. 105.5 MB/s (734144 bytes in 0.007s)
+tools/testdata/deep_selftest/selftest_in.bin: 1 file pushed, 0 skipped. 49.4 MB/s (66560 bytes in 0.001s)
+tools/testdata/deep_selftest/selftest_out.bin: 1 file pushed, 0 skipped. 44.0 MB/s (49408 bytes in 0.001s)
+total 24388
+drwxrws--- 2 u0_a209 ext_data_rw    4096 2026-10-03 07:18 .
+drwxrws--- 3 u0_a209 ext_data_rw    4096 2026-10-03 07:17 ..
+-rw-rw-rw- 1 shell   ext_data_rw    9728 2026-10-03 07:11 brains.json
+-rw-rw-rw- 1 shell   ext_data_rw  755248 2026-10-03 07:11 osor_unet_0.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  731520 2026-10-03 07:11 osor_unet_1.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  749232 2026-10-03 07:11 osor_unet_10.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  956336 2026-10-03 07:11 osor_unet_11.tflite
+-rw-rw-rw- 1 shell   ext_data_rw   90432 2026-10-03 07:11 osor_unet_12.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 2707648 2026-10-03 07:11 osor_unet_2.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 2836304 2026-10-03 07:11 osor_unet_3.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 3484528 2026-10-03 07:11 osor_unet_4.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 3200176 2026-10-03 07:11 osor_unet_5.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 3200176 2026-10-03 07:11 osor_unet_6.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 3036064 2026-10-03 07:11 osor_unet_7.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  297152 2026-10-03 07:11 osor_unet_8.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  831408 2026-10-03 07:11 osor_unet_9.tflite
+-rw-rw-rw- 1 shell   ext_data_rw 1103232 2026-10-03 07:11 osor_vae_dec.tflite
+-rw-rw-rw- 1 shell   ext_data_rw  734144 2026-10-03 07:11 osor_vae_enc.tflite
+-rw-rw-rw- 1 shell   ext_data_rw   66560 2026-10-03 07:11 selftest_in.bin
+-rw-rw-rw- 1 shell   ext_data_rw   49408 2026-10-03 07:11 selftest_out.bin

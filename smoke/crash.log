@@ -1,0 +1,26 @@
+--------- beginning of main
+10-03 07:18:41.694  4405  4405 I app.nanogone: Using CollectorTypeCMC GC.
+10-03 07:18:41.697  4405  4405 W app.nanogone: Unexpected CPU variant for x86: x86_64.
+10-03 07:18:41.697  4405  4405 W app.nanogone: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-03 07:18:41.700  4405  4405 E app.nanogone: Not starting debugger since process cannot load the jdwp agent.
+10-03 07:18:50.575  4405  4409 W app.nanogone: Suspending all threads took: 67.370ms
+10-03 07:18:50.698  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 6313KB AllocSpace bytes, 34(1580KB) LOS objects, 49% free, 5780KB/11MB, paused 67.845ms,739us total 1.144s
+10-03 07:18:54.978  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1900KB AllocSpace bytes, 2(40KB) LOS objects, 49% free, 23MB/47MB, paused 141us,6.604ms total 249.960ms
+10-03 07:18:56.873  4405  4409 W app.nanogone: Suspending all threads took: 5.889ms
+10-03 07:18:57.007  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 332KB AllocSpace bytes, 5(228KB) LOS objects, 49% free, 24MB/48MB, paused 6.377ms,564us total 167.635ms
+10-03 07:18:59.624  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 724KB AllocSpace bytes, 6(216KB) LOS objects, 49% free, 24MB/48MB, paused 310us,7.104ms total 506.544ms
+10-03 07:19:16.074  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2384KB AllocSpace bytes, 0(0B) LOS objects, 25% free, 70MB/94MB, paused 166us,4.106ms total 565.987ms
+10-03 07:19:16.781  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 176KB AllocSpace bytes, 0(0B) LOS objects, 17% free, 116MB/140MB, paused 185us,4.890ms total 166.401ms
+10-03 07:19:22.560  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 860KB AllocSpace bytes, 1(45MB) LOS objects, 25% free, 70MB/94MB, paused 75us,3.564ms total 508.077ms
+10-03 07:19:40.369  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1528KB AllocSpace bytes, 9(68MB) LOS objects, 48% free, 25MB/49MB, paused 117us,1.817ms total 1.198s
+10-03 07:19:56.588  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1996KB AllocSpace bytes, 8(3700KB) LOS objects, 31% free, 52MB/76MB, paused 359us,4.162ms total 1.379s
+10-03 07:20:12.319  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 644KB AllocSpace bytes, 5(17MB) LOS objects, 40% free, 35MB/59MB, paused 388us,54.183ms total 1.414s
+10-03 07:21:56.969  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 4688KB AllocSpace bytes, 1(3076KB) LOS objects, 35% free, 44MB/68MB, paused 70.487ms,58.029ms total 1.046s
+10-03 07:22:01.934  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 404KB AllocSpace bytes, 0(0B) LOS objects, 35% free, 44MB/68MB, paused 111us,3.001ms total 203.327ms
+10-03 07:26:09.093  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 9216KB AllocSpace bytes, 7(15MB) LOS objects, 27% free, 63MB/87MB, paused 323us,52.242ms total 670.458ms
+10-03 07:26:11.471  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2476KB AllocSpace bytes, 8(41MB) LOS objects, 29% free, 56MB/80MB, paused 324us,1.408ms total 1.111s
+10-03 07:26:24.894  4405  4408 W app.nanogone: Missing inline cache for void androidx.navigationevent.NavigationEventProcessor.updateEnabledHandlerInfo$navigationevent(androidx.navigationevent.NavigationEventHandler)
+10-03 07:26:32.208  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2720KB AllocSpace bytes, 9(39MB) LOS objects, 36% free, 41MB/65MB, paused 1.014ms,4.653ms total 200.719ms
+10-03 07:26:33.188  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 440KB AllocSpace bytes, 13(55MB) LOS objects, 27% free, 63MB/87MB, paused 233us,2.005ms total 115.249ms
+10-03 07:26:51.399  4405  4409 W app.nanogone: Cleared Reference was only reachable from finalizer (only reported once)
+10-03 07:26:51.738  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 9108KB AllocSpace bytes, 44(43MB) LOS objects, 23% free, 79MB/103MB, paused 350us,40.645ms total 432.253ms

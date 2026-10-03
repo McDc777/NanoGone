@@ -1,0 +1,145 @@
+10-03 07:18:41.641   579  1324 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=app.nanogone/.MainActivity} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-03 07:18:41.647   579  1324 I AppsFilter: interaction: PackageSetting{4409821 com.android.microdroid.empty_payload/10200} -> PackageSetting{91a736d app.nanogone/10209} BLOCKED
+10-03 07:18:41.653  1236  1236 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=9, baseIntent=Intent { flg=0x10000000 cmp=app.nanogone/.MainActivity }
+10-03 07:18:41.671   579   619 I ActivityManager: Start proc 4405:app.nanogone/u0a209 for next-top-activity {app.nanogone/app.nanogone.MainActivity}
+10-03 07:18:41.684   579   920 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package app.nanogone isStopped false
+10-03 07:18:41.686   974  1018 V WindowManagerShell: Transition requested (#30): android.os.BinderProxy@e08d2b2 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=9 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=app.nanogone/.MainActivity } baseActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} topActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} origActivity=null realActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} numActivities=1 lastActiveTime=219680 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@1a02203} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{cdd9580 app.nanogone.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 30 }
+10-03 07:18:41.694  4405  4405 I app.nanogone: Using CollectorTypeCMC GC.
+10-03 07:18:41.697  4405  4405 W app.nanogone: Unexpected CPU variant for x86: x86_64.
+10-03 07:18:41.697  4405  4405 W app.nanogone: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-03 07:18:41.700  4405  4405 E app.nanogone: Not starting debugger since process cannot load the jdwp agent.
+10-03 07:18:41.770  4405  4405 D nativeloader: Configuring clns-7 for other apk /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/lib/x86_64:/data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/app.nanogone
+10-03 07:18:42.022   579   877 D CoreBackPreview: Window{4bea40a u0 Splash Screen app.nanogone}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@94b7ce5, mPriority=0, mIsAnimationCallback=false}
+10-03 07:18:42.752   579   607 V WindowManager: Sent Transition (#30) createdAt=10-03 07:18:41.632 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=9 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=app.nanogone/.MainActivity } baseActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} topActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} origActivity=null realActivity=ComponentInfo{app.nanogone/app.nanogone.MainActivity} numActivities=1 lastActiveTime=219680 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{b045f72 Task{59c1dd8 #9 type=standard A=10209:app.nanogone}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{a1d8fc3 app.nanogone.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 30 }
+10-03 07:18:42.752   579   607 V WindowManager:         {WCT{RemoteToken{b045f72 Task{59c1dd8 #9 type=standard A=10209:app.nanogone}}} m=OPEN f=NONE leash=Surface(name=Task=9)/@0x2b99827 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+10-03 07:18:44.504  4405  4437 I NanoGone: AI chip: this phone is not on LiteRT's list
+10-03 07:18:44.528  4405  4437 D nativeloader: Load /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk!/lib/x86_64/liblitert_jni.so using ns clns-7 from class loader (caller=/data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk!classes2.dex): ok
+10-03 07:18:44.571   579  1645 D CoreBackPreview: Window{d71c2f0 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@4a7db67, mPriority=0, mIsAnimationCallback=false}
+10-03 07:18:46.492   579   607 I ActivityTaskManager: Displayed app.nanogone/.MainActivity for user 0: +4s353ms
+10-03 07:18:47.784   579  1648 D CoreBackPreview: Window{4bea40a u0 Splash Screen app.nanogone EXITING}: Setting back callback null
+10-03 07:18:47.837   579   877 W InputManager-JNI: Input channel object '4bea40a Splash Screen app.nanogone (client)' was disposed without first being removed with the input manager!
+10-03 07:18:48.355  4405  4466 D ProfileInstaller: Installing profile for app.nanogone
+10-03 07:18:48.397   579   728 I ImeTracker: app.nanogone:1fb0b0ac: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:18:48.410   579   728 I ImeTracker: app.nanogone:1fb0b0ac: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:18:48.504  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:18:49.677   579  1653 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:18:50.575  4405  4409 W app.nanogone: Suspending all threads took: 67.370ms
+10-03 07:18:50.698  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 6313KB AllocSpace bytes, 34(1580KB) LOS objects, 49% free, 5780KB/11MB, paused 67.845ms,739us total 1.144s
+10-03 07:18:51.617  4405  4437 I NanoGone: lama.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:53.548  4405  4437 I NanoGone: lama.tflite loaded on CPU x2
+10-03 07:18:53.692  4405  4437 I NanoGone: sam_encoder.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:53.851  4405  4437 I NanoGone: sam_encoder.tflite loaded on CPU x2
+10-03 07:18:54.532  4405  4437 I NanoGone: sam_decoder.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:54.728  4405  4437 I NanoGone: sam_decoder.tflite loaded on CPU x2
+10-03 07:18:54.978  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1900KB AllocSpace bytes, 2(40KB) LOS objects, 49% free, 23MB/47MB, paused 141us,6.604ms total 249.960ms
+10-03 07:18:55.316  4405  4437 I NanoGone: esrgan_x4.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:56.284  4405  4437 I NanoGone: esrgan_x4.tflite loaded on CPU x2
+10-03 07:18:56.395  4405  4437 D nativeloader: Load /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk!/lib/x86_64/libmediapipe_tasks_jni.so using ns clns-7 from class loader (caller=/data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk!classes3.dex): ok
+10-03 07:18:56.873  4405  4409 W app.nanogone: Suspending all threads took: 5.889ms
+10-03 07:18:56.921  4405  4437 I NanoGone: osor_vae_enc.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:56.962  4405  4437 I NanoGone: osor_vae_enc.tflite loaded on CPU x2
+10-03 07:18:57.007  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 332KB AllocSpace bytes, 5(228KB) LOS objects, 49% free, 24MB/48MB, paused 6.377ms,564us total 167.635ms
+10-03 07:18:57.075  4405  4437 I NanoGone: osor_unet_0.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.124  4405  4437 I NanoGone: osor_unet_0.tflite loaded on CPU x2
+10-03 07:18:57.221  4405  4437 I NanoGone: osor_unet_1.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.263  4405  4437 I NanoGone: osor_unet_1.tflite loaded on CPU x2
+10-03 07:18:57.344  4405  4437 I NanoGone: osor_unet_2.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.494  4405  4437 I NanoGone: osor_unet_2.tflite loaded on CPU x2
+10-03 07:18:57.549  4405  4437 I NanoGone: osor_unet_3.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.579  4405  4437 I NanoGone: osor_unet_3.tflite loaded on CPU x2
+10-03 07:18:57.580   579   603 I ActivityTaskManager: START u0 {act=android.intent.action.EDIT dat=content://media/... typ=image/jpeg flg=0x10000001 cmp=app.nanogone/.MainActivity} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=3
+10-03 07:18:57.592   974  1018 D WindowManagerShell: onActivityRestartAttempt: ComponentInfo{app.nanogone/app.nanogone.MainActivity}
+10-03 07:18:57.913  4405  4437 I NanoGone: osor_unet_4.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.007  4405  4437 I NanoGone: osor_unet_4.tflite loaded on CPU x2
+10-03 07:18:58.058  4405  4437 I NanoGone: osor_unet_5.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.082  4405  4437 I NanoGone: osor_unet_5.tflite loaded on CPU x2
+10-03 07:18:58.104  4405  4437 I NanoGone: osor_unet_6.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.129  4405  4437 I NanoGone: osor_unet_6.tflite loaded on CPU x2
+10-03 07:18:58.158  4405  4437 I NanoGone: osor_unet_7.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.183  4405  4437 I NanoGone: osor_unet_7.tflite loaded on CPU x2
+10-03 07:18:58.199  4405  4437 I NanoGone: osor_unet_8.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.207  4405  4437 I NanoGone: osor_unet_8.tflite loaded on CPU x2
+10-03 07:18:58.232  4405  4437 I NanoGone: osor_unet_9.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.245  4405  4437 I NanoGone: osor_unet_9.tflite loaded on CPU x2
+10-03 07:18:58.263  4405  4437 I NanoGone: osor_unet_10.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.274  4405  4437 I NanoGone: osor_unet_10.tflite loaded on CPU x2
+10-03 07:18:58.300  4405  4437 I NanoGone: osor_unet_11.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.334  4405  4437 I NanoGone: osor_unet_11.tflite loaded on CPU x2
+10-03 07:18:58.387  4405  4437 I NanoGone: osor_unet_12.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.393  4405  4437 I NanoGone: osor_unet_12.tflite loaded on CPU x2
+10-03 07:18:58.439  4405  4437 I NanoGone: osor_vae_dec.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.464  4405  4437 I NanoGone: osor_vae_dec.tflite loaded on CPU x2
+10-03 07:18:58.678  4405  4437 I NanoGone: deep brain: 13 parts in 1831 ms
+10-03 07:18:58.680  4405  4437 I NanoGone: deep selftest: max diff 2.026558E-6
+10-03 07:18:59.624  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 724KB AllocSpace bytes, 6(216KB) LOS objects, 49% free, 24MB/48MB, paused 310us,7.104ms total 506.544ms
+10-03 07:19:03.498  1434  1442 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk' with 1 weak references
+10-03 07:19:13.279  1236  1243 W s.nexuslauncher: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk' with 2 weak references
+10-03 07:19:16.074  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2384KB AllocSpace bytes, 0(0B) LOS objects, 25% free, 70MB/94MB, paused 166us,4.106ms total 565.987ms
+10-03 07:19:16.781  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 176KB AllocSpace bytes, 0(0B) LOS objects, 17% free, 116MB/140MB, paused 185us,4.890ms total 166.401ms
+10-03 07:19:16.809  4405  4438 I NanoGone: magic tap: view pixels 4000x3000 took 1304 ms
+10-03 07:19:21.662  1724  1743 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk' with 1 weak references
+10-03 07:19:22.560  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 860KB AllocSpace bytes, 1(45MB) LOS objects, 25% free, 70MB/94MB, paused 75us,3.564ms total 508.077ms
+10-03 07:19:25.789  4405  4438 I NanoGone: magic tap score 0.99944293
+10-03 07:19:26.206  4405  4438 I NanoGone: magic tap: outline took 9398 ms
+10-03 07:19:40.369  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1528KB AllocSpace bytes, 9(68MB) LOS objects, 48% free, 25MB/49MB, paused 117us,1.817ms total 1.198s
+10-03 07:19:50.990  4405  4438 I NanoGone: remove: selection mask 240x333 took 287 ms
+10-03 07:19:51.651  4405  4438 I NanoGone: remove: decode crop 1304x1397 took 662 ms
+10-03 07:19:55.292  4405  4438 I NanoGone: remove: shadow catcher (caught=false) took 3640 ms
+10-03 07:19:55.526  4405  4438 I NanoGone: remove: mask and grow r=8 took 234 ms
+10-03 07:19:56.588  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 1996KB AllocSpace bytes, 8(3700KB) LOS objects, 31% free, 52MB/76MB, paused 359us,4.162ms total 1.379s
+10-03 07:20:12.319  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 644KB AllocSpace bytes, 5(17MB) LOS objects, 40% free, 35MB/59MB, paused 388us,54.183ms total 1.414s
+10-03 07:21:35.272  1434  1442 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk' with 1 weak references
+10-03 07:21:56.969  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 4688KB AllocSpace bytes, 1(3076KB) LOS objects, 35% free, 44MB/68MB, paused 70.487ms,58.029ms total 1.046s
+10-03 07:22:01.934  4405  4409 I app.nanogone: NativeAlloc concurrent mark compact GC freed 404KB AllocSpace bytes, 0(0B) LOS objects, 35% free, 44MB/68MB, paused 111us,3.001ms total 203.327ms
+10-03 07:26:09.093  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 9216KB AllocSpace bytes, 7(15MB) LOS objects, 27% free, 63MB/87MB, paused 323us,52.242ms total 670.458ms
+10-03 07:26:10.293  4405  4438 I NanoGone: remove: repair (LaMa on CPU x2) and grain match took 374767 ms
+10-03 07:26:11.471  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2476KB AllocSpace bytes, 8(41MB) LOS objects, 29% free, 56MB/80MB, paused 324us,1.408ms total 1.111s
+10-03 07:26:12.223  4405  4438 I NanoGone: remove: paste took 1930 ms
+10-03 07:26:14.822  4405  4438 I NanoGone: remove: screen copy took 2168 ms
+10-03 07:26:24.894  4405  4408 W app.nanogone: Missing inline cache for void androidx.navigationevent.NavigationEventProcessor.updateEnabledHandlerInfo$navigationevent(androidx.navigationevent.NavigationEventHandler)
+10-03 07:26:25.172   579  1642 D CoreBackPreview: Window{6ff4005 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2721467, mPriority=0, mIsAnimationCallback=false}
+10-03 07:26:25.411   579   728 I ImeTracker: app.nanogone:62c0039d: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:26:25.600  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:26:25.606   579  1653 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:26:26.297  4405  4405 I ImeTracker: app.nanogone:62c0039d: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+10-03 07:26:32.208  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 2720KB AllocSpace bytes, 9(39MB) LOS objects, 36% free, 41MB/65MB, paused 1.014ms,4.653ms total 200.719ms
+10-03 07:26:33.188  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 440KB AllocSpace bytes, 13(55MB) LOS objects, 27% free, 63MB/87MB, paused 233us,2.005ms total 115.249ms
+10-03 07:26:33.301  4405  4438 I NanoGone: save: HDR gain map 1000x750 kept, 5271 gain pixels refilled
+10-03 07:26:33.349  1487  1522 I MediaProvider: Open with lower FS for /storage/emulated/0/Pictures/NanoGone/.pending-1791617193-test_beach_NanoGone.jpg. Uid: 10209
+10-03 07:26:33.372  1487  1522 D MediaProvider: Moving /storage/emulated/0/Pictures/NanoGone/.pending-1791617193-test_beach_NanoGone.jpg to /storage/emulated/0/Pictures/NanoGone/test_beach_NanoGone.jpg
+10-03 07:26:33.407  4405  4438 I NanoGone: save: JPEG only the changed squares rewritten, HDR kept took 2325 ms
+10-03 07:26:39.786   579   603 D CoreBackPreview: Window{6ff4005 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback null
+10-03 07:26:39.913   579  1647 W InputManager-JNI: Input channel object '6ff4005 app.nanogone/app.nanogone.MainActivity (client)' was disposed without first being removed with the input manager!
+10-03 07:26:40.362   579   728 I ImeTracker: app.nanogone:1b0d9f09: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:26:40.362   579   728 I ImeTracker: app.nanogone:1b0d9f09: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:26:40.379  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:26:40.382   579  1717 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:26:43.818   579  1647 D CoreBackPreview: Window{d769716 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@b88af0, mPriority=0, mIsAnimationCallback=false}
+10-03 07:26:44.248   579   728 I ImeTracker: app.nanogone:8c397ac9: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:26:44.248   579   728 I ImeTracker: app.nanogone:8c397ac9: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:26:44.273  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:26:44.287   579  1647 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:26:49.136   579  1653 D CoreBackPreview: Window{d769716 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback null
+10-03 07:26:49.149   579  1653 W InputManager-JNI: Input channel object 'd769716 app.nanogone/app.nanogone.MainActivity (client)' was disposed without first being removed with the input manager!
+10-03 07:26:49.459   579   728 I ImeTracker: app.nanogone:10a85895: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:26:49.459   579   728 I ImeTracker: app.nanogone:10a85895: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:26:49.474  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:26:49.482   579  1653 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:26:51.304  4405  4438 I NanoGone: objects: 
+10-03 07:26:51.304  4405  4438 I NanoGone: find Distractions: found 0 took 2170 ms
+10-03 07:26:51.364  4405  4438 I NanoGone: find Distractions: outlines took 59 ms
+10-03 07:26:51.399  4405  4409 W app.nanogone: Cleared Reference was only reachable from finalizer (only reported once)
+10-03 07:26:51.704   579  6341 I ActivityManager:   fg     TOP  2504249: app.nanogone (pid 4405) top-activity
+10-03 07:26:51.738  4405  4409 I app.nanogone: Background concurrent mark compact GC freed 9108KB AllocSpace bytes, 44(43MB) LOS objects, 23% free, 79MB/103MB, paused 350us,40.645ms total 432.253ms
+10-03 07:26:58.255   579  1176 D CoreBackPreview: Window{879ac04 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2e78470, mPriority=0, mIsAnimationCallback=false}
+10-03 07:26:58.444   579   728 I ImeTracker: app.nanogone:185052f3: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:26:58.448   579   728 I ImeTracker: app.nanogone:185052f3: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:26:58.629  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:26:58.641   579  1237 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0
+10-03 07:27:00.702   974   997 W ndroid.systemui: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~6m3CDFrs8uZfDCcU4S_KWg==/app.nanogone-hpCArYGJhBErcoEI-e8W2Q==/base.apk' with 2 weak references
+10-03 07:27:01.828   579  1237 D CoreBackPreview: Window{879ac04 u0 app.nanogone/app.nanogone.MainActivity}: Setting back callback null
+10-03 07:27:01.955   579  1237 W InputManager-JNI: Input channel object '879ac04 app.nanogone/app.nanogone.MainActivity (client)' was disposed without first being removed with the input manager!
+10-03 07:27:02.115   579   728 I ImeTracker: app.nanogone:4bba90fa: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-03 07:27:02.115   579   728 I ImeTracker: app.nanogone:4bba90fa: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-03 07:27:02.131  1407  1407 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=app.nanogone, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-03 07:27:02.136   579  1637 W PackageConfigPersister: App-specific configuration not found for packageName: app.nanogone and userId: 0

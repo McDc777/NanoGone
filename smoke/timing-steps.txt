@@ -1,0 +1,57 @@
+--------- beginning of main
+10-03 07:18:44.504  4405  4437 I NanoGone: AI chip: this phone is not on LiteRT's list
+10-03 07:18:51.617  4405  4437 I NanoGone: lama.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:53.548  4405  4437 I NanoGone: lama.tflite loaded on CPU x2
+10-03 07:18:53.692  4405  4437 I NanoGone: sam_encoder.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:53.851  4405  4437 I NanoGone: sam_encoder.tflite loaded on CPU x2
+10-03 07:18:54.532  4405  4437 I NanoGone: sam_decoder.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:54.728  4405  4437 I NanoGone: sam_decoder.tflite loaded on CPU x2
+10-03 07:18:55.316  4405  4437 I NanoGone: esrgan_x4.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:56.284  4405  4437 I NanoGone: esrgan_x4.tflite loaded on CPU x2
+10-03 07:18:56.921  4405  4437 I NanoGone: osor_vae_enc.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:56.962  4405  4437 I NanoGone: osor_vae_enc.tflite loaded on CPU x2
+10-03 07:18:57.075  4405  4437 I NanoGone: osor_unet_0.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.124  4405  4437 I NanoGone: osor_unet_0.tflite loaded on CPU x2
+10-03 07:18:57.221  4405  4437 I NanoGone: osor_unet_1.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.263  4405  4437 I NanoGone: osor_unet_1.tflite loaded on CPU x2
+10-03 07:18:57.344  4405  4437 I NanoGone: osor_unet_2.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.494  4405  4437 I NanoGone: osor_unet_2.tflite loaded on CPU x2
+10-03 07:18:57.549  4405  4437 I NanoGone: osor_unet_3.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:57.579  4405  4437 I NanoGone: osor_unet_3.tflite loaded on CPU x2
+10-03 07:18:57.913  4405  4437 I NanoGone: osor_unet_4.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.007  4405  4437 I NanoGone: osor_unet_4.tflite loaded on CPU x2
+10-03 07:18:58.058  4405  4437 I NanoGone: osor_unet_5.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.082  4405  4437 I NanoGone: osor_unet_5.tflite loaded on CPU x2
+10-03 07:18:58.104  4405  4437 I NanoGone: osor_unet_6.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.129  4405  4437 I NanoGone: osor_unet_6.tflite loaded on CPU x2
+10-03 07:18:58.158  4405  4437 I NanoGone: osor_unet_7.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.183  4405  4437 I NanoGone: osor_unet_7.tflite loaded on CPU x2
+10-03 07:18:58.199  4405  4437 I NanoGone: osor_unet_8.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.207  4405  4437 I NanoGone: osor_unet_8.tflite loaded on CPU x2
+10-03 07:18:58.232  4405  4437 I NanoGone: osor_unet_9.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.245  4405  4437 I NanoGone: osor_unet_9.tflite loaded on CPU x2
+10-03 07:18:58.263  4405  4437 I NanoGone: osor_unet_10.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.274  4405  4437 I NanoGone: osor_unet_10.tflite loaded on CPU x2
+10-03 07:18:58.300  4405  4437 I NanoGone: osor_unet_11.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.334  4405  4437 I NanoGone: osor_unet_11.tflite loaded on CPU x2
+10-03 07:18:58.387  4405  4437 I NanoGone: osor_unet_12.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.393  4405  4437 I NanoGone: osor_unet_12.tflite loaded on CPU x2
+10-03 07:18:58.439  4405  4437 I NanoGone: osor_vae_dec.tflite: graphics chip not usable (Failed to compile model), using all 2 main-chip cores
+10-03 07:18:58.464  4405  4437 I NanoGone: osor_vae_dec.tflite loaded on CPU x2
+10-03 07:18:58.678  4405  4437 I NanoGone: deep brain: 13 parts in 1831 ms
+10-03 07:18:58.680  4405  4437 I NanoGone: deep selftest: max diff 2.026558E-6
+10-03 07:19:16.809  4405  4438 I NanoGone: magic tap: view pixels 4000x3000 took 1304 ms
+10-03 07:19:25.789  4405  4438 I NanoGone: magic tap score 0.99944293
+10-03 07:19:26.206  4405  4438 I NanoGone: magic tap: outline took 9398 ms
+10-03 07:19:50.990  4405  4438 I NanoGone: remove: selection mask 240x333 took 287 ms
+10-03 07:19:51.651  4405  4438 I NanoGone: remove: decode crop 1304x1397 took 662 ms
+10-03 07:19:55.292  4405  4438 I NanoGone: remove: shadow catcher (caught=false) took 3640 ms
+10-03 07:19:55.526  4405  4438 I NanoGone: remove: mask and grow r=8 took 234 ms
+10-03 07:26:10.293  4405  4438 I NanoGone: remove: repair (LaMa on CPU x2) and grain match took 374767 ms
+10-03 07:26:12.223  4405  4438 I NanoGone: remove: paste took 1930 ms
+10-03 07:26:14.822  4405  4438 I NanoGone: remove: screen copy took 2168 ms
+10-03 07:26:33.301  4405  4438 I NanoGone: save: HDR gain map 1000x750 kept, 5271 gain pixels refilled
+10-03 07:26:33.407  4405  4438 I NanoGone: save: JPEG only the changed squares rewritten, HDR kept took 2325 ms
+10-03 07:26:51.304  4405  4438 I NanoGone: objects: 
+10-03 07:26:51.304  4405  4438 I NanoGone: find Distractions: found 0 took 2170 ms
+10-03 07:26:51.364  4405  4438 I NanoGone: find Distractions: outlines took 59 ms

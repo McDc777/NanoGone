@@ -1,0 +1,5 @@
+removal took 381s
+save took 7s
+find distractions took 3s
+10-03 07:18:58.680  4405  4437 I NanoGone: deep selftest: max diff 2.026558E-6
+10-03 07:26:33.301  4405  4438 I NanoGone: save: HDR gain map 1000x750 kept, 5271 gain pixels refilled
