@@ -1,0 +1,545 @@
+{
+ "version": 1,
+ "size": 512,
+ "latent": 64,
+ "t": 400,
+ "alphas_cumprod": 0.4244827926158905,
+ "prompt": "Remove the instance of object",
+ "parts": [
+  {
+   "file": "osor_unet_0.tflite",
+   "pops": 0,
+   "pushes": 7,
+   "h_is_skip": true,
+   "first": true,
+   "last": false,
+   "params": 65563840,
+   "worst_diff": 0.0035419464111328125,
+   "input_order": [
+    "args_0",
+    "args_1",
+    "args_2"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ],
+    [
+     "serving_default_args_1",
+     [
+      1,
+      64,
+      64,
+      1
+     ]
+    ],
+    [
+     "serving_default_args_2",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_output_1_output",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_output_2_output",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_output_3_output",
+     [
+      1,
+      32,
+      32,
+      320
+     ]
+    ],
+    [
+     "serving_default_output_4_output",
+     [
+      1,
+      32,
+      32,
+      640
+     ]
+    ],
+    [
+     "serving_default_output_5_output",
+     [
+      1,
+      32,
+      32,
+      640
+     ]
+    ],
+    [
+     "serving_default_output_6_output",
+     [
+      1,
+      16,
+      16,
+      640
+     ]
+    ],
+    [
+     "serving_default_output_7_output",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_1.tflite",
+   "pops": 0,
+   "pushes": 1,
+   "h_is_skip": true,
+   "first": false,
+   "last": false,
+   "params": 375425280,
+   "worst_diff": 0.002626776695251465,
+   "input_order": [
+    "args_0"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      640
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_2.tflite",
+   "pops": 0,
+   "pushes": 1,
+   "h_is_skip": true,
+   "first": false,
+   "last": false,
+   "params": 381978880,
+   "worst_diff": 0.003942012786865234,
+   "input_order": [
+    "args_0"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_3.tflite",
+   "pops": 0,
+   "pushes": 0,
+   "h_is_skip": false,
+   "first": false,
+   "last": false,
+   "params": 413117440,
+   "worst_diff": 0.005260467529296875,
+   "input_order": [
+    "args_0"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_4.tflite",
+   "pops": 1,
+   "pushes": 0,
+   "h_is_skip": false,
+   "first": false,
+   "last": false,
+   "params": 400005120,
+   "worst_diff": 0.0067234039306640625,
+   "input_order": [
+    "args_0",
+    "args_1"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ],
+    [
+     "serving_default_args_1",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_5.tflite",
+   "pops": 1,
+   "pushes": 0,
+   "h_is_skip": false,
+   "first": false,
+   "last": false,
+   "params": 400005120,
+   "worst_diff": 0.008871078491210938,
+   "input_order": [
+    "args_0",
+    "args_1"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ],
+    [
+     "serving_default_args_1",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_6.tflite",
+   "pops": 1,
+   "pushes": 0,
+   "h_is_skip": false,
+   "first": false,
+   "last": false,
+   "params": 391811840,
+   "worst_diff": 0.004042148590087891,
+   "input_order": [
+    "args_0",
+    "args_1"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ],
+    [
+     "serving_default_args_1",
+     [
+      1,
+      16,
+      16,
+      640
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ]
+   ]
+  },
+  {
+   "file": "osor_unet_7.tflite",
+   "pops": 6,
+   "pushes": 0,
+   "h_is_skip": false,
+   "first": false,
+   "last": true,
+   "params": 132277445,
+   "worst_diff": 0.0001659393310546875,
+   "input_order": [
+    "args_0",
+    "args_1",
+    "args_2",
+    "args_3",
+    "args_4",
+    "args_5",
+    "args_6",
+    "args_7",
+    "args_8"
+   ],
+   "inputs": [
+    [
+     "serving_default_args_0",
+     [
+      1,
+      16,
+      16,
+      1280
+     ]
+    ],
+    [
+     "serving_default_args_1",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_args_2",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_args_3",
+     [
+      1,
+      64,
+      64,
+      320
+     ]
+    ],
+    [
+     "serving_default_args_4",
+     [
+      1,
+      32,
+      32,
+      320
+     ]
+    ],
+    [
+     "serving_default_args_5",
+     [
+      1,
+      32,
+      32,
+      640
+     ]
+    ],
+    [
+     "serving_default_args_6",
+     [
+      1,
+      32,
+      32,
+      640
+     ]
+    ],
+    [
+     "serving_default_args_7",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ],
+    [
+     "serving_default_args_8",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ]
+   ],
+   "outputs": [
+    [
+     "serving_default_output_0_output",
+     [
+      1,
+      64,
+      64,
+      4
+     ]
+    ],
+    [
+     "serving_default_output_1_output",
+     [
+      1,
+      64,
+      64,
+      1
+     ]
+    ]
+   ]
+  }
+ ],
+ "files": [
+  {
+   "name": "osor_vae_enc.tflite",
+   "size": 136915420,
+   "sha256": "c54b50a41b5f51e54b74d2b8d2226cfee73429d87a8f94566aa2629dfb99433d"
+  },
+  {
+   "name": "osor_unet_0.tflite",
+   "size": 107192256,
+   "sha256": "1c6984da2d5219ddbe30987381c68783165d2323172ef34311b8609d9c2c27f3"
+  },
+  {
+   "name": "osor_unet_1.tflite",
+   "size": 651445792,
+   "sha256": "d23ba16fc0951bc70d4c803c3c3e679eb61774b94fe018dcc65d0160e6820409"
+  },
+  {
+   "name": "osor_unet_2.tflite",
+   "size": 664548912,
+   "sha256": "2ee8db67796ddc3adb72ac4635ce178512a89cc9d6142970e52125bec2f837fc"
+  },
+  {
+   "name": "osor_unet_3.tflite",
+   "size": 723697696,
+   "sha256": "c2026f9a23a8d72330382a15639c85c20ef1d559ae769180d0189d6e52d9ffb7"
+  },
+  {
+   "name": "osor_unet_4.tflite",
+   "size": 700621088,
+   "sha256": "bc6ca2fec9c03b966d669a2cb14151217b6c727b1eb175a0854050e77e866c35"
+  },
+  {
+   "name": "osor_unet_5.tflite",
+   "size": 700621088,
+   "sha256": "fb7a7acdf8b7d83daa8051f88a9489aa0e3568369d2cf3bdb4cc8f5720f60cd4"
+  },
+  {
+   "name": "osor_unet_6.tflite",
+   "size": 684229408,
+   "sha256": "43a1aa92b4da301f1f79ac640132505ae84b6b1d6c80c6770585dc16c04f26d7"
+  },
+  {
+   "name": "osor_unet_7.tflite",
+   "size": 228700544,
+   "sha256": "2d86ff0897c22e1f64efa9ce17df99cc477d69c038a82ffabda18d8a428dee93"
+  },
+  {
+   "name": "osor_vae_dec.tflite",
+   "size": 198309644,
+   "sha256": "eba81fb9588b6e08547c691d9f5966e9d71de59eca2c3bc14c514c3170b9497e"
+  }
+ ],
+ "check_mean_diff": 0.002392919035628438
+}

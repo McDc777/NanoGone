@@ -1,0 +1,609 @@
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+Loading weights:   0%|          | 0/196 [00:00<?, ?it/s]Loading weights:   1%|          | 2/196 [00:00<00:48,  4.01it/s]Loading weights:  53%|█████▎    | 104/196 [00:00<00:00, 229.88it/s]Loading weights:  84%|████████▎ | 164/196 [00:00<00:00, 267.94it/s]Loading weights: 100%|██████████| 196/196 [00:00<00:00, 216.07it/s]
+Loading weights:   0%|          | 0/517 [00:00<?, ?it/s]Loading weights:   8%|▊         | 42/517 [00:00<00:01, 368.44it/s]Loading weights:  15%|█▌        | 79/517 [00:00<00:02, 175.08it/s]Loading weights:  20%|█▉        | 102/517 [00:00<00:02, 163.19it/s]Loading weights:  23%|██▎       | 121/517 [00:00<00:03, 119.61it/s]Loading weights:  26%|██▋       | 136/517 [00:01<00:03, 108.40it/s]Loading weights:  29%|██▉       | 152/517 [00:01<00:03, 100.87it/s]Loading weights:  40%|████      | 208/517 [00:01<00:01, 189.79it/s]Loading weights:  57%|█████▋    | 296/517 [00:01<00:00, 320.40it/s]Loading weights:  65%|██████▍   | 336/517 [00:01<00:00, 233.15it/s]Loading weights:  71%|███████   | 368/517 [00:02<00:00, 163.44it/s]Loading weights:  76%|███████▌  | 393/517 [00:02<00:00, 137.87it/s]Loading weights:  80%|███████▉  | 413/517 [00:02<00:00, 122.16it/s]Loading weights:  83%|████████▎ | 429/517 [00:02<00:00, 116.57it/s]Loading weights:  86%|████████▌ | 444/517 [00:03<00:00, 105.18it/s]Loading weights:  89%|████████▊ | 458/517 [00:03<00:00, 104.00it/s]Loading weights:  91%|█████████▏| 472/517 [00:03<00:00, 109.23it/s]Loading weights:  94%|█████████▍| 488/517 [00:03<00:00, 97.98it/s] Loading weights:  97%|█████████▋| 504/517 [00:03<00:00, 95.43it/s]Loading weights: 100%|██████████| 517/517 [00:03<00:00, 138.68it/s]
+[     10s] prompt (1, 77, 2048) (1, 1280) rss 1320276 kB
+Cannot initialize model with low cpu memory usage because `accelerate` was not found in the environment. Defaulting to `low_cpu_mem_usage=False`. It is strongly recommended to install `accelerate` for faster and less memory-intense model loading. You can do so with: 
+```
+pip install accelerate
+```
+.
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[     11s] unet loaded rss 1531636 kB
+[     12s] checkpoint: 1544 tensors {'torch.float32': 1544} sample ['unet.down_blocks.0.resnets.0.conv1.lora_A.default.weight', 'unet.down_blocks.0.resnets.0.conv1.lora_B.default.weight', 'unet.down_blocks.0.resnets.0.conv2.lora_A.default.weight', 'unet.down_blocks.0.resnets.0.conv2.lora_B.default.weight'] rss 1533204 kB
+[    106s] merged 771 LoRA layers; unused checkpoint keys: 0 [] rss 6487476 kB
+[    203s] saved merged UNet 5149 MB; acp 0.4244827926158905 ; parts 8
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+Cannot initialize model with low cpu memory usage because `accelerate` was not found in the environment. Defaulting to `low_cpu_mem_usage=False`. It is strongly recommended to install `accelerate` for faster and less memory-intense model loading. You can do so with: 
+```
+pip install accelerate
+```
+.
+[     15s] test photos encoded
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      2s] part 0 of 8 loaded (66M params), rss 445996 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:01) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:01) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:01)
+(00:01) [START] LiteRT-Torch Convert > Run FX Passes
+(00:01) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:03) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:01)
+(00:03) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:01)
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:05) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:05) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:03)
+(00:07) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:07) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:07) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:09) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:02)
+(00:09) [START] LiteRT-Torch Convert > Quantize Model
+(00:09) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:09) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:00)
+Generating Quantization Parameters::   0%|          | 0/638 [00:00<?, ?it/s]Generating Quantization Parameters::  64%|██████▍   | 409/638 [00:00<00:00, 3668.53it/s]Generating Quantization Parameters:: 100%|██████████| 638/638 [00:00<00:00, 3067.12it/s]
+Applying Transformations to tensors::   0%|          | 0/804 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 804/804 [00:00<00:00, 479008.58it/s]
+Original model size: 202.45 MiB
+Quantized model size: 102.23 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 263.02 ms
+(00:09) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:00)
+(00:09) [ DONE] LiteRT-Torch Convert (+00:09)
+[     17s] part 0 converted: 0.11 GB, rss 1329884 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     18s] part 0: worst difference vs PyTorch 0.0035
+Mem:               7           0           6           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      2s] part 1 of 8 loaded (375M params), rss 464892 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:02)
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:09) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:09) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:09) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:09) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:09) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:22) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:12)
+(00:22) [START] LiteRT-Torch Convert > Quantize Model
+(00:22) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:36) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:14)
+Generating Quantization Parameters::   0%|          | 0/921 [00:00<?, ?it/s]Generating Quantization Parameters::   6%|▌         | 57/921 [00:00<00:01, 519.87it/s]Generating Quantization Parameters::  18%|█▊        | 164/921 [00:00<00:00, 769.55it/s]Generating Quantization Parameters::  27%|██▋       | 247/921 [00:00<00:00, 758.21it/s]Generating Quantization Parameters::  36%|███▌      | 330/921 [00:00<00:00, 739.06it/s]Generating Quantization Parameters::  45%|████▍     | 413/921 [00:00<00:00, 616.55it/s]Generating Quantization Parameters::  52%|█████▏    | 482/921 [00:00<00:00, 628.74it/s]Generating Quantization Parameters::  60%|██████    | 553/921 [00:00<00:00, 650.83it/s]Generating Quantization Parameters::  67%|██████▋   | 620/921 [00:00<00:00, 635.61it/s]Generating Quantization Parameters::  74%|███████▍  | 686/921 [00:01<00:00, 636.79it/s]Generating Quantization Parameters::  82%|████████▏ | 751/921 [00:01<00:00, 613.43it/s]Generating Quantization Parameters::  90%|████████▉ | 828/921 [00:01<00:00, 604.31it/s]Generating Quantization Parameters::  99%|█████████▉| 911/921 [00:01<00:00, 529.50it/s]Generating Quantization Parameters:: 100%|██████████| 921/921 [00:01<00:00, 588.13it/s]
+Applying Transformations to tensors::   0%|          | 0/1151 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1151/1151 [00:00<00:00, 145779.80it/s]
+Original model size: 1.20 GiB
+Quantized model size: 621.27 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 7.53 s
+(00:44) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:22)
+(00:45) [ DONE] LiteRT-Torch Convert (+00:45)
+[     66s] part 1 converted: 0.65 GB, rss 2936528 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     71s] part 1: worst difference vs PyTorch 0.0026
+Mem:               7           1           5           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      3s] part 2 of 8 loaded (382M params), rss 464120 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:02)
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:09) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:09) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:09) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:09) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:09) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:22) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:12)
+(00:22) [START] LiteRT-Torch Convert > Quantize Model
+(00:22) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:38) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:16)
+Generating Quantization Parameters::   0%|          | 0/919 [00:00<?, ?it/s]Generating Quantization Parameters::   6%|▌         | 57/919 [00:00<00:03, 248.29it/s]Generating Quantization Parameters::  18%|█▊        | 162/919 [00:00<00:01, 478.77it/s]Generating Quantization Parameters::  27%|██▋       | 245/919 [00:00<00:01, 516.61it/s]Generating Quantization Parameters::  34%|███▍      | 314/919 [00:00<00:01, 552.90it/s]Generating Quantization Parameters::  41%|████      | 373/919 [00:00<00:01, 502.27it/s]Generating Quantization Parameters::  49%|████▉     | 452/919 [00:00<00:00, 574.11it/s]Generating Quantization Parameters::  58%|█████▊    | 535/919 [00:00<00:00, 639.16it/s]Generating Quantization Parameters::  66%|██████▌   | 604/919 [00:01<00:00, 642.04it/s]Generating Quantization Parameters::  73%|███████▎  | 671/919 [00:01<00:00, 612.80it/s]Generating Quantization Parameters::  81%|████████  | 743/919 [00:01<00:00, 616.39it/s]Generating Quantization Parameters::  90%|████████▉ | 826/919 [00:01<00:00, 599.81it/s]Generating Quantization Parameters::  97%|█████████▋| 887/919 [00:01<00:00, 594.64it/s]Generating Quantization Parameters:: 100%|██████████| 919/919 [00:01<00:00, 509.13it/s]
+Applying Transformations to tensors::   0%|          | 0/1142 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1142/1142 [00:00<00:00, 193445.14it/s]
+Original model size: 1.23 GiB
+Quantized model size: 633.76 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 6.94 s
+(00:46) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:24)
+(00:46) [ DONE] LiteRT-Torch Convert (+00:46)
+[     70s] part 2 converted: 0.66 GB, rss 2519144 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     73s] part 2: worst difference vs PyTorch 0.0039
+Mem:               7           0           5           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      3s] part 3 of 8 loaded (413M params), rss 448976 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:03)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:10) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:10) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:10) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:23) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:12)
+(00:23) [START] LiteRT-Torch Convert > Quantize Model
+(00:23) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:45) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:21)
+Generating Quantization Parameters::   0%|          | 0/976 [00:00<?, ?it/s]Generating Quantization Parameters::   6%|▌         | 57/976 [00:00<00:02, 400.46it/s]Generating Quantization Parameters::  10%|█         | 98/976 [00:00<00:02, 365.45it/s]Generating Quantization Parameters::  17%|█▋        | 162/976 [00:00<00:01, 440.93it/s]Generating Quantization Parameters::  25%|██▌       | 245/976 [00:00<00:01, 529.68it/s]Generating Quantization Parameters::  34%|███▎      | 328/976 [00:00<00:01, 576.48it/s]Generating Quantization Parameters::  42%|████▏     | 411/976 [00:00<00:00, 591.92it/s]Generating Quantization Parameters::  51%|█████     | 494/976 [00:00<00:00, 585.94it/s]Generating Quantization Parameters::  59%|█████▉    | 577/976 [00:01<00:00, 594.00it/s]Generating Quantization Parameters::  68%|██████▊   | 660/976 [00:01<00:00, 574.10it/s]Generating Quantization Parameters::  76%|███████▌  | 743/976 [00:01<00:00, 573.42it/s]Generating Quantization Parameters::  85%|████████▍ | 826/976 [00:01<00:00, 584.21it/s]Generating Quantization Parameters::  93%|█████████▎| 909/976 [00:01<00:00, 596.93it/s]Generating Quantization Parameters::  99%|█████████▉| 969/976 [00:01<00:00, 597.46it/s]Generating Quantization Parameters:: 100%|██████████| 976/976 [00:01<00:00, 548.29it/s]
+Applying Transformations to tensors::   0%|          | 0/1207 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1207/1207 [00:00<00:00, 204637.41it/s]
+Original model size: 1.34 GiB
+Quantized model size: 690.17 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 6.00 s
+(00:51) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:28)
+(00:51) [ DONE] LiteRT-Torch Convert (+00:51)
+[     76s] part 3 converted: 0.72 GB, rss 2223160 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     82s] part 3: worst difference vs PyTorch 0.0053
+Mem:               7           1           5           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      3s] part 4 of 8 loaded (400M params), rss 441212 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:02)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:10) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:10) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:10) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:27) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:17)
+(00:27) [START] LiteRT-Torch Convert > Quantize Model
+(00:27) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:37) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:10)
+Generating Quantization Parameters::   0%|          | 0/923 [00:00<?, ?it/s]Generating Quantization Parameters::   3%|▎         | 31/923 [00:00<00:04, 185.87it/s]Generating Quantization Parameters::  10%|▉         | 89/923 [00:00<00:02, 357.35it/s]Generating Quantization Parameters::  18%|█▊        | 166/923 [00:00<00:01, 446.80it/s]Generating Quantization Parameters::  27%|██▋       | 249/923 [00:00<00:01, 561.02it/s]Generating Quantization Parameters::  36%|███▌      | 332/923 [00:00<00:00, 638.42it/s]Generating Quantization Parameters::  45%|████▍     | 415/923 [00:00<00:00, 661.27it/s]Generating Quantization Parameters::  54%|█████▍    | 498/923 [00:00<00:00, 651.72it/s]Generating Quantization Parameters::  63%|██████▎   | 581/923 [00:00<00:00, 660.81it/s]Generating Quantization Parameters::  72%|███████▏  | 664/923 [00:01<00:00, 596.21it/s]Generating Quantization Parameters::  81%|████████  | 747/923 [00:01<00:00, 608.01it/s]Generating Quantization Parameters::  90%|████████▉ | 830/923 [00:01<00:00, 640.82it/s]Generating Quantization Parameters::  99%|█████████▉| 913/923 [00:01<00:00, 638.58it/s]Generating Quantization Parameters:: 100%|██████████| 923/923 [00:01<00:00, 585.36it/s]
+Applying Transformations to tensors::   0%|          | 0/1154 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1154/1154 [00:00<00:00, 127505.25it/s]
+Original model size: 1.30 GiB
+Quantized model size: 668.16 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 4.35 s
+(00:43) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:15)
+(00:43) [ DONE] LiteRT-Torch Convert (+00:43)
+[     73s] part 4 converted: 0.70 GB, rss 2367096 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     75s] part 4: worst difference vs PyTorch 0.0067
+Mem:               7           1           6           0           0           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      3s] part 5 of 8 loaded (400M params), rss 441072 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:03) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:03)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:10) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:10) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:10) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:23) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:12)
+(00:23) [START] LiteRT-Torch Convert > Quantize Model
+(00:23) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:38) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:15)
+Generating Quantization Parameters::   0%|          | 0/923 [00:00<?, ?it/s]Generating Quantization Parameters::   3%|▎         | 31/923 [00:00<00:03, 263.29it/s]Generating Quantization Parameters::  15%|█▌        | 140/923 [00:00<00:01, 712.71it/s]Generating Quantization Parameters::  23%|██▎       | 215/923 [00:00<00:01, 643.99it/s]Generating Quantization Parameters::  31%|███       | 282/923 [00:00<00:01, 592.58it/s]Generating Quantization Parameters::  37%|███▋      | 343/923 [00:00<00:01, 570.79it/s]Generating Quantization Parameters::  45%|████▍     | 415/923 [00:00<00:00, 602.17it/s]Generating Quantization Parameters::  54%|█████▍    | 498/923 [00:00<00:00, 601.97it/s]Generating Quantization Parameters::  63%|██████▎   | 581/923 [00:00<00:00, 599.15it/s]Generating Quantization Parameters::  72%|███████▏  | 664/923 [00:01<00:00, 598.32it/s]Generating Quantization Parameters::  81%|████████  | 747/923 [00:01<00:00, 588.53it/s]Generating Quantization Parameters::  90%|████████▉ | 830/923 [00:01<00:00, 592.19it/s]Generating Quantization Parameters::  99%|█████████▉| 913/923 [00:01<00:00, 589.85it/s]Generating Quantization Parameters:: 100%|██████████| 923/923 [00:01<00:00, 563.08it/s]
+Applying Transformations to tensors::   0%|          | 0/1154 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1154/1154 [00:00<00:00, 147590.39it/s]
+Original model size: 1.30 GiB
+Quantized model size: 668.16 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 6.04 s
+(00:45) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:21)
+(00:45) [ DONE] LiteRT-Torch Convert (+00:45)
+[     71s] part 5 converted: 0.70 GB, rss 1950372 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     72s] part 5: worst difference vs PyTorch 0.0089
+Mem:               7           1           5           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      3s] part 6 of 8 loaded (392M params), rss 441608 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:05) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:02)
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:05) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:02)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:08) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:08) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:05)
+(00:10) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:10) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:10) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:22) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:11)
+(00:22) [START] LiteRT-Torch Convert > Quantize Model
+(00:22) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:35) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:13)
+Generating Quantization Parameters::   0%|          | 0/923 [00:00<?, ?it/s]Generating Quantization Parameters::   6%|▋         | 59/923 [00:00<00:01, 495.36it/s]Generating Quantization Parameters::  18%|█▊        | 166/923 [00:00<00:01, 693.95it/s]Generating Quantization Parameters::  27%|██▋       | 249/923 [00:00<00:00, 703.54it/s]Generating Quantization Parameters::  36%|███▌      | 332/923 [00:00<00:00, 675.14it/s]Generating Quantization Parameters::  45%|████▍     | 415/923 [00:00<00:00, 643.53it/s]Generating Quantization Parameters::  52%|█████▏    | 480/923 [00:00<00:00, 531.49it/s]Generating Quantization Parameters::  58%|█████▊    | 536/923 [00:01<00:01, 386.14it/s]Generating Quantization Parameters::  63%|██████▎   | 581/923 [00:01<00:00, 398.79it/s]Generating Quantization Parameters::  72%|███████▏  | 664/923 [00:01<00:00, 463.43it/s]Generating Quantization Parameters::  81%|████████  | 747/923 [00:01<00:00, 503.88it/s]Generating Quantization Parameters::  90%|████████▉ | 830/923 [00:01<00:00, 523.81it/s]Generating Quantization Parameters::  99%|█████████▉| 913/923 [00:01<00:00, 539.98it/s]Generating Quantization Parameters:: 100%|██████████| 923/923 [00:01<00:00, 522.28it/s]
+Applying Transformations to tensors::   0%|          | 0/1154 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1154/1154 [00:00<00:00, 223103.33it/s]
+Original model size: 1.27 GiB
+Quantized model size: 652.53 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 3.69 s
+(00:39) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:17)
+(00:39) [ DONE] LiteRT-Torch Convert (+00:39)
+[     61s] part 6 converted: 0.68 GB, rss 1679132 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     63s] part 6: worst difference vs PyTorch 0.0040
+Mem:               7           1           6           0           0           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+The config attributes {'decay': 0.9999, 'inv_gamma': 1.0, 'min_decay': 0.0, 'optimization_step': 37000, 'power': 0.6666666666666666, 'update_after_step': 0, 'use_ema_warmup': False} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.
+[      4s] part 7 of 8 loaded (132M params), rss 444704 kB
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:02)
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes
+(00:02) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:02)
+(00:04) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:02)
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:04) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:03)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:07) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:07) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:10) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:06)
+(00:10) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:10) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:10) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:15) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:04)
+(00:15) [START] LiteRT-Torch Convert > Quantize Model
+(00:15) [START] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes
+(00:15) [ DONE] LiteRT-Torch Convert > Quantize Model > Write Model to Bytes 
+(+00:00)
+Generating Quantization Parameters::   0%|          | 0/999 [00:00<?, ?it/s]Generating Quantization Parameters::  13%|█▎        | 127/999 [00:00<00:00, 1260.51it/s]Generating Quantization Parameters::  39%|███▊      | 387/999 [00:00<00:00, 2045.92it/s]Generating Quantization Parameters::  68%|██████▊   | 683/999 [00:00<00:00, 2374.92it/s]Generating Quantization Parameters:: 100%|██████████| 999/999 [00:00<00:00, 2529.36it/s]
+Applying Transformations to tensors::   0%|          | 0/1263 [00:00<?, ?it/s]Applying Transformations to tensors:: 100%|██████████| 1263/1263 [00:00<00:00, 442372.10it/s]
+Original model size: 433.14 MiB
+Quantized model size: 218.11 MiB
+Quantization Ratio: 0.50 (2.0x smaller)
+Total time: 478.83 ms
+(00:16) [ DONE] LiteRT-Torch Convert > Quantize Model (+00:00)
+(00:16) [ DONE] LiteRT-Torch Convert (+00:16)
+[     28s] part 7 converted: 0.23 GB, rss 2058028 kB
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     30s] part 7: worst difference vs PyTorch 0.0002
+Mem:               7           1           5           0           1           6
+Swap:             11           0          11
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+Cannot initialize model with low cpu memory usage because `accelerate` was not found in the environment. Defaulting to `low_cpu_mem_usage=False`. It is strongly recommended to install `accelerate` for faster and less memory-intense model loading. You can do so with: 
+```
+pip install accelerate
+```
+.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+(00:00) [START] LiteRT-Torch Convert
+WARNING:root:Your model is converted in training mode. Please set the module in evaluation mode with `module.eval()` for better on-device performance and compatibility.
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:01) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:01) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:01)
+(00:01) [START] LiteRT-Torch Convert > Run FX Passes
+(00:01) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:00)
+(00:02) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:01)
+(00:02) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:02) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:03) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:03) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:06) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:06) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:04)
+(00:06) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:06) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:06) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:07) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:00)
+(00:07) [ DONE] LiteRT-Torch Convert (+00:07)
+(00:00) [START] Write Model to /mnt/w/parts/osor_vae_enc.tflite
+(00:00) [ DONE] Write Model to /mnt/w/parts/osor_vae_enc.tflite (+00:00)
+(00:00) [START] LiteRT-Torch Convert
+WARNING:root:Your model is converted in training mode. Please set the module in evaluation mode with `module.eval()` for better on-device performance and compatibility.
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default
+(00:00) [START] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:00) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:00) [ DONE] LiteRT-Torch Convert > Torch Export: serving_default (+00:00)
+(00:00) [START] LiteRT-Torch Convert > Run FX Passes
+(00:00) [START] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:02) [ DONE] LiteRT-Torch Convert > Run FX Passes > ExportedProgram Run 
+Decompositions (+00:01)
+(00:02) [ DONE] LiteRT-Torch Convert > Run FX Passes (+00:01)
+(00:02) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default
+(00:02) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/copyreg.py:105: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+(00:03) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:01)
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions
+(00:03) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > 
+ExportedProgram Run Decompositions (+00:00)
+(00:03) [START] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module
+(00:06) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default > Create 
+MLIR Module (+00:02)
+(00:06) [ DONE] LiteRT-Torch Convert > Lower to MLIR: serving_default (+00:04)
+(00:06) [START] LiteRT-Torch Convert > Merge MLIR Modules
+(00:06) [ DONE] LiteRT-Torch Convert > Merge MLIR Modules (+00:00)
+(00:06) [START] LiteRT-Torch Convert > Run LiteRT Converter Passes
+(00:06) [ DONE] LiteRT-Torch Convert > Run LiteRT Converter Passes (+00:00)
+(00:06) [ DONE] LiteRT-Torch Convert (+00:06)
+(00:00) [START] Write Model to /mnt/w/parts/osor_vae_dec.tflite
+(00:00) [ DONE] Write Model to /mnt/w/parts/osor_vae_dec.tflite (+00:00)
+[     17s] vae converted
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_cutlass_90a.abi3.so
+Failed to load /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so: Could not load this library: /opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/torchao/_C_mxfp8.cpython-310-x86_64-linux-gnu.so
+Unable to import `torchao` Tensor objects. This may affect loading checkpoints serialized with `torchao`
+Cannot initialize model with low cpu memory usage because `accelerate` was not found in the environment. Defaulting to `low_cpu_mem_usage=False`. It is strongly recommended to install `accelerate` for faster and less memory-intense model loading. You can do so with: 
+```
+pip install accelerate
+```
+.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+[     70s] check astronaut: phone files vs PyTorch mean difference 0.00 of 255
+[    110s] check coffee: phone files vs PyTorch mean difference 0.00 of 255
+[    113s] brains.json written: 10 files, 4796 MB
