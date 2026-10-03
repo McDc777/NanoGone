@@ -1,10 +1,12 @@
 name: convert-brains
-# Turns the big brains into phone files and attaches them to the "brains-v1" release.
-# Face fix (GFPGAN v1.4) ships inside the APK; the deep brain (OSOR-SDXL) is the brain pack.
+# Deep brain (OSOR-SDXL) to phone files, in pieces that each fit one GitHub machine:
+# merge (LoRA into the UNet) -> parts (one machine per part, in parallel) + vae -> finish (whole-chain check,
+# brains.json, attach to the brains-v1 release). Big in-between files travel through the temporary
+# "brains-work" release, because private projects have little build-file storage.
 on:
   push:
     branches: [main]
-    paths: ["tools/convert/convert_osor.py", "tools/convert/osor_parts.py", ".github/workflows/convert.yml"]
+    paths: ["tools/convert/osor_stage.py", "tools/convert/osor_parts.py", "tools/convert/room.sh", ".github/workflows/convert.yml"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,40 +16,24 @@ concurrency:
 defaults:
   run:
     shell: bash
+env:
+  GH_TOKEN: ${{ github.token }}
+  PIP_TOOLS: litert-torch==0.9.4 ai-edge-litert==2.2.0 diffusers==0.40.0 transformers==5.18.0 safetensors==0.8.0 huggingface_hub==1.33.0 scikit-image pillow
 jobs:
-  convert:
+  merge:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 120
     steps:
-      - name: Room to work (disk and swap)
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
-          sudo docker image prune -af >/dev/null 2>&1 || true
-          df -h / /mnt || true
-          # Work on whichever disk has more room; swap only from space beyond the 40 GB the work needs.
-          ROOT=$(df --output=avail -BG / | tail -1 | tr -dc 0-9); MNT=$(df --output=avail -BG /mnt 2>/dev/null | tail -1 | tr -dc 0-9)
-          if [ "$(df --output=source /mnt | tail -1)" != "$(df --output=source / | tail -1)" ] && [ "${MNT:-0}" -gt "$ROOT" ]; then BASE=/mnt; FREE=$MNT; else BASE=$HOME; FREE=$ROOT; fi
-          sudo mkdir -p $BASE/w && sudo chown $USER $BASE/w && sudo ln -sfn $BASE/w /mnt/w
-          SWAP=$(( FREE - 40 )); [ $SWAP -gt 24 ] && SWAP=24
-          if [ $SWAP -ge 4 ]; then sudo swapoff -a || true; sudo fallocate -l ${SWAP}G $BASE/w/swapfile && sudo chmod 600 $BASE/w/swapfile && sudo mkswap $BASE/w/swapfile >/dev/null && sudo swapon $BASE/w/swapfile; fi
-          echo "work disk $BASE, free ${FREE}G, swap ${SWAP}G"; free -g; df -h $BASE
       - uses: actions/checkout@v4
+      - name: Room to work
+        run: bash tools/convert/room.sh
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        with: { python-version: "3.11" }
       - name: Tools
         run: |
-          pip install -q torch==2.13.0 torchvision --index-url https://download.pytorch.org/whl/cpu
-          pip install -q litert-torch==0.9.4 ai-edge-litert==2.2.0 diffusers==0.40.0 transformers==5.18.0 peft==0.21.2 accelerate==1.15.0 safetensors==0.8.0 huggingface_hub==1.33.0 scikit-image pillow
-          mkdir -p out
-      - name: Face fix (GFPGAN v1.4)
-        run: |
-          curl -sfL -o /mnt/w/GFPGANv1.4.pth https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth
-          python -u tools/convert/convert_gfpgan.py /mnt/w/GFPGANv1.4.pth /mnt/w/gfpgan.tflite 2>&1 | grep -v "^W1\|^I0" | tee out/gfpgan.log
-          rm /mnt/w/GFPGANv1.4.pth
-      - name: Fetch deep brain sources
-        env:
-          HF_HUB_ENABLE_HF_TRANSFER: "0"
+          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q $PIP_TOOLS
+      - name: Fetch sources
         run: |
           python - <<'PY'
           from huggingface_hub import snapshot_download, hf_hub_download
@@ -56,30 +42,117 @@ jobs:
               "text_encoder/config.json", "text_encoder/model.fp16.safetensors",
               "text_encoder_2/config.json", "text_encoder_2/model.fp16.safetensors",
               "tokenizer/*", "tokenizer_2/*", "scheduler/*", "model_index.json"])
-          snapshot_download("madebyollin/sdxl-vae-fp16-fix", local_dir="/mnt/w/vae", allow_patterns=["config.json", "diffusion_pytorch_model.safetensors"])
           hf_hub_download("QinmingZhou/OSOR", "osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth", local_dir="/mnt/w/osor")
           PY
-          du -sh /mnt/w/* | tee out/sources.txt
-      - name: Deep brain (OSOR-SDXL, split into parts)
+          mkdir -p out; du -sh /mnt/w/base /mnt/w/osor | tee out/sources.txt
+      - name: Merge
         run: |
-          # Progress report every 10 minutes (branch ci-results-convert-progress).
-          ( while true; do sleep 600; d=$(mktemp -d); cp out/*.log out/*.txt "$d"/ 2>/dev/null; free -g > "$d/memory.txt"; df -h /mnt >> "$d/memory.txt"
-            (cd "$d" && git init -q -b p && git config user.email ci@nanogone && git config user.name nanogone-ci && echo "${GITHUB_SHA}" > commit.txt && git add -A && git commit -qm progress && git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" p:ci-results-convert-progress) >/dev/null 2>&1; done ) &
-          python -u tools/convert/convert_osor.py /mnt/w/base /mnt/w/vae /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/deep 2>&1 | grep -v "^W1\|^I0" | tee out/osor.log
-          test -f /mnt/w/deep/brains.json
-          cp /mnt/w/deep/*.png /mnt/w/deep/brains.json out/
-      - name: Attach to the brains-v1 release
-        env:
-          GH_TOKEN: ${{ github.token }}
+          python -u tools/convert/osor_stage.py merge /mnt/w/base /mnt/w/osor/osor-sdxlinpainting/weights/sdxlinpainting_phase2.pth /mnt/w/work 2>&1 | grep -v "^W1\|^I0" | tee out/merge.log
+          test -f /mnt/w/work/count.json
+      - name: Hand over to the part machines
         run: |
-          gh release view brains-v1 >/dev/null 2>&1 || gh release create brains-v1 --title "NanoGone brains v1" --notes "AI brain files. The app fetches the deep brain pack from here once, over Wi-Fi." --prerelease
-          gh release upload brains-v1 /mnt/w/gfpgan.tflite /mnt/w/deep/*.tflite /mnt/w/deep/brains.json --clobber
-          gh release view brains-v1 --json assets --jq '.assets[] | "\(.name) \(.size)"' | tee out/release.txt
-      - name: Publish results
+          gh release delete brains-work --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create brains-work --title "NanoGone brains (work in progress)" --notes "Temporary files while converting. Removed when done." --prerelease
+          cd /mnt/w/work && split -b 1900M -d unet.safetensors unet.safetensors.part- && rm unet.safetensors
+          gh release upload brains-work unet.safetensors.part-* unet_config.json constants.pt count.json --clobber
+      - name: Publish log
         if: always()
+        run: bash tools/convert/publish.sh merge
+
+  vae:
+    needs: merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Convert the picture encoder and decoder
         run: |
-          echo "${GITHUB_SHA}" > out/commit.txt
-          echo "${{ job.status }}" > out/status.txt
-          cd out && git init -q -b r && git config user.email ci@nanogone && git config user.name nanogone-ci
-          git add -A && git commit -qm convert
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" r:ci-results-convert
+          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q $PIP_TOOLS
+          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
+          mkdir -p out
+          python -u tools/convert/osor_stage.py vae /tmp/vae /tmp/vaeout 2>&1 | grep -v "^W1\|^I0" | tee out/vae.log
+      - name: Attach to the work release
+        run: |
+          gh release upload brains-work /tmp/vaeout/osor_vae_enc.tflite /tmp/vaeout/osor_vae_dec.tflite --clobber
+      - name: Publish log
+        if: always()
+        run: bash tools/convert/publish.sh vae
+
+  parts:
+    needs: merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Is this part needed?
+        id: need
+        run: |
+          gh release download brains-work -p count.json -D /tmp/c --clobber
+          N=$(python3 -c "import json;print(json.load(open('/tmp/c/count.json'))['count'])")
+          echo "parts: $N"; if [ ${{ matrix.part }} -lt $N ]; then echo "go=1" >> $GITHUB_OUTPUT; fi
+          [ ${{ matrix.part }} -lt 10 ] && [ $N -gt 10 ] && { echo "more than 10 parts: raise the matrix"; exit 1; } || true
+      - name: Room to work
+        if: steps.need.outputs.go == '1'
+        run: bash tools/convert/room.sh
+      - uses: actions/setup-python@v5
+        if: steps.need.outputs.go == '1'
+        with: { python-version: "3.11" }
+      - name: Tools and files
+        if: steps.need.outputs.go == '1'
+        run: |
+          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q $PIP_TOOLS
+          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
+          mkdir -p /mnt/w/work && cd /mnt/w/work
+          gh release download brains-work -p 'unet.safetensors.part-*' -p unet_config.json -p constants.pt -p count.json --clobber
+          cat unet.safetensors.part-* > unet.safetensors && rm unet.safetensors.part-*
+      - name: Convert part ${{ matrix.part }}
+        if: steps.need.outputs.go == '1'
+        run: |
+          mkdir -p out
+          python -u tools/convert/osor_stage.py part ${{ matrix.part }} /mnt/w/work /tmp/vae /mnt/w/parts 2>&1 | grep -v "^W1\|^I0" | tee out/part.log
+          gh release upload brains-work /mnt/w/parts/osor_unet_${{ matrix.part }}.tflite /mnt/w/parts/osor_unet_${{ matrix.part }}.json --clobber
+      - name: Publish log
+        if: always()
+        run: bash tools/convert/publish.sh part-${{ matrix.part }}
+
+  finish:
+    needs: [parts, vae]
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - name: Room to work
+        run: bash tools/convert/room.sh
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Tools and files
+        run: |
+          pip install -q torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q $PIP_TOOLS
+          python -c "from huggingface_hub import snapshot_download as s; s('madebyollin/sdxl-vae-fp16-fix', local_dir='/tmp/vae', allow_patterns=['config.json','diffusion_pytorch_model.safetensors'])"
+          mkdir -p /mnt/w/work /mnt/w/parts
+          (cd /mnt/w/work && gh release download brains-work -p 'unet.safetensors.part-*' -p unet_config.json -p constants.pt -p count.json --clobber && cat unet.safetensors.part-* > unet.safetensors && rm unet.safetensors.part-*)
+          (cd /mnt/w/parts && gh release download brains-work -p 'osor_*' --clobber)
+      - name: Check the whole chain and write brains.json
+        run: |
+          mkdir -p out
+          python -u tools/convert/osor_stage.py finish /mnt/w/work /tmp/vae /mnt/w/parts /mnt/w/final 2>&1 | grep -v "^W1\|^I0" | tee out/finish.log
+          cp /mnt/w/final/*.png /mnt/w/final/brains.json out/
+      - name: Attach to brains-v1
+        run: |
+          gh release view brains-v1 >/dev/null 2>&1 || gh release create brains-v1 --title "NanoGone brains v1" --notes "AI brain files for NanoGone." --prerelease
+          gh release upload brains-v1 /mnt/w/parts/osor_*.tflite /mnt/w/final/brains.json --clobber
+          gh release view brains-v1 --json assets --jq '.assets[] | "\(.name) \(.size)"' | tee out/release.txt
+          gh release delete brains-work --yes --cleanup-tag || true
+      - name: Publish log
+        if: always()
+        run: bash tools/convert/publish.sh finish

@@ -1,6 +1,6 @@
 """Build a tiny fake deep-brain pack plus expected answers, for the phone self-test.
 
-Usage: OSOR_FAKE=1 python tools/convert/convert_osor.py x x x OUT   (makes tiny random parts)
+Usage: OSOR_FAKE=1 python tools/convert/osor_stage.py merge|vae|part N|finish ...   (tiny random parts, see that file)
        python tools/make_deep_selftest.py OUT tools/testdata/deep_selftest
 The phone runs the same chain (encoder, parts with the skip stack, decoder) and compares with
 selftest_out.bin. This checks the plumbing (order of inputs and outputs, the stack), not quality.
